@@ -105,6 +105,7 @@ export const getTask = async (req, res) => {
     task.createdAtFormatted = task.createdAt.toLocaleDateString('ru-RU');
     responses.forEach(response => {
       response.createdAtFormatted = response.createdAt.toLocaleDateString('ru-RU');
+      response.isOwnResponse = response.responder._id.toString() === req.session.userId;
     });
 
     const isAuthor = task.author._id.toString() === req.session.userId;
@@ -115,6 +116,7 @@ export const getTask = async (req, res) => {
       responses,
       isAuthor,
       hasResponded,
+      currentUserId: req.session.userId,
       title: task.title
     });
   } catch (error) {
@@ -150,6 +152,52 @@ export const postResponse = async (req, res) => {
     res.redirect(`/tasks/${req.params.id}`);
   } catch (error) {
     res.redirect(`/tasks/${req.params.id}`);
+  }
+};
+
+// Редактировать отклик
+export const editResponse = async (req, res) => {
+  const { message } = req.body;
+  try {
+    const response = await Response.findById(req.params.responseId);
+    if (!response || response.responder.toString() !== req.session.userId) {
+      return res.redirect(`/tasks/${req.params.taskId}`);
+    }
+
+    const task = await Task.findById(req.params.taskId);
+    if (!task || task.status !== 'open') {
+      return res.redirect(`/tasks/${req.params.taskId}`);
+    }
+
+    // Обновить отклик
+    response.message = message;
+    await response.save();
+
+    res.redirect(`/tasks/${req.params.taskId}`);
+  } catch (error) {
+    res.redirect(`/tasks/${req.params.taskId}`);
+  }
+};
+
+// Удалить отклик
+export const deleteResponse = async (req, res) => {
+  try {
+    const response = await Response.findById(req.params.responseId);
+    if (!response || response.responder.toString() !== req.session.userId) {
+      return res.redirect(`/tasks/${req.params.taskId}`);
+    }
+
+    const task = await Task.findById(req.params.taskId);
+    if (!task || task.status !== 'open') {
+      return res.redirect(`/tasks/${req.params.taskId}`);
+    }
+
+    // Удалить отклик
+    await Response.findByIdAndDelete(req.params.responseId);
+
+    res.redirect(`/tasks/${req.params.taskId}`);
+  } catch (error) {
+    res.redirect(`/tasks/${req.params.taskId}`);
   }
 };
 

@@ -7,7 +7,9 @@ import {
   getTask,
   postResponse,
   acceptResponse,
-  closeTask
+  closeTask,
+  editResponse,
+  deleteResponse
 } from '../controllers/tasksController.js';
 
 const router = express.Router();
@@ -30,6 +32,12 @@ router.post('/:id/response', postResponse);
 
 // Принять отклик
 router.post('/:taskId/response/:responseId/accept', acceptResponse);
+
+// Редактировать отклик
+router.post('/:taskId/response/:responseId/edit', editResponse);
+
+// Удалить отклик
+router.post('/:taskId/response/:responseId/delete', deleteResponse);
 
 // Закрыть задачу
 router.post('/:id/close', closeTask);

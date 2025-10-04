@@ -31,8 +31,9 @@
     <h3>Отклики {{#if responses.length}}({{responses.length}}){{/if}}</h3>
 
     {{#if (eq task.status 'open')}}
-      {{#unless hasResponded}}
-        <div class="card mb-4">
+      {{#unless isAuthor}}
+        {{#unless hasResponded}}
+          <div class="card mb-4">
           <div class="card-header">Оставить отклик</div>
           <div class="card-body">
             <form action="/tasks/{{task._id}}/response" method="POST">
@@ -44,14 +45,16 @@
             </form>
           </div>
         </div>
+        {{/unless}}
       {{/unless}}
     {{/if}}
 
     {{#each responses}}
+      {{#if (or ../isAuthor isOwnResponse)}}
       <div class="card mb-3 {{#if (eq status 'accepted')}}border-success{{else if (eq status 'rejected')}}border-danger{{/if}}">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start mb-2">
-            <strong>{{responder.name}}</strong>
+            <strong>{{responder.name}}{{#if (eq responder._id ../currentUserId)}} (Вы){{/if}}</strong>
             <div>
               {{#if (eq status 'accepted')}}
                 <span class="badge bg-success">Принят</span>
@@ -62,8 +65,20 @@
               {{/if}}
             </div>
           </div>
-          <p class="mb-2">{{message}}</p>
-          <small class="text-muted">{{createdAtFormatted}}</small>
+          <div id="response-display-{{_id}}">
+            <p class="mb-2">{{message}}</p>
+            <small class="text-muted">{{createdAtFormatted}}</small>
+          </div>
+
+          <div id="response-edit-{{_id}}" style="display: none;">
+            <form action="/tasks/{{../task._id}}/response/{{_id}}/edit" method="POST" class="mt-2">
+              <div class="mb-3">
+                <textarea class="form-control" name="message" rows="3" required>{{message}}</textarea>
+              </div>
+              <button type="submit" class="btn btn-success btn-sm">Сохранить</button>
+              <button type="button" class="btn btn-secondary btn-sm ms-2" onclick="cancelEdit('{{_id}}')">Отмена</button>
+            </form>
+          </div>
 
           {{#if ../isAuthor}}
             {{#if (eq status 'pending')}}
@@ -74,9 +89,17 @@
                 <button type="button" class="btn btn-danger btn-sm ms-2" onclick="rejectResponse('{{_id}}')">Отклонить</button>
               </div>
             {{/if}}
+          {{else if isOwnResponse}}
+            {{#if (eq status 'pending')}}
+              <div class="mt-2" id="response-actions-{{_id}}">
+                <button type="button" class="btn btn-primary btn-sm" onclick="editResponse('{{_id}}')">Редактировать</button>
+                <button type="button" class="btn btn-danger btn-sm ms-2" onclick="deleteResponse('{{_id}}')">Удалить</button>
+              </div>
+            {{/if}}
           {{/if}}
         </div>
       </div>
+      {{/if}}
     {{else}}
       <div class="text-center text-muted mt-4">
         <p>Пока нет откликов</p>
@@ -107,6 +130,43 @@ function rejectResponse(responseId) {
   if (confirm('Вы уверены, что хотите отклонить этот отклик?')) {
     // Для простоты, пока что оставим без действия, можно добавить AJAX позже
     alert('Функция отклонения будет реализована');
+  }
+}
+
+function editResponse(responseId) {
+  // Скрыть отображение отклика
+  document.getElementById('response-display-' + responseId).style.display = 'none';
+  // Скрыть кнопки действий
+  document.getElementById('response-actions-' + responseId).style.display = 'none';
+  // Показать форму редактирования
+  document.getElementById('response-edit-' + responseId).style.display = 'block';
+}
+
+function cancelEdit(responseId) {
+  // Показать отображение отклика
+  document.getElementById('response-display-' + responseId).style.display = 'block';
+  // Показать кнопки действий
+  document.getElementById('response-actions-' + responseId).style.display = 'block';
+  // Скрыть форму редактирования
+  document.getElementById('response-edit-' + responseId).style.display = 'none';
+}
+
+function deleteResponse(responseId) {
+  if (confirm('Вы уверены, что хотите удалить свой отклик?')) {
+    // Создаем форму для отправки запроса на удаление
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/tasks/' + '{{task._id}}' + '/response/' + responseId + '/delete';
+
+    // Добавляем CSRF токен, если используется
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_csrf';
+    csrfInput.value = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    form.appendChild(csrfInput);
+
+    document.body.appendChild(form);
+    form.submit();
   }
 }
 </script>
