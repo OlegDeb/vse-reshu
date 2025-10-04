@@ -1,0 +1,16 @@
+<h2>Редактировать категорию</h2>
+{{#if error}}
+<div class="alert alert-danger">{{error}}</div>
+{{/if}}
+<form action="/admin/categories/{{category._id}}/edit" method="POST">
+  <div class="mb-3">
+    <label for="name" class="form-label">Название</label>
+    <input type="text" class="form-control" id="name" name="name" value="{{category.name}}" required>
+  </div>
+  <div class="mb-3">
+    <label for="icon" class="form-label">Иконка (класс FontAwesome, например, 'fas fa-home')</label>
+    <input type="text" class="form-control" id="icon" name="icon" value="{{category.icon}}" required>
+  </div>
+  <button type="submit" class="btn btn-primary">Обновить</button>
+  <a href="/admin/categories" class="btn btn-secondary">Отмена</a>
+</form>

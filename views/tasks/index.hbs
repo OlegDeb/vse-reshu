@@ -1,0 +1,59 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Задачи</h1>
+  <a href="/tasks/create" class="btn btn-primary">Создать задачу</a>
+</div>
+
+{{#if tasks.length}}
+  <div class="row">
+    {{#each tasks}}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+              <i class="{{category.icon}} me-2"></i>
+              <span class="badge bg-secondary">{{category.name}}</span>
+            </div>
+            <h5 class="card-title">{{title}}</h5>
+            <p class="card-text text-truncate">{{description}}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">Автор: {{author.name}}</small>
+              <small class="text-muted">{{createdAtFormatted}}</small>
+            </div>
+          </div>
+          <div class="card-footer">
+            <a href="/tasks/{{_id}}" class="btn btn-outline-primary btn-sm">Просмотреть</a>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+
+  <!-- Пагинация -->
+  <nav aria-label="Пагинация задач">
+    <ul class="pagination justify-content-center">
+      {{#if hasPrev}}
+        <li class="page-item">
+          <a class="page-link" href="?page={{subtract currentPage 1}}">Предыдущая</a>
+        </li>
+      {{/if}}
+
+      {{#each pages}}
+        <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+          <a class="page-link" href="?page={{this}}">{{this}}</a>
+        </li>
+      {{/each}}
+
+      {{#if hasNext}}
+        <li class="page-item">
+          <a class="page-link" href="?page={{add currentPage 1}}">Следующая</a>
+        </li>
+      {{/if}}
+    </ul>
+  </nav>
+{{else}}
+  <div class="text-center mt-5">
+    <h3>Задач пока нет</h3>
+    <p>Будьте первым, кто создаст задачу!</p>
+    <a href="/tasks/create" class="btn btn-primary">Создать задачу</a>
+  </div>
+{{/if}}

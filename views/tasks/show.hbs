@@ -1,0 +1,112 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>{{task.title}}</h1>
+  {{#if isAuthor}}
+    {{#if (eq task.status 'in_progress')}}
+      <form action="/tasks/{{task._id}}/close" method="POST" class="d-inline">
+        <button type="submit" class="btn btn-success">Закрыть задачу</button>
+      </form>
+    {{/if}}
+  {{/if}}
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+          <i class="{{task.category.icon}} me-2"></i>
+          <span class="badge bg-secondary me-2">{{task.category.name}}</span>
+          <span class="badge {{#if (eq task.status 'open')}}bg-success{{else if (eq task.status 'in_progress')}}bg-warning{{else}}bg-secondary{{/if}}">
+            {{#if (eq task.status 'open')}}Открыта{{else if (eq task.status 'in_progress')}}В работе{{else}}Закрыта{{/if}}
+          </span>
+        </div>
+        <p class="card-text">{{task.description}}</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <small class="text-muted">Автор: {{task.author.name}}</small>
+          <small class="text-muted">{{task.createdAtFormatted}}</small>
+        </div>
+      </div>
+    </div>
+
+    <h3>Отклики {{#if responses.length}}({{responses.length}}){{/if}}</h3>
+
+    {{#if (eq task.status 'open')}}
+      {{#unless hasResponded}}
+        <div class="card mb-4">
+          <div class="card-header">Оставить отклик</div>
+          <div class="card-body">
+            <form action="/tasks/{{task._id}}/response" method="POST">
+              <div class="mb-3">
+                <label for="message" class="form-label">Ваше предложение</label>
+                <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Отправить отклик</button>
+            </form>
+          </div>
+        </div>
+      {{/unless}}
+    {{/if}}
+
+    {{#each responses}}
+      <div class="card mb-3 {{#if (eq status 'accepted')}}border-success{{else if (eq status 'rejected')}}border-danger{{/if}}">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <strong>{{responder.name}}</strong>
+            <div>
+              {{#if (eq status 'accepted')}}
+                <span class="badge bg-success">Принят</span>
+              {{else if (eq status 'rejected')}}
+                <span class="badge bg-danger">Отклонен</span>
+              {{else}}
+                <span class="badge bg-secondary">Ожидает</span>
+              {{/if}}
+            </div>
+          </div>
+          <p class="mb-2">{{message}}</p>
+          <small class="text-muted">{{createdAtFormatted}}</small>
+
+          {{#if ../isAuthor}}
+            {{#if (eq status 'pending')}}
+              <div class="mt-2">
+                <form action="/tasks/{{../task._id}}/response/{{_id}}/accept" method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-success btn-sm">Принять</button>
+                </form>
+                <button type="button" class="btn btn-danger btn-sm ms-2" onclick="rejectResponse('{{_id}}')">Отклонить</button>
+              </div>
+            {{/if}}
+          {{/if}}
+        </div>
+      </div>
+    {{else}}
+      <div class="text-center text-muted mt-4">
+        <p>Пока нет откликов</p>
+      </div>
+    {{/each}}
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">Информация о задаче</div>
+      <div class="card-body">
+        <p><strong>Статус:</strong>
+          {{#if (eq task.status 'open')}}Открыта{{else if (eq task.status 'in_progress')}}В работе{{else}}Закрыта{{/if}}
+        </p>
+        {{#if task.acceptedResponse}}
+          <p><strong>Исполнитель:</strong> {{task.acceptedResponse.responder.name}}</p>
+        {{/if}}
+        <p><strong>Создано:</strong> {{task.createdAtFormatted}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a href="/tasks" class="btn btn-secondary mt-3">Вернуться к списку</a>
+
+<script>
+function rejectResponse(responseId) {
+  if (confirm('Вы уверены, что хотите отклонить этот отклик?')) {
+    // Для простоты, пока что оставим без действия, можно добавить AJAX позже
+    alert('Функция отклонения будет реализована');
+  }
+}
+</script>
