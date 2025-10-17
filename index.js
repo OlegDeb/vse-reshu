@@ -21,28 +21,43 @@ const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 
 // Подключение к MongoDB
-mongoose.connect(MONGO_URI)
-  .then(async () => {
-    console.log('MongoDB connected');
+// Локальное подключение к MongoDB (если MONGO_URI не настроен)
+const localMongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/vse-reshu';
 
-    // Создаем категории по умолчанию, если их нет
-    const Category = (await import('./models/Category.js')).default;
-    const categoriesCount = await Category.countDocuments();
-    if (categoriesCount === 0) {
-      const defaultCategories = [
-        { name: 'Программирование', icon: 'fas fa-code' },
-        { name: 'Дизайн', icon: 'fas fa-palette' },
-        { name: 'Маркетинг', icon: 'fas fa-bullhorn' },
-        { name: 'Письмо', icon: 'fas fa-pen' },
-        { name: 'Перевод', icon: 'fas fa-language' },
-        { name: 'Другое', icon: 'fas fa-ellipsis-h' }
-      ];
+console.log('🔄 Подключение к MongoDB...');
+console.log('📝 MONGO_URI:', localMongoURI);
 
-      await Category.insertMany(defaultCategories);
-      console.log('Добавлены категории по умолчанию');
-    }
+mongoose.connect(localMongoURI, {
+  serverSelectionTimeoutMS: 10000, // Увеличен таймаут до 10 секунд
+  socketTimeoutMS: 45000,
+  bufferCommands: false,
+  maxPoolSize: 5,
+  minPoolSize: 1
+})
+  .then(() => {
+    console.log('✅ MongoDB подключена успешно');
+    console.log('📊 База данных:', mongoose.connection.name || 'vse-reshu');
+    console.log('🔗 Строка подключения:', localMongoURI);
+    console.log('🚀 Сервер готов к работе');
   })
-  .catch(err => console.error('MongoDB connection error:', err));
+  .catch(err => {
+    console.error('❌ Ошибка подключения к MongoDB:', err.message);
+    console.error('❌ Полная ошибка:', err);
+
+    if (err.message.includes('ECONNREFUSED')) {
+      console.log('💡 Возможные решения:');
+      console.log('1. Убедитесь, что MongoDB запущена локально');
+      console.log('2. Для локальной разработки используйте: mongodb://127.0.0.1:27017/vse-reshu');
+      console.log('3. Проверьте, что процесс mongod запущен: ps aux | grep mongod');
+    } else if (err.message.includes('authentication failed')) {
+      console.log('🔐 Проверьте логин и пароль в MONGO_URI');
+    } else if (err.message.includes('getaddrinfo ENOTFOUND')) {
+      console.log('🌐 Проверьте доступность сервера MongoDB');
+    }
+
+    console.log('\n📝 Используется строка подключения:', localMongoURI);
+    console.log('⚠️  Сервер запущен, но без подключения к БД');
+  });
 
 // Настройка Handlebars
 app.engine('hbs', engine({
@@ -59,7 +74,15 @@ app.engine('hbs', engine({
     and: (a, b) => a && b,
     or: (a, b) => a || b,
     subtract: (a, b) => a - b,
-    add: (a, b) => a + b
+    add: (a, b) => a + b,
+    formatDate: (date) => {
+      if (!date) return '';
+      const d = new Date(date);
+      return d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
   },
   runtimeOptions: {
     allowProtoPropertiesByDefault: true
@@ -108,6 +131,15 @@ app.use('/tasks', taskRoutes);
 // Главная страница
 app.get('/', (req, res) => {
   res.render('index', { title: 'Главная' });
+});
+
+// Тестовая страница для проверки работы сервера
+app.get('/test', (req, res) => {
+  res.json({
+    status: 'Сервер работает',
+    timestamp: new Date().toISOString(),
+    mongodb: mongoose.connection.readyState === 1 ? 'подключена' : 'не подключена'
+  });
 });
 
 // Запуск сервера

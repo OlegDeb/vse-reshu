@@ -8,8 +8,13 @@
     <input type="text" class="form-control" id="name" name="name" value="{{category.name}}" required>
   </div>
   <div class="mb-3">
-    <label for="icon" class="form-label">Иконка (класс FontAwesome, например, 'fas fa-home')</label>
-    <input type="text" class="form-control" id="icon" name="icon" value="{{category.icon}}" required>
+    <label for="type" class="form-label">Тип категории</label>
+    <select class="form-control" id="type" name="type" required>
+      <option value="">Выберите тип категории</option>
+      {{#each categoryTypes}}
+      <option value="{{@key}}" {{#if (eq @key ../category.type)}}selected{{/if}}>{{@key}}</option>
+      {{/each}}
+    </select>
   </div>
   <button type="submit" class="btn btn-primary">Обновить</button>
   <a href="/admin/categories" class="btn btn-secondary">Отмена</a>

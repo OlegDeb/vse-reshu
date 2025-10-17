@@ -1,4 +1,4 @@
-import Category from '../models/Category.js';
+import Category, { CATEGORY_TYPES } from '../models/Category.js';
 
 export const getIndex = async (req, res) => {
   try {
@@ -12,20 +12,27 @@ export const getIndex = async (req, res) => {
 };
 
 export const getCreate = (req, res) => {
-  res.render('admin/categories/create', { title: 'Создать категорию' });
+  res.render('admin/categories/create', {
+    title: 'Создать категорию',
+    categoryTypes: CATEGORY_TYPES
+  });
 };
 
 export const postCreate = async (req, res) => {
-  const { name, icon } = req.body;
-  console.log('Создание категории:', { name, icon });
+  const { name, type } = req.body;
+  console.log('Создание категории:', { name, type });
   try {
-    const category = new Category({ name, icon });
+    const category = new Category({ name, type });
     await category.save();
     console.log('Категория создана:', category);
     res.redirect('/admin/categories');
   } catch (error) {
     console.log('Ошибка создания категории:', error);
-    res.render('admin/categories/create', { error: 'Ошибка создания категории', title: 'Создать категорию' });
+    res.render('admin/categories/create', {
+      error: 'Ошибка создания категории',
+      title: 'Создать категорию',
+      categoryTypes: CATEGORY_TYPES
+    });
   }
 };
 
@@ -35,19 +42,26 @@ export const getEdit = async (req, res) => {
     if (!category) {
       return res.status(404).send('Категория не найдена');
     }
-    res.render('admin/categories/edit', { category, title: 'Редактировать категорию' });
+    res.render('admin/categories/edit', { category, categoryTypes: CATEGORY_TYPES, title: 'Редактировать категорию' });
   } catch (error) {
     res.status(500).send('Ошибка загрузки категории');
   }
 };
 
 export const postEdit = async (req, res) => {
-  const { name, icon } = req.body;
+  const { name, type } = req.body;
   try {
-    await Category.findByIdAndUpdate(req.params.id, { name, icon });
+    await Category.findByIdAndUpdate(req.params.id, { name, type });
     res.redirect('/admin/categories');
   } catch (error) {
-    res.render('admin/categories/edit', { error: 'Ошибка обновления категории', title: 'Редактировать категорию' });
+    console.log('Ошибка обновления категории:', error);
+    const category = await Category.findById(req.params.id);
+    res.render('admin/categories/edit', {
+      error: 'Ошибка обновления категории',
+      title: 'Редактировать категорию',
+      category,
+      categoryTypes: CATEGORY_TYPES
+    });
   }
 };
 

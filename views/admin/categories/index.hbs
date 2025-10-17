@@ -4,7 +4,10 @@
   <thead>
     <tr>
       <th>Название</th>
-      <th>Иконка</th>
+      <th>Тип категории</th>
+      <th>Slug</th>
+      <th>Дата создания</th>
+      <th>Последнее обновление</th>
       <th>Действия</th>
     </tr>
   </thead>
@@ -12,7 +15,10 @@
     {{#each categories}}
     <tr>
       <td>{{this.name}}</td>
-      <td><i class="{{this.icon}}"></i> {{this.icon}}</td>
+      <td>{{this.type}}</td>
+      <td><code>{{this.slug}}</code></td>
+      <td>{{formatDate this.createdAt}}</td>
+      <td>{{formatDate this.updatedAt}}</td>
       <td>
         <a href="/admin/categories/{{this._id}}/edit" class="btn btn-secondary btn-sm">Редактировать</a>
         <form action="/admin/categories/{{this._id}}/delete" method="POST" style="display: inline;">
