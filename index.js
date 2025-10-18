@@ -17,6 +17,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 
@@ -98,10 +99,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Сессии
 app.use(session({
-  secret: process.env.SECRET_KEY,
+  secret: process.env.SECRET_KEY || 'default-secret-key',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: MONGO_URI }),
+  store: MongoStore.create({ mongoUrl: localMongoURI }),
   cookie: { maxAge: 1000 * 60 * 60 * 24 } // 24 часа
 }));
 
@@ -111,8 +112,9 @@ app.use(async (req, res, next) => {
     try {
       const user = await User.findById(req.session.userId);
       res.locals.user = user;
-      res.locals.isAdmin = user.role === 'admin';
+      res.locals.isAdmin = user && user.role === 'admin';
     } catch (err) {
+      console.log('Ошибка загрузки пользователя:', err);
       res.locals.user = null;
       res.locals.isAdmin = false;
     }

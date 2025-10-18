@@ -1,24 +1,36 @@
 import mongoose from 'mongoose';
 import { transliterate } from '../libs/transliterate.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Константы типов категорий с иконками
-export const CATEGORY_TYPES = {
-  'Курьерские услуги': 'fas fa-truck',
-  'Ремонт и строительство': 'fas fa-tools',
-  'Грузоперевозки': 'fas fa-shipping-fast',
-  'Уборка и помощь по хозяйству': 'fas fa-broom',
-  'Виртуальный помощник': 'fas fa-user-tie',
-  'Мероприятия и промоакции': 'fas fa-bullhorn',
-  'Дизайн': 'fas fa-palette',
-  'Разработка ПО': 'fas fa-code',
-  'Фото, видео и аудио': 'fas fa-camera',
-  'Установка и ремонт техники': 'fas fa-cog',
-  'Красота и здоровье': 'fas fa-spa',
-  'Ремонт цифровой техники': 'fas fa-laptop',
-  'Юридическая и бухгалтерская помощь': 'fas fa-balance-scale',
-  'Репетиторы и обучение': 'fas fa-graduation-cap',
-  'Ремонт транспорта': 'fas fa-car'
-};
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Загружаем типы категорий из JSON файла
+let CATEGORY_TYPES = {};
+try {
+  const categoryTypesPath = path.join(__dirname, '../libs/categoryTypes.json');
+  console.log('Путь к файлу:', categoryTypesPath);
+  console.log('Файл существует?', fs.existsSync(categoryTypesPath));
+
+  const categoryTypesData = fs.readFileSync(categoryTypesPath, 'utf8');
+  console.log('Данные из файла:', categoryTypesData.substring(0, 200) + '...');
+
+  CATEGORY_TYPES = JSON.parse(categoryTypesData);
+  console.log('CATEGORY_TYPES загружены из JSON файла, количество:', Object.keys(CATEGORY_TYPES).length);
+} catch (error) {
+  console.error('Ошибка загрузки CATEGORY_TYPES из JSON файла:', error);
+  // Fallback на базовые типы категорий
+  CATEGORY_TYPES = {
+    'Курьерские услуги': 'fas fa-truck',
+    'Ремонт и строительство': 'fas fa-tools',
+    'Грузоперевозки': 'fas fa-shipping-fast'
+  };
+  console.log('Используем fallback CATEGORY_TYPES');
+}
+
+export { CATEGORY_TYPES };
 
 const categorySchema = new mongoose.Schema({
   name: { type: String, required: true },

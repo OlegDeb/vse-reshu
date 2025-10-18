@@ -2,14 +2,47 @@ import Category, { CATEGORY_TYPES } from '../models/Category.js';
 
 export const getIndex = async (req, res) => {
   try {
-    const categories = await Category.find();
-    console.log('Категории:', categories);
-    res.render('admin/categories/index', { categories, title: 'Категории' });
+    // Создаем массив типов категорий для удобства работы в шаблоне
+    const typesArray = Object.entries(CATEGORY_TYPES).map(([name, icon]) => ({
+      name,
+      icon
+    }));
+
+    res.render('admin/categories/index', {
+      title: 'Категории',
+      categoryTypes: CATEGORY_TYPES,
+      typesArray: typesArray
+    });
   } catch (error) {
-    console.log('Ошибка загрузки категорий:', error);
+    console.log('Ошибка загрузки страницы категорий:', error);
+    res.status(500).send('Ошибка загрузки страницы категорий');
+  }
+};
+
+export const getCategoriesByType = async (req, res) => {
+  try {
+    const { type } = req.params;
+    const categories = await Category.find({ type });
+
+    // Создаем массив типов категорий для кнопки "Назад"
+    const typesArray = Object.entries(CATEGORY_TYPES).map(([name, icon]) => ({
+      name,
+      icon
+    }));
+
+    res.render('admin/categories/index', {
+      categories,
+      selectedType: type,
+      categoryTypes: CATEGORY_TYPES,
+      typesArray: typesArray,
+      title: `Категории: ${type}`
+    });
+  } catch (error) {
+    console.log('Ошибка загрузки категорий по типу:', error);
     res.status(500).send('Ошибка загрузки категорий');
   }
 };
+
 
 export const getCreate = (req, res) => {
   res.render('admin/categories/create', {

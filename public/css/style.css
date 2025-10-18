@@ -1,0 +1,397 @@
+/* Кастомные стили для приложения */
+
+/* Navbar стили */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #689f38, #7cb342) !important;
+}
+
+.navbar-brand img {
+    transition: transform 0.2s ease;
+}
+
+.navbar-brand:hover img {
+    transform: scale(1.05);
+}
+
+/* Центрирование элементов в navbar */
+.navbar .container {
+    position: relative;
+}
+
+.navbar .navbar-nav.flex-row.mx-auto {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+/* Стили для карточек категорий */
+.category-card, .card.category-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    border: 2px solid #e8f5e8 !important;
+    background: linear-gradient(135deg, #f8fff8, #ffffff);
+    box-shadow: 0 2px 8px rgba(104, 159, 56, 0.1);
+    position: relative;
+    overflow: hidden;
+    min-height: 120px;
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #689f38, #7cb342);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.category-card:hover::before {
+    opacity: 1;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(104, 159, 56, 0.2) !important;
+    border-color: #689f38 !important;
+}
+
+/* Стили для иконок категорий */
+/* Стили для иконок категорий */
+.category-icon {
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    color: #689f38 !important;
+    filter: drop-shadow(0 2px 4px rgba(104, 159, 56, 0.3));
+}
+
+.category-card:hover .category-icon {
+    opacity: 1;
+    color: #7cb342 !important;
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(124, 179, 66, 0.4));
+}
+
+
+.category-card:hover .category-icon {
+    opacity: 1;
+    color: #7cb342 !important;
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(124, 179, 66, 0.4));
+}
+
+/* Стили для текста в карточках */
+.category-card .card-title {
+    color: #2c3e50;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.category-card:hover .card-title {
+    color: #689f38;
+    transform: translateY(-2px);
+}
+
+/* Улучшенные карточки для белого фона */
+.category-card {
+    border: 2px solid #e8f5e8 !important;
+    background: linear-gradient(135deg, #f8fff8, #ffffff);
+    box-shadow: 0 2px 8px rgba(104, 159, 56, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #689f38, #7cb342);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.category-card:hover::before {
+    opacity: 1;
+}
+
+.category-card:hover {
+    border-color: #689f38 !important;
+    box-shadow: 0 8px 25px rgba(104, 159, 56, 0.2) !important;
+}
+
+.category-card .card-title {
+    color: #2c3e50;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.category-card:hover .card-title {
+    color: #689f38;
+    transform: translateY(-2px);
+}
+
+/* Жирные заголовки в админ панели */
+.admin-container h2,
+.admin-container h3 {
+    font-weight: 700 !important;
+    color: #2c3e50 !important;
+    letter-spacing: -0.5px;
+}
+
+/* Стили для админ панели */
+.admin-container {
+    padding: 2rem 0;
+}
+
+.admin-container .table {
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.admin-container .table th {
+    background: linear-gradient(135deg, #689f38, #7cb342) !important;
+    color: white !important;
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+}
+
+.admin-container .table td {
+    border-color: #e8f5e8;
+    vertical-align: middle;
+}
+
+.admin-container .table tbody tr:hover {
+    background-color: #f8fff8;
+}
+
+/* Анимации для плавного появления */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.navbar {
+    animation: slideInDown 0.3s ease-out;
+}
+
+.category-card {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+/* Hover эффект для кнопок */
+
+/* Специальные стили для кнопки создания категории */
+.btn-create-category {
+    background: linear-gradient(135deg, #689f38, #7cb342) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(104, 159, 56, 0.3) !important;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: white !important;
+}
+
+/* Стили для карточек категорий */
+.category-card, .card.category-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    border: 2px solid #e8f5e8 !important;
+    background: linear-gradient(135deg, #f8fff8, #ffffff);
+    box-shadow: 0 2px 8px rgba(104, 159, 56, 0.1);
+    position: relative;
+    overflow: hidden;
+    min-height: 120px;
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #689f38, #7cb342);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.category-card:hover::before {
+    opacity: 1;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(104, 159, 56, 0.2) !important;
+    border-color: #689f38 !important;
+}
+
+.btn-create-category:hover {
+    background: linear-gradient(135deg, #5d8c2e, #689f38) !important;
+    box-shadow: 0 6px 20px rgba(104, 159, 56, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Стили для кнопок действий в таблице */
+.admin-container .table .btn {
+    border-radius: 20px;
+    font-size: 0.8rem;
+    padding: 0.375rem 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.admin-container .table .btn-outline-primary {
+    color: #689f38;
+    border-color: #689f38;
+}
+
+.admin-container .table .btn-outline-primary:hover {
+    background-color: #689f38;
+    border-color: #689f38;
+    transform: translateY(-1px);
+    color: white;
+}
+
+.admin-container .table .btn-outline-danger:hover {
+    transform: translateY(-1px);
+}
+
+.admin-container .btn-outline-secondary {
+    background: linear-gradient(135deg, #6c757d, #5a6268) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 500;
+}
+
+.admin-container .btn-outline-secondary:hover {
+    background: linear-gradient(135deg, #5a6268, #545b62) !important;
+    transform: translateY(-1px);
+    color: white !important;
+}
+
+/* Стили для кнопки "Назад" */
+
+/* Стили для админ панели */
+.admin-header {
+    background: linear-gradient(135deg, #689f38, #7cb342);
+    color: white;
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+}
+
+/* Специальные стили для админских страниц */
+.admin-container {
+    background-color: white;
+    padding: 2rem 0;
+}
+
+/* Дополнительные улучшения для админ интерфейса */
+.admin-header {
+    padding: 1.5rem 0;
+}
+
+.category-card {
+    min-height: 120px;
+}
+
+/* Анимация для кнопки создания категории */
+@keyframes pulse-create {
+    0% {
+        box-shadow: 0 4px 15px rgba(104, 159, 56, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 25px rgba(104, 159, 56, 0.5);
+    }
+    100% {
+        box-shadow: 0 4px 15px rgba(104, 159, 56, 0.3);
+    }
+}
+
+.btn-create-category {
+    animation: pulse-create 2s infinite;
+}
+
+.admin-card {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border: none;
+    transition: box-shadow 0.3s ease;
+}
+
+.admin-card:hover {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+/* Стили для форм */
+.form-control:focus {
+    border-color: #689f38;
+    box-shadow: 0 0 0 0.2rem rgba(104, 159, 56, 0.25);
+}
+
+/* Стили для таблиц */
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+
+/* Улучшенные кнопки действий */
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    .category-card .fa-3x {
+        font-size: 2.5rem !important;
+    }
+
+    .card-title {
+        font-size: 0.9rem;
+    }
+
+    .category-card {
+        margin-bottom: 1rem;
+    }
+}

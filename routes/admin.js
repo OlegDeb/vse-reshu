@@ -6,16 +6,18 @@ import {
   postCreate,
   getEdit,
   postEdit,
-  postDelete
+  postDelete,
+  getCategoriesByType
 } from '../controllers/categoriesController.js';
 
 const router = express.Router();
 
 // Применить middleware для всех маршрутов админки
-// router.use(adminMiddleware); // Временно отключено для тестирования
+router.use(adminMiddleware);
 
-// Категории
+
 router.get('/categories', getIndex);
+router.get('/categories/type/:type', getCategoriesByType);
 router.get('/categories/create', getCreate);
 router.post('/categories/create', postCreate);
 router.get('/categories/:id/edit', getEdit);
