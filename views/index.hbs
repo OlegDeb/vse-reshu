@@ -1,2 +1,111 @@
-<h1>Добро пожаловать!</h1>
-<p>Это главная страница приложения.</p>
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="text-center mb-4 main-title">
+        <span class="title-line-1">Мы готовы помочь вам</span><br>
+        <span class="title-line-2">в решении самых разнообразных задач</span>
+      </h1>
+    </div>
+  </div>
+
+  <!-- Типы категорий -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="category-types-nav">
+        {{#each typesArray}}
+        <button class="btn category-type-btn {{#eq ../selectedType this.name}}active{{/eq}}"
+                data-type="{{this.name}}"
+                type="button">
+          <i class="{{this.icon}} me-2"></i>
+          {{this.name}}
+        </button>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+
+  <!-- Категории выбранного типа -->
+  <div class="row">
+    <div class="col-12">
+      <div class="categories-section">
+        {{#if selectedType}}
+        <h2 class="section-title">{{selectedType}}</h2>
+        <div class="categories-container">
+          {{#each (lookup ../categoriesByType selectedType)}}
+          <div class="category-item">
+            <a href="/tasks?category={{this.slug}}" class="category-link">
+              <i class="fas fa-chevron-right category-arrow"></i>
+              <span class="category-name">{{this.name}}</span>
+            </a>
+          </div>
+          {{/each}}
+        </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const typeButtons = document.querySelectorAll('.category-type-btn');
+  const categoriesSection = document.querySelector('.categories-section');
+
+  // Инициализируем активную кнопку по умолчанию
+  const defaultType = 'Курьерские услуги';
+  const defaultButton = document.querySelector(`[data-type="${defaultType}"]`);
+  if (defaultButton) {
+    defaultButton.classList.add('active');
+  }
+
+  typeButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const type = this.getAttribute('data-type');
+
+      // Убираем активный класс у всех кнопок
+      typeButtons.forEach(btn => btn.classList.remove('active'));
+
+      // Добавляем активный класс текущей кнопке
+      this.classList.add('active');
+
+      // Здесь будет AJAX запрос для загрузки категорий
+      loadCategories(type);
+    });
+  });
+
+  function loadCategories(type) {
+    fetch(`/categories-by-type?type=${encodeURIComponent(type)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          updateCategoriesSection(data.categories, type);
+        } else {
+          console.error('Ошибка сервера:', data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Ошибка загрузки категорий:', error);
+      });
+  }
+
+  function updateCategoriesSection(categories, type) {
+    const sectionTitle = categoriesSection.querySelector('.section-title');
+    const categoriesContainer = categoriesSection.querySelector('.categories-container');
+
+    if (categories.length > 0) {
+      sectionTitle.textContent = type;
+      categoriesContainer.innerHTML = categories.map(category => `
+        <div class="category-item">
+          <a href="/tasks?category=${category.slug}" class="category-link">
+            <i class="fas fa-chevron-right category-arrow"></i>
+            <span class="category-name">${category.name}</span>
+          </a>
+        </div>
+      `).join('');
+    } else {
+      sectionTitle.textContent = type;
+      categoriesContainer.innerHTML = '<p class="text-muted">В этом разделе пока нет категорий</p>';
+    }
+  }
+});
+</script>

@@ -377,8 +377,225 @@
     font-size: 0.875rem;
 }
 
-/* Мобильная адаптация */
+/* Стили для главной страницы */
+
+/* Заголовок в две строки */
+.main-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.1;
+    margin-bottom: 3rem;
+}
+
+.title-line-1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.2rem;
+}
+
+.title-line-2 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
 @media (max-width: 768px) {
+    .main-title {
+        font-size: 2rem;
+    }
+
+    .title-line-1 {
+        font-size: 2.2rem;
+    }
+
+    .title-line-2 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-title {
+        font-size: 1.8rem;
+    }
+
+    .title-line-1 {
+        font-size: 2rem;
+    }
+
+    .title-line-2 {
+        font-size: 1.6rem;
+    }
+}
+.category-types-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: white;
+}
+
+.category-type-btn {
+    background: linear-gradient(135deg, #f8fff8, #ffffff);
+    border: 2px solid #e8f5e8;
+    color: #689f38;
+    padding: 0.75rem 1.25rem;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.category-type-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(104, 159, 56, 0.2);
+    border-color: #689f38;
+    background: linear-gradient(135deg, #689f38, #7cb342);
+    color: white;
+}
+
+.category-type-btn.active {
+    background: linear-gradient(135deg, #689f38, #7cb342);
+    border-color: #689f38;
+    color: white;
+    box-shadow: 0 4px 15px rgba(104, 159, 56, 0.3);
+}
+
+.category-type-btn i {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.category-type-btn:hover i,
+.category-type-btn.active i {
+    transform: scale(1.1);
+}
+
+.categories-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    min-height: 400px;
+}
+
+.section-title {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #689f38, #7cb342);
+    border-radius: 2px;
+}
+
+.categories-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.category-item {
+    background: none;
+    border: none;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    overflow: visible;
+}
+
+.category-item:hover {
+    transform: none;
+    box-shadow: none;
+    border: none;
+    background: none;
+}
+
+.category-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    text-decoration: none;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.category-link:hover {
+    color: #689f38;
+    text-decoration: none;
+}
+
+.category-arrow {
+    color: #689f38;
+    margin-right: 0.75rem;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    width: 15px;
+}
+
+.category-link:hover .category-arrow {
+    transform: translateX(5px);
+    color: #7cb342;
+}
+
+.category-name {
+    font-weight: 500;
+    flex-grow: 1;
+}
+
+/* Мобильная адаптация для главной страницы */
+@media (max-width: 1200px) {
+    .categories-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .category-types-nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .category-type-btn {
+        text-align: center;
+        margin-bottom: 0.25rem;
+    }
+
+    .categories-container {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .categories-section {
+        padding: 1rem;
+    }
+
+    .category-link {
+        padding: 0.75rem 1rem;
+    }
     .navbar-brand {
         font-size: 1.1rem;
     }

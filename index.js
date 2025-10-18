@@ -12,6 +12,7 @@ import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin.js';
 import taskRoutes from './routes/tasks.js';
 import User from './models/User.js';
+import Category, { CATEGORY_TYPES } from './models/Category.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -131,8 +132,62 @@ app.use('/admin', adminRoutes);
 app.use('/tasks', taskRoutes);
 
 // Главная страница
-app.get('/', (req, res) => {
-  res.render('index', { title: 'Главная' });
+app.get('/', async (req, res) => {
+  try {
+    // Создаем массив типов категорий для удобства работы в шаблоне
+    const typesArray = Object.entries(CATEGORY_TYPES).map(([name, icon]) => ({
+      name,
+      icon
+    }));
+
+    // Получаем все категории для отображения
+    const allCategories = await Category.find({});
+
+    // Группируем категории по типам
+    const categoriesByType = {};
+    allCategories.forEach(category => {
+      if (!categoriesByType[category.type]) {
+        categoriesByType[category.type] = [];
+      }
+      categoriesByType[category.type].push(category);
+    });
+
+    const selectedType = req.query.type || 'Курьерские услуги';
+
+    res.render('index', {
+      title: 'Главная',
+      categoryTypes: CATEGORY_TYPES,
+      typesArray: typesArray,
+      categoriesByType: categoriesByType,
+      selectedType: selectedType
+    });
+  } catch (error) {
+    console.error('Ошибка загрузки главной страницы:', error);
+    res.render('index', {
+      title: 'Главная',
+      error: 'Ошибка загрузки данных'
+    });
+  }
+});
+
+// AJAX endpoint для загрузки категорий по типу
+app.get('/categories-by-type', async (req, res) => {
+  try {
+    const { type } = req.query;
+    const categories = await Category.find({ type });
+
+    res.json({
+      success: true,
+      categories: categories,
+      type: type
+    });
+  } catch (error) {
+    console.error('Ошибка загрузки категорий по типу:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Ошибка загрузки категорий'
+    });
+  }
 });
 
 // Тестовая страница для проверки работы сервера
