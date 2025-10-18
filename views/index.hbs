@@ -28,19 +28,35 @@
   <div class="row">
     <div class="col-12">
       <div class="categories-section">
-        {{#if selectedType}}
         <h2 class="section-title">{{selectedType}}</h2>
         <div class="categories-container">
-          {{#each (lookup ../categoriesByType selectedType)}}
-          <div class="category-item">
-            <a href="/tasks?category={{this.slug}}" class="category-link">
-              <i class="fas fa-chevron-right category-arrow"></i>
-              <span class="category-name">{{this.name}}</span>
-            </a>
-          </div>
-          {{/each}}
+          {{#if categoriesByType}}
+            {{#with (lookup categoriesByType selectedType)}}
+              {{#if this}}
+                {{#each this}}
+                <div class="category-item">
+                  <a href="/tasks?category={{this.slug}}" class="category-link">
+                    <i class="fas fa-chevron-right category-arrow"></i>
+                    <span class="category-name">{{this.name}}</span>
+                  </a>
+                </div>
+                {{/each}}
+              {{else}}
+                <div class="category-item">
+                  <p class="text-muted">В этом разделе пока нет категорий</p>
+                </div>
+              {{/if}}
+            {{else}}
+              <div class="category-item">
+                <p class="text-muted">Тип категорий не найден</p>
+              </div>
+            {{/with}}
+          {{else}}
+            <div class="category-item">
+              <p class="text-muted">Данные категорий недоступны</p>
+            </div>
+          {{/if}}
         </div>
-        {{/if}}
       </div>
     </div>
   </div>

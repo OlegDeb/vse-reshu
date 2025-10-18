@@ -152,7 +152,18 @@ app.get('/', async (req, res) => {
       categoriesByType[category.type].push(category);
     });
 
-    const selectedType = req.query.type || 'Курьерские услуги';
+    // Определяем доступный тип для отображения
+    let selectedType = req.query.type;
+    if (!selectedType) {
+      // Если нет категорий для "Курьерские услуги", берем первый доступный тип
+      if (categoriesByType['Курьерские услуги'] && categoriesByType['Курьерские услуги'].length > 0) {
+        selectedType = 'Курьерские услуги';
+      } else if (Object.keys(categoriesByType).length > 0) {
+        selectedType = Object.keys(categoriesByType)[0];
+      } else {
+        selectedType = 'Курьерские услуги'; // fallback
+      }
+    }
 
     res.render('index', {
       title: 'Главная',
