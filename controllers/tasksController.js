@@ -108,15 +108,15 @@ export const getTask = async (req, res) => {
       response.isOwnResponse = response.responder._id.toString() === req.session.userId;
     });
 
-    const isAuthor = task.author._id.toString() === req.session.userId;
-    const hasResponded = responses.some(r => r.responder._id.toString() === req.session.userId);
+    const isAuthor = req.session.userId ? task.author._id.toString() === req.session.userId : false;
+    const hasResponded = req.session.userId ? responses.some(r => r.responder._id.toString() === req.session.userId) : false;
 
     res.render('tasks/show', {
       task,
       responses,
       isAuthor,
       hasResponded,
-      currentUserId: req.session.userId,
+      currentUserId: req.session.userId || null,
       title: task.title
     });
   } catch (error) {

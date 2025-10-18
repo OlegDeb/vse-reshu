@@ -30,23 +30,32 @@
 
     <h3>Отклики {{#if responses.length}}({{responses.length}}){{/if}}</h3>
 
-    {{#if (eq task.status 'open')}}
-      {{#unless isAuthor}}
-        {{#unless hasResponded}}
-          <div class="card mb-4">
-          <div class="card-header">Оставить отклик</div>
-          <div class="card-body">
-            <form action="/tasks/{{task._id}}/response" method="POST">
-              <div class="mb-3">
-                <label for="message" class="form-label">Ваше предложение</label>
-                <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
-              </div>
-              <button type="submit" class="btn btn-primary">Отправить отклик</button>
-            </form>
+    {{#if user}}
+      {{#if (eq task.status 'open')}}
+        {{#unless isAuthor}}
+          {{#unless hasResponded}}
+            <div class="card mb-4">
+            <div class="card-header">Оставить отклик</div>
+            <div class="card-body">
+              <form action="/tasks/{{task._id}}/response" method="POST">
+                <div class="mb-3">
+                  <label for="message" class="form-label">Ваше предложение</label>
+                  <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить отклик</button>
+              </form>
+            </div>
           </div>
-        </div>
+          {{/unless}}
         {{/unless}}
-      {{/unless}}
+      {{/if}}
+    {{else}}
+      <div class="alert alert-info mb-4">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Хотите ответить на задачу?</strong>
+        <a href="/login" class="alert-link">Войдите в аккаунт</a> или
+        <a href="/register" class="alert-link">зарегистрируйтесь</a>, чтобы оставить отклик.
+      </div>
     {{/if}}
 
     {{#each responses}}

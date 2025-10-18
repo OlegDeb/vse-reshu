@@ -14,18 +14,18 @@ import {
 
 const router = express.Router();
 
-// Все роуты требуют аутентификации
-router.use(requireAuth);
-
-// Список задач
+// Список задач - доступен всем
 router.get('/', getTasks);
+
+// Просмотр задачи - доступен всем
+router.get('/:id', getTask);
+
+// Остальные роуты требуют аутентификации
+router.use(requireAuth);
 
 // Создание задачи
 router.get('/create', getCreateTask);
 router.post('/create', postCreateTask);
-
-// Просмотр задачи
-router.get('/:id', getTask);
 
 // Оставить отклик
 router.post('/:id/response', postResponse);
