@@ -1,6 +1,7 @@
 import Task from '../models/Task.js';
 import Response from '../models/Response.js';
-import Category from '../models/Category.js';
+import Message from '../models/Message.js';
+import Category, { CATEGORY_TYPES } from '../models/Category.js';
 
 // Middleware для проверки аутентификации
 export const requireAuth = (req, res, next) => {
@@ -19,7 +20,7 @@ export const getTasks = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const tasks = await Task.find({ status: 'open' })
-      .populate('author', 'name')
+      .populate('author', 'firstName lastName username')
       .populate('category', 'name icon')
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -57,7 +58,18 @@ export const getTasks = async (req, res) => {
 export const getCreateTask = async (req, res) => {
   try {
     const categories = await Category.find();
-    res.render('tasks/create', { categories, title: 'Создать задачу' });
+    // Создаем массив типов категорий для удобства работы в шаблоне
+    const typesArray = Object.entries(CATEGORY_TYPES).map(([name, icon]) => ({
+      name,
+      icon
+    }));
+
+    res.render('tasks/create', {
+      categories,
+      categoryTypes: CATEGORY_TYPES,
+      typesArray: typesArray,
+      title: 'Создать задачу'
+    });
   } catch (error) {
     res.render('error', { message: 'Ошибка загрузки категорий' });
   }
@@ -88,18 +100,31 @@ export const postCreateTask = async (req, res) => {
 // Просмотр задачи
 export const getTask = async (req, res) => {
   try {
+    console.log('Loading task with ID:', req.params.id);
+
     const task = await Task.findById(req.params.id)
-      .populate('author', 'name')
+      .populate('author', 'firstName lastName username')
       .populate('category', 'name icon')
-      .populate('acceptedResponse');
+      .populate({
+        path: 'acceptedResponse',
+        populate: {
+          path: 'responder',
+          select: 'firstName lastName username'
+        }
+      });
 
     if (!task) {
+      console.log('Task not found with ID:', req.params.id);
       return res.render('error', { message: 'Задача не найдена' });
     }
 
+    console.log('Task found:', task.title);
+
     const responses = await Response.find({ task: req.params.id })
-      .populate('responder', 'name')
+      .populate('responder', 'firstName lastName username')
       .sort({ createdAt: -1 });
+
+    console.log('Responses found:', responses.length);
 
     // Форматируем даты
     task.createdAtFormatted = task.createdAt.toLocaleDateString('ru-RU');
@@ -120,7 +145,8 @@ export const getTask = async (req, res) => {
       title: task.title
     });
   } catch (error) {
-    res.render('error', { message: 'Ошибка загрузки задачи' });
+    console.error('Error loading task:', error);
+    res.render('error', { message: 'Ошибка загрузки задачи: ' + error.message });
   }
 };
 
@@ -246,8 +272,199 @@ export const closeTask = async (req, res) => {
     task.status = 'closed';
     await task.save();
 
+    // Создаем системное сообщение о закрытии задачи
+    const systemMessage = new Message({
+      task: req.params.id,
+      message: `📋 Задача "${task.title}" была закрыта заказчиком.`,
+      isSystemMessage: true,
+      isRead: true
+    });
+    await systemMessage.save();
+
     res.redirect(`/tasks/${req.params.id}`);
   } catch (error) {
     res.redirect(`/tasks/${req.params.id}`);
+  }
+};
+
+// Форма редактирования задачи
+export const getEditTask = async (req, res) => {
+  try {
+    console.log('Loading edit form for task ID:', req.params.id);
+    console.log('User ID:', req.session.userId);
+
+    if (!req.session.userId) {
+      console.log('User not authenticated');
+      return res.redirect('/login');
+    }
+
+    const task = await Task.findById(req.params.id).populate('category', 'name');
+
+    if (!task) {
+      console.log('Task not found with ID:', req.params.id);
+      return res.render('error', { message: 'Задача не найдена' });
+    }
+
+    console.log('Task found:', task.title);
+    console.log('Task author:', task.author.toString());
+    console.log('Current user:', req.session.userId);
+
+    // Проверяем, что пользователь является автором задачи
+    if (task.author.toString() !== req.session.userId) {
+      console.log('User is not the author of the task');
+      return res.render('error', { message: 'У вас нет прав для редактирования этой задачи' });
+    }
+
+    console.log('User is the author, task status:', task.status);
+
+    // Проверяем, что задача не закрыта
+    if (task.status === 'closed') {
+      console.log('Task is closed, cannot edit');
+      return res.render('error', { message: 'Нельзя редактировать закрытую задачу' });
+    }
+
+    console.log('Loading categories...');
+    const categories = await Category.find();
+    console.log('Categories loaded:', categories.length);
+
+    // Создаем массив типов категорий для удобства работы в шаблоне
+    const typesArray = Object.entries(CATEGORY_TYPES).map(([name, icon]) => ({
+      name,
+      icon
+    }));
+
+    console.log('Rendering edit form for task:', task.title);
+    res.render('tasks/edit', {
+      task: task.toObject(),
+      categories,
+      categoryTypes: CATEGORY_TYPES,
+      typesArray: typesArray,
+      title: 'Редактирование задачи'
+    });
+  } catch (error) {
+    console.error('Ошибка загрузки формы редактирования задачи:', error);
+    res.render('error', { message: 'Ошибка загрузки формы редактирования: ' + error.message });
+  }
+};
+
+// Редактирование задачи
+export const postEditTask = async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/login');
+    }
+
+    const { title, description, category } = req.body;
+    const task = await Task.findById(req.params.id);
+
+    if (!task) {
+      return res.render('error', { message: 'Задача не найдена' });
+    }
+
+    // Проверяем, что пользователь является автором задачи
+    if (task.author.toString() !== req.session.userId) {
+      return res.render('error', { message: 'У вас нет прав для редактирования этой задачи' });
+    }
+
+    // Проверяем, что задача не закрыта
+    if (task.status === 'closed') {
+      return res.render('error', { message: 'Нельзя редактировать закрытую задачу' });
+    }
+
+    // Обновляем задачу
+    task.title = title;
+    task.description = description;
+    task.category = category;
+
+    await task.save();
+
+    res.redirect(`/tasks/${task._id}`);
+  } catch (error) {
+    console.error('Ошибка редактирования задачи:', error);
+
+    // Загружаем задачу и категории заново для формы с ошибкой
+    const task = await Task.findById(req.params.id).populate('category', 'name');
+    const categories = await Category.find();
+
+    // Создаем массив типов категорий для удобства работы в шаблоне
+    const typesArray = Object.entries(CATEGORY_TYPES).map(([name, icon]) => ({
+      name,
+      icon
+    }));
+
+    res.render('tasks/edit', {
+      task: task.toObject(),
+      categories,
+      categoryTypes: CATEGORY_TYPES,
+      typesArray: typesArray,
+      error: 'Ошибка сохранения задачи: ' + error.message,
+      title: 'Редактирование задачи'
+    });
+  }
+};
+
+// Получить задачи пользователя (мои задачи)
+export const getMyTasks = async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/login');
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    // Получаем задачи пользователя (где он автор или исполнитель)
+    const tasks = await Task.find({
+      $or: [
+        { author: req.session.userId }, // задачи, созданные пользователем
+        { acceptedResponse: { $exists: true } } // задачи с принятыми откликами
+      ]
+    })
+    .populate('author', 'username firstName lastName')
+    .populate('category', 'name icon')
+    .populate({
+      path: 'acceptedResponse',
+      populate: {
+        path: 'responder',
+        select: 'username firstName lastName'
+      }
+    })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+    // Фильтруем задачи, где пользователь является исполнителем
+    const filteredTasks = tasks.filter(task => {
+      if (task.author._id.toString() === req.session.userId) {
+        return true; // пользователь - автор задачи
+      }
+      if (task.acceptedResponse && task.acceptedResponse.responder) {
+        return task.acceptedResponse.responder._id.toString() === req.session.userId;
+      }
+      return false;
+    });
+
+    const totalTasks = filteredTasks.length;
+    const totalPages = Math.ceil(totalTasks / limit);
+
+    // Создаем массив страниц для пагинации
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+    }
+
+    res.render('tasks/myTasks', {
+      tasks: filteredTasks,
+      currentPage: page,
+      totalPages,
+      pages,
+      hasNext: page < totalPages,
+      hasPrev: page > 1,
+      title: 'Мои задачи'
+    });
+  } catch (error) {
+    console.error('Ошибка загрузки задач пользователя:', error);
+    res.render('error', { message: 'Ошибка загрузки задач: ' + error.message });
   }
 };

@@ -5,7 +5,9 @@ import {
   getLogin,
   postLogin,
   getLogout,
-  getProfile
+  getProfile,
+  getEditProfile,
+  postEditProfile
 } from '../controllers/authController.js';
 
 const router = express.Router();
@@ -23,5 +25,7 @@ router.get('/logout', getLogout);
 
 // Профиль
 router.get('/profile', getProfile);
+router.get('/profile/edit', getEditProfile);
+router.post('/profile/edit', postEditProfile);
 
 export default router;

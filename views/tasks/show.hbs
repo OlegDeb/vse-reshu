@@ -1,11 +1,16 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h1>{{task.title}}</h1>
   {{#if isAuthor}}
-    {{#if (eq task.status 'in_progress')}}
-      <form action="/tasks/{{task._id}}/close" method="POST" class="d-inline">
-        <button type="submit" class="btn btn-success">Закрыть задачу</button>
-      </form>
-    {{/if}}
+    <div class="d-flex gap-2">
+      {{#if (eq task.status 'open')}}
+        <a href="/tasks/{{task._id}}/edit" class="btn btn-warning">Редактировать</a>
+      {{/if}}
+      {{#if (eq task.status 'in_progress')}}
+        <form action="/tasks/{{task._id}}/close" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-success">Закрыть задачу</button>
+        </form>
+      {{/if}}
+    </div>
   {{/if}}
 </div>
 
@@ -22,7 +27,15 @@
         </div>
         <p class="card-text">{{task.description}}</p>
         <div class="d-flex justify-content-between align-items-center">
-          <small class="text-muted">Автор: {{task.author.name}}</small>
+          <small class="text-muted">Автор:
+            <a href="/users/{{task.author.username}}" target="_blank" class="text-decoration-none">
+              {{#if task.author.firstName}}
+                {{task.author.firstName}} {{task.author.lastName}}
+              {{else}}
+                {{task.author.username}}
+              {{/if}}
+            </a>
+          </small>
           <small class="text-muted">{{task.createdAtFormatted}}</small>
         </div>
       </div>
@@ -63,7 +76,17 @@
       <div class="card mb-3 {{#if (eq status 'accepted')}}border-success{{else if (eq status 'rejected')}}border-danger{{/if}}">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start mb-2">
-            <strong>{{responder.name}}{{#if (eq responder._id ../currentUserId)}} (Вы){{/if}}</strong>
+            <strong>
+              {{#if responder.name}}
+                <a href="/users/{{responder.username}}" target="_blank" class="text-decoration-none">
+                  {{responder.name}}{{#if (eq responder._id ../currentUserId)}} (Вы){{/if}}
+                </a>
+              {{else}}
+                <a href="/users/{{responder.username}}" target="_blank" class="text-decoration-none">
+                  {{responder.username}}{{#if (eq responder._id ../currentUserId)}} (Вы){{/if}}
+                </a>
+              {{/if}}
+            </strong>
             <div>
               {{#if (eq status 'accepted')}}
                 <span class="badge bg-success">Принят</span>
@@ -114,6 +137,62 @@
         <p>Пока нет откликов</p>
       </div>
     {{/each}}
+
+    <!-- Переписка между участниками задачи -->
+    {{#if (and user (or (eq task.status 'in_progress') (eq task.status 'closed')))}}
+      {{#if (or isAuthor hasResponded)}}
+        <div class="card mt-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Переписка
+              {{#if (eq task.status 'closed')}}
+                <span class="badge bg-secondary ms-2">Задача закрыта</span>
+              {{/if}}
+            </h5>
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-sm btn-outline-primary" onclick="loadMessages()">
+                <i class="fas fa-sync-alt"></i> Обновить
+              </button>
+              <small class="text-muted">
+                {{#if isAuthor}}
+                  Общение с исполнителем
+                {{else}}
+                  Общение с заказчиком
+                {{/if}}
+                {{#if (eq task.status 'closed')}}
+                  <span class="ms-1 text-warning">(задача закрыта)</span>
+                {{/if}}
+              </small>
+            </div>
+          </div>
+          <div class="card-body">
+            {{#if (eq task.status 'closed')}}
+              <div class="alert alert-warning text-center mb-3">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Задача закрыта</strong> - переписка доступна для обсуждения результатов работы
+              </div>
+            {{/if}}
+            <div id="messages-container" style="height: 300px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 15px; margin-bottom: 15px;">
+              <div class="text-center text-muted">
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="visually-hidden">Загрузка сообщений...</span>
+                </div>
+                <div>Загрузка сообщений...</div>
+              </div>
+            </div>
+
+            <form id="message-form">
+              <div class="input-group">
+                <textarea class="form-control" id="message-input" name="message" rows="2" placeholder="Напишите сообщение..." maxlength="1000" required></textarea>
+                <button class="btn btn-primary" type="submit" id="send-button">
+                  <i class="fas fa-paper-plane"></i> Отправить
+                </button>
+              </div>
+              <div class="form-text">Максимум 1000 символов</div>
+            </form>
+          </div>
+        </div>
+      {{/if}}
+    {{/if}}
   </div>
 
   <div class="col-md-4">
@@ -124,7 +203,15 @@
           {{#if (eq task.status 'open')}}Открыта{{else if (eq task.status 'in_progress')}}В работе{{else}}Закрыта{{/if}}
         </p>
         {{#if task.acceptedResponse}}
-          <p><strong>Исполнитель:</strong> {{task.acceptedResponse.responder.name}}</p>
+          <p><strong>Исполнитель:</strong>
+            <a href="/users/{{task.acceptedResponse.responder.username}}" target="_blank" class="text-decoration-none">
+              {{#if task.acceptedResponse.responder.firstName}}
+                {{task.acceptedResponse.responder.firstName}} {{task.acceptedResponse.responder.lastName}}
+              {{else}}
+                {{task.acceptedResponse.responder.username}}
+              {{/if}}
+            </a>
+          </p>
         {{/if}}
         <p><strong>Создано:</strong> {{task.createdAtFormatted}}</p>
       </div>
@@ -178,4 +265,128 @@ function deleteResponse(responseId) {
     form.submit();
   }
 }
+
+// Глобальные переменные для работы с сообщениями
+const taskId = '{{task._id}}';
+
+// Загрузка сообщений
+async function loadMessages() {
+  try {
+    const response = await fetch(`/tasks/${taskId}/messages`);
+    const data = await response.json();
+
+    if (data.success) {
+      displayMessages(data.messages);
+    } else {
+      console.error('Ошибка загрузки сообщений:', data.error);
+      document.getElementById('messages-container').innerHTML =
+        '<div class="alert alert-danger">Ошибка загрузки сообщений: ' + data.error + '</div>';
+    }
+  } catch (error) {
+    console.error('Ошибка сети:', error);
+    document.getElementById('messages-container').innerHTML =
+      '<div class="alert alert-danger">Ошибка сети при загрузке сообщений</div>';
+  }
+}
+
+// Отображение сообщений
+function displayMessages(messages) {
+  const container = document.getElementById('messages-container');
+
+  if (messages.length === 0) {
+    container.innerHTML = '<div class="text-center text-muted">Пока нет сообщений</div>';
+    return;
+  }
+
+  let html = '';
+  messages.forEach(message => {
+    const isSystemMessage = message.isSystemMessage || false;
+    if (isSystemMessage) {
+      // Системное сообщение - отображается по центру
+      html += `
+        <div class="alert alert-info text-center" style="max-width: 80%; margin: 10px auto; background-color: #e3f2fd;">
+          <div class="d-flex justify-content-center align-items-center mb-1">
+            <small class="text-muted">${new Date(message.createdAt).toLocaleString('ru-RU')}</small>
+          </div>
+          <div><strong>🔔 Системное уведомление:</strong> ${message.message.replace(/\n/g, '<br>')}</div>
+        </div>
+      `;
+    } else {
+      const isOwn = message.sender && message.sender._id === '{{currentUserId}}';
+      const messageClass = isOwn ? 'alert alert-primary ms-auto' : 'alert alert-secondary me-auto';
+      const messageStyle = isOwn ? 'margin-left: auto; margin-right: 0;' : 'margin-left: 0; margin-right: auto;';
+
+      html += `
+        <div class="${messageClass}" style="max-width: 70%; ${messageStyle}">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <strong>${isOwn ? 'Вы' : (message.sender.firstName || message.sender.username)}</strong>
+            <small class="text-muted">${new Date(message.createdAt).toLocaleString('ru-RU')}</small>
+          </div>
+          <div>${message.message.replace(/\n/g, '<br>')}</div>
+        </div>
+      `;
+    }
+  });
+
+  container.innerHTML = html;
+  container.scrollTop = container.scrollHeight;
+}
+
+// Отправка сообщения
+async function sendMessage(message) {
+  try {
+    const response = await fetch(`/tasks/${taskId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      document.getElementById('message-input').value = '';
+      loadMessages(); // Перезагружаем сообщения
+    } else {
+      alert('Ошибка отправки сообщения: ' + data.error);
+    }
+  } catch (error) {
+    console.error('Ошибка сети:', error);
+    alert('Ошибка сети при отправке сообщения');
+  }
+}
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', function() {
+  const messageForm = document.getElementById('message-form');
+  const messageInput = document.getElementById('message-input');
+
+  if (messageForm) {
+    // Загружаем сообщения сразу при открытии страницы
+    loadMessages();
+
+    // Обработка отправки формы
+    messageForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const message = messageInput.value.trim();
+
+      if (message) {
+        sendMessage(message);
+      }
+    });
+
+    // Обработка Ctrl+Enter для отправки
+    messageInput.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        const message = this.value.trim();
+        if (message) {
+          sendMessage(message);
+        }
+      }
+    });
+  }
+});
+
 </script>

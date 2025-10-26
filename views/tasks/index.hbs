@@ -13,17 +13,45 @@
           <div class="card-body">
             <div class="d-flex align-items-center mb-2">
               <i class="{{category.icon}} me-2"></i>
-              <span class="badge bg-secondary">{{category.name}}</span>
+              <span class="badge bg-secondary me-2">{{category.name}}</span>
+              <span class="badge {{#if (eq status 'open')}}bg-success{{else if (eq status 'in_progress')}}bg-warning{{else}}bg-secondary{{/if}}">
+                {{#if (eq status 'open')}}Открыта{{else if (eq status 'in_progress')}}В работе{{else}}Закрыта{{/if}}
+              </span>
             </div>
             <h5 class="card-title">{{title}}</h5>
             <p class="card-text text-truncate">{{description}}</p>
             <div class="d-flex justify-content-between align-items-center">
-              <small class="text-muted">Автор: {{author.name}}</small>
+              <div>
+                <small class="text-muted">
+                  Автор:
+                  {{#if author.firstName}}
+                    <a href="/users/{{author.username}}" target="_blank" class="text-decoration-none">{{author.firstName}} {{author.lastName}}</a>
+                  {{else}}
+                    <a href="/users/{{author.username}}" target="_blank" class="text-decoration-none">{{author.username}}</a>
+                  {{/if}}
+                </small>
+                {{#if acceptedResponse}}
+                  <br>
+                  <small class="text-muted">
+                    Исполнитель:
+                    {{#if acceptedResponse.responder.firstName}}
+                      <a href="/users/{{acceptedResponse.responder.username}}" target="_blank" class="text-decoration-none">{{acceptedResponse.responder.firstName}} {{acceptedResponse.responder.lastName}}</a>
+                    {{else}}
+                      <a href="/users/{{acceptedResponse.responder.username}}" target="_blank" class="text-decoration-none">{{acceptedResponse.responder.username}}</a>
+                    {{/if}}
+                  </small>
+                {{/if}}
+              </div>
               <small class="text-muted">{{createdAtFormatted}}</small>
             </div>
           </div>
-          <div class="card-footer">
+          <div class="card-footer d-flex justify-content-between">
             <a href="/tasks/{{_id}}" class="btn btn-outline-primary btn-sm">Просмотреть</a>
+            {{#if (eq ../user._id author._id)}}
+              {{#if (eq status 'open')}}
+                <a href="/tasks/{{_id}}/edit" class="btn btn-outline-warning btn-sm">Редактировать</a>
+              {{/if}}
+            {{/if}}
           </div>
         </div>
       </div>

@@ -1,0 +1,109 @@
+<h1>Редактирование задачи</h1>
+
+{{#if error}}
+  <div class="alert alert-danger">{{error}}</div>
+{{/if}}
+
+<form action="/tasks/{{task._id}}/edit" method="POST">
+  <div class="mb-3">
+    <label for="title" class="form-label">Название задачи</label>
+    <input type="text" class="form-control" id="title" name="title" value="{{task.title}}" required>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label for="categoryType" class="form-label">Тип категории</label>
+        <select class="form-select" id="categoryType" required>
+          <option value="">Выберите тип категории</option>
+          {{#each typesArray}}
+            <option value="{{name}}" {{#if (eq name ../task.category.type)}}selected{{/if}}>{{name}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label for="category" class="form-label">Категория</label>
+        <select class="form-select" id="category" name="category" required>
+          <option value="">Сначала выберите тип категории</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label for="description" class="form-label">Описание</label>
+    <textarea class="form-control" id="description" name="description" rows="5" required>{{task.description}}</textarea>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Информация:</strong> Можно редактировать только открытые задачи. Закрытые задачи редактировать нельзя.
+  </div>
+
+  <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+  <a href="/tasks/{{task._id}}" class="btn btn-secondary">Отмена</a>
+  <a href="/tasks" class="btn btn-outline-secondary">К списку задач</a>
+</form>
+
+<script>
+document.getElementById('categoryType').addEventListener('change', function() {
+  const categoryType = this.value;
+  const categorySelect = document.getElementById('category');
+
+  if (!categoryType) {
+    categorySelect.innerHTML = '<option value="">Сначала выберите тип категории</option>';
+    return;
+  }
+
+  // Загружаем категории по типу
+  fetch(`/categories-by-type?type=${encodeURIComponent(categoryType)}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        let options = '<option value="">Выберите категорию</option>';
+        data.categories.forEach(category => {
+          options += `<option value="${category._id}">${category.name}</option>`;
+        });
+        categorySelect.innerHTML = options;
+      } else {
+        categorySelect.innerHTML = '<option value="">Ошибка загрузки категорий</option>';
+      }
+    })
+    .catch(error => {
+      console.error('Ошибка загрузки категорий:', error);
+      categorySelect.innerHTML = '<option value="">Ошибка загрузки категорий</option>';
+    });
+});
+
+// При загрузке страницы устанавливаем правильный тип категории для текущей задачи
+document.addEventListener('DOMContentLoaded', function() {
+  const categoryTypeSelect = document.getElementById('categoryType');
+  const categorySelect = document.getElementById('category');
+  const currentCategoryId = '{{task.category._id}}';
+
+  // Устанавливаем текущий тип категории
+  const currentType = '{{task.category.type}}';
+  if (currentType) {
+    categoryTypeSelect.value = currentType;
+
+    // Загружаем категории для текущего типа
+    fetch(`/categories-by-type?type=${encodeURIComponent(currentType)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          let options = '<option value="">Выберите категорию</option>';
+          data.categories.forEach(category => {
+            const selected = category._id === currentCategoryId ? 'selected' : '';
+            options += `<option value="${category._id}" ${selected}>${category.name}</option>`;
+          });
+          categorySelect.innerHTML = options;
+        }
+      })
+      .catch(error => {
+        console.error('Ошибка загрузки категорий:', error);
+      });
+  }
+});
+</script>

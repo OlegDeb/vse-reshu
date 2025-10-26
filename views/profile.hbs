@@ -1,5 +1,45 @@
 <h2>Профиль пользователя</h2>
-<p><strong>Имя:</strong> {{user.name}}</p>
-<p><strong>Email:</strong> {{user.email}}</p>
-<p><strong>Дата регистрации:</strong> {{user.createdAtFormatted}}</p>
-<a href="/" class="btn btn-secondary">На главную</a>
+
+<div class="row">
+    <div class="col-md-8">
+        {{#if user.firstName}}
+        <p><strong>Имя:</strong> {{user.firstName}}</p>
+        {{/if}}
+        {{#if user.lastName}}
+        <p><strong>Фамилия:</strong> {{user.lastName}}</p>
+        {{/if}}
+        <p><strong>Логин:</strong> {{user.username}}</p>
+        <p><strong>Email:</strong> {{user.email}}</p>
+
+        {{#if user.phone}}
+        <p><strong>Телефон:</strong> {{user.phone}}</p>
+        {{/if}}
+
+        {{#if user.dateOfBirth}}
+        <p><strong>Возраст:</strong> {{calculateAge user.dateOfBirth}}</p>
+        {{/if}}
+
+        {{#if user.gender}}
+        <p><strong>Пол:</strong> {{user.gender}}</p>
+        {{/if}}
+
+        <p><strong>Дата регистрации:</strong> {{user.createdAtFormatted}}</p>
+
+        {{#if user.lastLogin}}
+        <p><strong>Последний вход:</strong> {{user.lastLogin}}</p>
+        {{/if}}
+
+        {{#if user.updatedAt}}
+        <p><strong>Последнее обновление:</strong> {{user.updatedAt}}</p>
+        {{/if}}
+    </div>
+
+    <div class="col-md-4">
+        <div class="d-grid gap-2">
+            <a href="/tasks/my-tasks" class="btn btn-info">Мои задачи</a>
+            <a href="/tasks/create" class="btn btn-success">Создать задачу</a>
+            <a href="/profile/edit" class="btn btn-primary">Редактировать профиль</a>
+            <a href="/" class="btn btn-secondary">На главную</a>
+        </div>
+    </div>
+</div>

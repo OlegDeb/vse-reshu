@@ -5,6 +5,9 @@ import {
   getCreateTask,
   postCreateTask,
   getTask,
+  getEditTask,
+  postEditTask,
+  getMyTasks,
   postResponse,
   acceptResponse,
   closeTask,
@@ -17,15 +20,22 @@ const router = express.Router();
 // Список задач - доступен всем
 router.get('/', getTasks);
 
+// Мои задачи - требует аутентификации
+router.get('/my-tasks', requireAuth, getMyTasks);
+
+// Создание задачи - требует аутентификации
+router.get('/create', requireAuth, getCreateTask);
+router.post('/create', requireAuth, postCreateTask);
+
 // Просмотр задачи - доступен всем
 router.get('/:id', getTask);
 
+// Редактирование задачи - требует аутентификации
+router.get('/:id/edit', requireAuth, getEditTask);
+router.post('/:id/edit', requireAuth, postEditTask);
+
 // Остальные роуты требуют аутентификации
 router.use(requireAuth);
-
-// Создание задачи
-router.get('/create', getCreateTask);
-router.post('/create', postCreateTask);
 
 // Оставить отклик
 router.post('/:id/response', postResponse);

@@ -11,6 +11,8 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin.js';
 import taskRoutes from './routes/tasks.js';
+import messageRoutes from './routes/messages.js';
+import publicProfileRoutes from './routes/publicProfile.js';
 import User from './models/User.js';
 import Category, { CATEGORY_TYPES } from './models/Category.js';
 
@@ -69,6 +71,7 @@ app.engine('hbs', engine({
   helpers: {
     eq: (a, b) => a === b,
     ne: (a, b) => a !== b,
+    neq: (a, b) => a !== b,
     lt: (a, b) => a < b,
     gt: (a, b) => a > b,
     lte: (a, b) => a <= b,
@@ -84,6 +87,33 @@ app.engine('hbs', engine({
         hour: '2-digit',
         minute: '2-digit'
       });
+    },
+    inputDate: (date) => {
+      if (!date) return '';
+      const d = new Date(date);
+      return d.toISOString().split('T')[0]; // Формат YYYY-MM-DD для input[type="date"]
+    },
+    calculateAge: (birthDate) => {
+      if (!birthDate) return '';
+      const birth = new Date(birthDate);
+      const today = new Date();
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+      }
+
+      if (age <= 0) return '';
+
+      // Правильное склонение слова "год/года/лет"
+      if (age % 10 === 1 && age % 100 !== 11) {
+        return `${age} год`;
+      } else if (age % 10 >= 2 && age % 10 <= 4 && (age % 100 < 10 || age % 100 >= 20)) {
+        return `${age} года`;
+      } else {
+        return `${age} лет`;
+      }
     }
   },
   runtimeOptions: {
@@ -128,6 +158,8 @@ app.use(async (req, res, next) => {
 
 // Маршруты
 app.use('/', authRoutes);
+app.use('/', publicProfileRoutes);
+app.use('/', messageRoutes);
 app.use('/admin', adminRoutes);
 app.use('/tasks', taskRoutes);
 

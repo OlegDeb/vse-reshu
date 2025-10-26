@@ -1,0 +1,60 @@
+<h2>Редактирование профиля</h2>
+{{#if error}}
+<div class="alert alert-danger">{{error}}</div>
+{{/if}}
+<form action="/profile/edit" method="POST" class="col-md-6">
+    <div class="mb-3">
+        <label for="username" class="form-label">Логин *</label>
+        <input type="text" class="form-control" id="username" name="username"
+               value="{{user.username}}" pattern="[a-zA-Z0-9_-]+"
+               title="Только латинские буквы, цифры, дефис и подчеркивание" required>
+        <div class="form-text">Логин должен содержать только латинские буквы, цифры, дефис и подчеркивание</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="firstName" class="form-label">Имя</label>
+        <input type="text" class="form-control" id="firstName" name="firstName"
+               value="{{user.firstName}}" placeholder="Иван">
+        <div class="form-text">Необязательное поле</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="lastName" class="form-label">Фамилия</label>
+        <input type="text" class="form-control" id="lastName" name="lastName"
+               value="{{user.lastName}}" placeholder="Иванов">
+        <div class="form-text">Необязательное поле</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" value="{{user.email}}" disabled>
+        <div class="form-text">Email изменить нельзя</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="phone" class="form-label">Номер телефона</label>
+        <input type="tel" class="form-control" id="phone" name="phone" value="{{user.phone}}" placeholder="+7 (999) 123-45-67">
+    </div>
+
+    <div class="mb-3">
+        <label for="dateOfBirth" class="form-label">Дата рождения</label>
+        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth"
+               value="{{#if user.dateOfBirth}}{{inputDate user.dateOfBirth}}{{/if}}">
+    </div>
+
+    <div class="mb-3">
+        <label for="gender" class="form-label">Пол</label>
+        <select class="form-control" id="gender" name="gender">
+            <option value="">Не указан</option>
+            {{#each genders}}
+            <option value="{{this}}" {{#if (eq ../user.gender this)}}selected{{/if}}>{{this}}</option>
+            {{/each}}
+        </select>
+    </div>
+
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        <a href="/profile" class="btn btn-secondary">Отмена</a>
+    </div>
+</form>

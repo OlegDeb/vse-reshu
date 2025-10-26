@@ -1,0 +1,119 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Мои задачи</h1>
+  <div>
+    <a href="/tasks/create" class="btn btn-primary">Создать задачу</a>
+    <a href="/tasks" class="btn btn-secondary">Все задачи</a>
+  </div>
+</div>
+
+{{#if tasks.length}}
+  <div class="row">
+    {{#each tasks}}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 {{#if (eq status 'in_progress')}}border-warning{{else if (eq status 'closed')}}border-secondary{{/if}}">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+              <i class="{{category.icon}} me-2"></i>
+              <span class="badge bg-secondary me-2">{{category.name}}</span>
+              <span class="badge {{#if (eq status 'open')}}bg-success{{else if (eq status 'in_progress')}}bg-warning{{else}}bg-secondary{{/if}}">
+                {{#if (eq status 'open')}}Открыта{{else if (eq status 'in_progress')}}В работе{{else}}Закрыта{{/if}}
+              </span>
+            </div>
+
+            <h5 class="card-title">
+              <a href="/tasks/{{_id}}" class="text-decoration-none">{{title}}</a>
+            </h5>
+
+            <p class="card-text">{{description}}</p>
+
+            <div class="mt-3">
+              {{#if (eq ../user._id author._id)}}
+                <small class="text-muted">👤 Вы - заказчик</small>
+              {{else if acceptedResponse}}
+                {{#if (eq ../user._id acceptedResponse.responder._id)}}
+                  <small class="text-muted">👷 Вы - исполнитель</small>
+                {{else}}
+                  <small class="text-muted">👤 Заказчик: {{author.firstName}} {{author.lastName}}</small>
+                {{/if}}
+              {{/if}}
+            </div>
+
+            {{#if acceptedResponse}}
+              <div class="mt-2">
+                <small class="text-muted">
+                  Исполнитель:
+                  {{#if (eq ../user._id acceptedResponse.responder._id)}}
+                    Вы
+                  {{else}}
+                    {{#if acceptedResponse.responder.firstName}}
+                      {{acceptedResponse.responder.firstName}} {{acceptedResponse.responder.lastName}}
+                    {{else}}
+                      {{acceptedResponse.responder.username}}
+                    {{/if}}
+                  {{/if}}
+                </small>
+              </div>
+            {{/if}}
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small class="text-muted">{{createdAtFormatted}}</small>
+              <div class="d-flex gap-1">
+                <a href="/tasks/{{_id}}" class="btn btn-outline-primary btn-sm">Посмотреть</a>
+                {{#if (eq ../user._id author._id)}}
+                  {{#if (eq status 'open')}}
+                    <a href="/tasks/{{_id}}/edit" class="btn btn-outline-warning btn-sm">Редактировать</a>
+                  {{/if}}
+                {{/if}}
+              </div>
+            </div>
+
+            {{#if (eq status 'in_progress')}}
+              {{#if (eq ../user._id author._id)}}
+                <div class="mt-2">
+                  <form action="/tasks/{{_id}}/close" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-success btn-sm w-100">Закрыть задачу</button>
+                  </form>
+                </div>
+              {{/if}}
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+
+  <!-- Пагинация -->
+  {{#if totalPages}}
+    <nav aria-label="Навигация по страницам" class="mt-4">
+      <ul class="pagination justify-content-center">
+        {{#if hasPrev}}
+          <li class="page-item">
+            <a class="page-link" href="?page={{subtract currentPage 1}}">Назад</a>
+          </li>
+        {{/if}}
+
+        {{#each pages}}
+          <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+            <a class="page-link" href="?page={{this}}">{{this}}</a>
+          </li>
+        {{/each}}
+
+        {{#if hasNext}}
+          <li class="page-item">
+            <a class="page-link" href="?page={{add currentPage 1}}">Далее</a>
+          </li>
+        {{/if}}
+      </ul>
+    </nav>
+  {{/if}}
+
+{{else}}
+  <div class="text-center text-muted mt-5">
+    <h3>У вас пока нет задач</h3>
+    <p>Создайте свою первую задачу или откликнитесь на существующие</p>
+    <div class="mt-4">
+      <a href="/tasks/create" class="btn btn-primary">Создать задачу</a>
+      <a href="/tasks" class="btn btn-secondary">Посмотреть все задачи</a>
+    </div>
+  </div>
+{{/if}}

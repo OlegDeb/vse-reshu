@@ -15,8 +15,9 @@
                 <img src="/img/logo/logo2.png" alt="Логотип" height="30" class="me-2">
             </a>
             <div class="navbar-nav flex-row mx-auto d-none d-lg-flex">
+                <a class="nav-link text-white me-3" href="/tasks">ВСЕ ЗАДАЧИ</a>
                 {{#if user}}
-                    <a class="nav-link text-white me-3" href="/tasks">ЗАДАЧИ</a>
+                    <a class="nav-link text-white" href="/tasks/my-tasks">МОИ ЗАДАЧИ</a>
                 {{/if}}
                 {{#if isAdmin}}
                     <a class="nav-link text-white" href="/admin/categories">АДМИНКА</a>
@@ -25,13 +26,14 @@
 
             <!-- Мобильное меню для центральных ссылок -->
             <div class="navbar-nav d-lg-none">
+                <a class="nav-link text-white" href="/tasks">Задачи</a>
                 {{#if user}}
-                    <a class="nav-link text-white" href="/tasks">Задачи</a>
+                    <a class="nav-link text-white" href="/tasks/my-tasks">Мои задачи</a>
                 {{/if}}
             </div>
             <div class="navbar-nav ms-auto">
                 {{#if user}}
-                    <a class="nav-link text-white" href="/profile">Привет, {{user.name}}</a>
+                    <a class="nav-link text-white" href="/profile">Привет, {{#if user.firstName}}{{user.firstName}}{{else}}{{user.username}}{{/if}}</a>
                     
                     <a class="nav-link text-white" href="/logout">Выход</a>
                 {{else}}

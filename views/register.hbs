@@ -4,16 +4,36 @@
 {{/if}}
 <form action="/register" method="POST" class="col-md-6">
     <div class="mb-3">
-        <label for="name" class="form-label">Имя</label>
-        <input type="text" class="form-control" id="name" name="name" required>
+        <label for="username" class="form-label">Логин *</label>
+        <input type="text" class="form-control" id="username" name="username"
+               pattern="[a-zA-Z0-9_-]+" title="Только латинские буквы, цифры, дефис и подчеркивание"
+               placeholder="example_user123" required>
+        <div class="form-text">Логин должен содержать только латинские буквы, цифры, дефис и подчеркивание</div>
     </div>
+
     <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
+        <label for="firstName" class="form-label">Имя</label>
+        <input type="text" class="form-control" id="firstName" name="firstName"
+               placeholder="Иван">
+        <div class="form-text">Необязательное поле</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="lastName" class="form-label">Фамилия</label>
+        <input type="text" class="form-control" id="lastName" name="lastName"
+               placeholder="Иванов">
+        <div class="form-text">Необязательное поле</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Email *</label>
         <input type="email" class="form-control" id="email" name="email" required>
     </div>
+
     <div class="mb-3">
-        <label for="password" class="form-label">Пароль</label>
+        <label for="password" class="form-label">Пароль *</label>
         <input type="password" class="form-control" id="password" name="password" required>
     </div>
+
     <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
 </form>

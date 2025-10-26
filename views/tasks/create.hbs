@@ -10,14 +10,27 @@
     <input type="text" class="form-control" id="title" name="title" required>
   </div>
 
-  <div class="mb-3">
-    <label for="category" class="form-label">Категория</label>
-    <select class="form-select" id="category" name="category" required>
-      <option value="">Выберите категорию</option>
-      {{#each categories}}
-        <option value="{{_id}}">{{name}}</option>
-      {{/each}}
-    </select>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label for="categoryType" class="form-label">Тип категории</label>
+        <select class="form-select" id="categoryType" required>
+          <option value="">Выберите тип категории</option>
+          {{#each typesArray}}
+            <option value="{{name}}">{{name}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label for="category" class="form-label">Категория</label>
+        <select class="form-select" id="category" name="category" required>
+          <option value="">Сначала выберите тип категории</option>
+        </select>
+      </div>
+    </div>
   </div>
 
   <div class="mb-3">
@@ -28,3 +41,34 @@
   <button type="submit" class="btn btn-primary">Создать задачу</button>
   <a href="/tasks" class="btn btn-secondary">Отмена</a>
 </form>
+
+<script>
+document.getElementById('categoryType').addEventListener('change', function() {
+  const categoryType = this.value;
+  const categorySelect = document.getElementById('category');
+
+  if (!categoryType) {
+    categorySelect.innerHTML = '<option value="">Сначала выберите тип категории</option>';
+    return;
+  }
+
+  // Загружаем категории по типу
+  fetch(`/categories-by-type?type=${encodeURIComponent(categoryType)}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        let options = '<option value="">Выберите категорию</option>';
+        data.categories.forEach(category => {
+          options += `<option value="${category._id}">${category.name}</option>`;
+        });
+        categorySelect.innerHTML = options;
+      } else {
+        categorySelect.innerHTML = '<option value="">Ошибка загрузки категорий</option>';
+      }
+    })
+    .catch(error => {
+      console.error('Ошибка загрузки категорий:', error);
+      categorySelect.innerHTML = '<option value="">Ошибка загрузки категорий</option>';
+    });
+});
+</script>
