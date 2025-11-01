@@ -7,13 +7,10 @@ import {
 
 const router = express.Router();
 
-// Все маршруты сообщений требуют аутентификации
-router.use(requireAuth);
+// Получить сообщения для задачи - требует аутентификации
+router.get('/tasks/:taskId/messages', requireAuth, getMessages);
 
-// Получить сообщения для задачи
-router.get('/tasks/:taskId/messages', getMessages);
-
-// Отправить сообщение в задаче
-router.post('/tasks/:taskId/messages', postMessage);
+// Отправить сообщение в задаче - требует аутентификации
+router.post('/tasks/:taskId/messages', requireAuth, postMessage);
 
 export default router;

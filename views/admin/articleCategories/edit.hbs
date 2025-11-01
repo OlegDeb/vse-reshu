@@ -1,0 +1,29 @@
+<h2>Редактировать категорию статей</h2>
+
+{{#if error}}
+<div class="alert alert-danger">{{error}}</div>
+{{/if}}
+
+<form action="/admin/article-categories/{{category._id}}/edit" method="POST">
+  <div class="mb-3">
+    <label for="name" class="form-label">Название *</label>
+    <input type="text" class="form-control" id="name" name="name" required value="{{category.name}}">
+    <small class="form-text text-muted">Slug будет сгенерирован автоматически</small>
+  </div>
+  <div class="mb-3">
+    <label for="description" class="form-label">Описание</label>
+    <textarea class="form-control" id="description" name="description" rows="3">{{category.description}}</textarea>
+    <small class="form-text text-muted">Опционально, максимум 500 символов</small>
+  </div>
+  <div class="mb-3">
+    <small class="text-muted">
+      <strong>Slug:</strong> <code>{{category.slug}}</code>
+    </small>
+  </div>
+  <button type="submit" class="btn btn-create-category">
+    <i class="fas fa-save"></i> Сохранить
+  </button>
+  <a href="/admin/article-categories" class="btn btn-secondary">
+    <i class="fas fa-times"></i> Отмена
+  </a>
+</form>

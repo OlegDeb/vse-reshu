@@ -1,0 +1,92 @@
+<div class="row">
+  <div class="col-md-8">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Главная</a></li>
+        <li class="breadcrumb-item"><a href="/articles">Статьи</a></li>
+        {{#if currentCategory}}
+        <li class="breadcrumb-item">
+          <a href="/articles?category={{currentCategory.slug}}">{{currentCategory.name}}</a>
+        </li>
+        {{/if}}
+        <li class="breadcrumb-item active">{{article.title}}</li>
+      </ol>
+    </nav>
+
+    <article>
+      <div class="mb-3">
+        <span class="badge bg-secondary">{{article.category.name}}</span>
+        <span class="text-muted small ms-2">
+          <i class="far fa-calendar"></i> {{formatDate article.publishedAt}}
+        </span>
+        <span class="text-muted small ms-3">
+          <i class="far fa-eye"></i> {{article.viewsCount}} просмотров
+        </span>
+      </div>
+
+      <h1 class="mb-4">{{article.title}}</h1>
+
+      {{#if article.image}}
+      <div class="mb-4">
+        <img src="{{article.image}}" alt="{{article.title}}" class="img-fluid rounded">
+      </div>
+      {{/if}}
+
+      {{#if article.excerpt}}
+      <div class="alert alert-light border mb-4">
+        <p class="mb-0 lead">{{article.excerpt}}</p>
+      </div>
+      {{/if}}
+
+      <div class="article-content" style="white-space: pre-wrap;">
+        {{article.content}}
+      </div>
+
+      <hr class="my-5">
+
+      {{#if relatedArticles}}
+      <div class="mb-5">
+        <h4 class="mb-3">
+          <i class="fas fa-newspaper"></i> Похожие статьи
+        </h4>
+        <div class="row">
+          {{#each relatedArticles}}
+          <div class="col-md-4 mb-3">
+            <div class="card h-100">
+              {{#if this.image}}
+              <img src="{{this.image}}" class="card-img-top" alt="{{this.title}}" style="height: 150px; object-fit: cover;">
+              {{/if}}
+              <div class="card-body">
+                <h6 class="card-title">{{this.title}}</h6>
+                <a href="/articles/{{this.slug}}" class="btn btn-sm btn-outline-primary">
+                  Читать <i class="fas fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+    </article>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">
+          <i class="fas fa-list"></i> Категории статей
+        </h5>
+        <ul class="list-group">
+          {{#each categories}}
+          <li class="list-group-item">
+            <a href="/articles?category={{this.slug}}" class="text-decoration-none">
+              {{this.name}}
+            </a>
+          </li>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

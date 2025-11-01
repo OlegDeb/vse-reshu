@@ -13,6 +13,7 @@ import adminRoutes from './routes/admin.js';
 import taskRoutes from './routes/tasks.js';
 import messageRoutes from './routes/messages.js';
 import publicProfileRoutes from './routes/publicProfile.js';
+import articlesRoutes from './routes/articles.js';
 import User from './models/User.js';
 import Category, { CATEGORY_TYPES } from './models/Category.js';
 
@@ -114,6 +115,17 @@ app.engine('hbs', engine({
       } else {
         return `${age} лет`;
       }
+    },
+    split: (str, delimiter) => {
+      if (!str) return [];
+      return str.split(delimiter);
+    },
+    range: (start, end) => {
+      const result = [];
+      for (let i = start; i <= end; i++) {
+        result.push(i);
+      }
+      return result;
     }
   },
   runtimeOptions: {
@@ -156,14 +168,36 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// Маршруты
-app.use('/', authRoutes);
-app.use('/', publicProfileRoutes);
-app.use('/', messageRoutes);
-app.use('/admin', adminRoutes);
-app.use('/tasks', taskRoutes);
+// AJAX endpoint для загрузки категорий по типу - должен быть раньше других роутов
+app.get('/categories-by-type', async (req, res) => {
+  try {
+    const { type } = req.query;
+    const categories = await Category.find({ type });
 
-// Главная страница
+    res.json({
+      success: true,
+      categories: categories,
+      type: type
+    });
+  } catch (error) {
+    console.error('Ошибка загрузки категорий по типу:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Ошибка загрузки категорий'
+    });
+  }
+});
+
+// Тестовая страница для проверки работы сервера
+app.get('/test', (req, res) => {
+  res.json({
+    status: 'Сервер работает',
+    timestamp: new Date().toISOString(),
+    mongodb: mongoose.connection.readyState === 1 ? 'подключена' : 'не подключена'
+  });
+});
+
+// Главная страница - должна быть зарегистрирована раньше всех роутов
 app.get('/', async (req, res) => {
   try {
     // Создаем массив типов категорий для удобства работы в шаблоне
@@ -213,34 +247,13 @@ app.get('/', async (req, res) => {
   }
 });
 
-// AJAX endpoint для загрузки категорий по типу
-app.get('/categories-by-type', async (req, res) => {
-  try {
-    const { type } = req.query;
-    const categories = await Category.find({ type });
-
-    res.json({
-      success: true,
-      categories: categories,
-      type: type
-    });
-  } catch (error) {
-    console.error('Ошибка загрузки категорий по типу:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Ошибка загрузки категорий'
-    });
-  }
-});
-
-// Тестовая страница для проверки работы сервера
-app.get('/test', (req, res) => {
-  res.json({
-    status: 'Сервер работает',
-    timestamp: new Date().toISOString(),
-    mongodb: mongoose.connection.readyState === 1 ? 'подключена' : 'не подключена'
-  });
-});
+// Маршруты
+app.use('/', authRoutes);
+app.use('/', publicProfileRoutes);
+app.use('/', messageRoutes);
+app.use('/', articlesRoutes);
+app.use('/admin', adminRoutes);
+app.use('/tasks', taskRoutes);
 
 // Запуск сервера
 app.listen(PORT, () => {

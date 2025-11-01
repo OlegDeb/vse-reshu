@@ -1,0 +1,152 @@
+<h2>Редактировать статью</h2>
+
+{{#if error}}
+<div class="alert alert-danger">{{error}}</div>
+{{/if}}
+
+<form action="/admin/articles/{{article._id}}/edit" method="POST" enctype="multipart/form-data">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Основная информация</h5>
+          
+          <div class="mb-3">
+            <label for="title" class="form-label">Название статьи *</label>
+            <input type="text" class="form-control" id="title" name="title" required value="{{article.title}}">
+            <small class="form-text text-muted">Максимум 200 символов</small>
+          </div>
+
+          <div class="mb-3">
+            <label for="content" class="form-label">Содержимое статьи *</label>
+            <textarea class="form-control" id="content" name="content" rows="15" required>{{article.content}}</textarea>
+            <small class="form-text text-muted">Текстовое поле без визуального редактора</small>
+          </div>
+
+          <div class="mb-3">
+            <label for="excerpt" class="form-label">Краткое описание</label>
+            <textarea class="form-control" id="excerpt" name="excerpt" rows="3">{{article.excerpt}}</textarea>
+            <small class="form-text text-muted">Максимум 500 символов. Если не заполнено, будет сгенерировано автоматически</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">SEO мета-теги</h5>
+          
+          <div class="mb-3">
+            <label for="metaTitle" class="form-label">Meta Title</label>
+            <input type="text" class="form-control" id="metaTitle" name="metaTitle" value="{{article.metaTitle}}">
+            <small class="form-text text-muted">Максимум 60 символов. Если не заполнено, будет использовано название статьи</small>
+          </div>
+
+          <div class="mb-3">
+            <label for="metaDescription" class="form-label">Meta Description</label>
+            <textarea class="form-control" id="metaDescription" name="metaDescription" rows="2">{{article.metaDescription}}</textarea>
+            <small class="form-text text-muted">Максимум 160 символов. Краткое описание для поисковых систем</small>
+          </div>
+
+          <div class="mb-3">
+            <label for="metaKeywords" class="form-label">Meta Keywords</label>
+            <input type="text" class="form-control" id="metaKeywords" name="metaKeywords" value="{{article.metaKeywords}}">
+            <small class="form-text text-muted">Максимум 255 символов. Ключевые слова через запятую</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Информация</h5>
+          <p class="text-muted mb-2"><strong>URL:</strong> <code>/articles/{{article.slug}}</code></p>
+          <p class="text-muted mb-2"><strong>Дата создания:</strong> {{formatDate article.createdAt}}</p>
+          <p class="text-muted mb-2"><strong>Последнее обновление:</strong> {{formatDate article.updatedAt}}</p>
+          <p class="text-muted mb-0"><strong>Просмотры:</strong> {{article.viewsCount}}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Настройки публикации</h5>
+          
+          <div class="mb-3">
+            <label for="category" class="form-label">Категория *</label>
+            <select class="form-select" id="category" name="category" required>
+              <option value="">Выберите категорию</option>
+              {{#each categories}}
+              <option value="{{this._id}}" {{#if (eq this._id ../article.category._id)}}selected{{/if}}>{{this.name}}</option>
+              {{/each}}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="status" class="form-label">Статус</label>
+            <select class="form-select" id="status" name="status">
+              <option value="draft" {{#if (eq article.status "draft")}}selected{{/if}}>Черновик</option>
+              <option value="published" {{#if (eq article.status "published")}}selected{{/if}}>Опубликовано</option>
+            </select>
+            <small class="form-text text-muted">Опубликованные статьи видны всем пользователям</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Изображение</h5>
+          
+          {{#if article.image}}
+          <div class="mb-3">
+            <label class="form-label">Текущее изображение</label>
+            <div>
+              <img src="{{article.image}}" alt="{{article.title}}" class="img-fluid rounded mb-2">
+              <p class="text-muted small mb-0">Чтобы заменить изображение, выберите новое</p>
+            </div>
+          </div>
+          {{/if}}
+
+          <div class="mb-3">
+            <label for="image" class="form-label">Загрузить изображение</label>
+            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+            <small class="form-text text-muted">JPG, PNG, GIF, WEBP. Максимум 5MB</small>
+          </div>
+
+          <div id="imagePreview" style="display: none;">
+            <img id="previewImg" src="" alt="Preview" class="img-fluid rounded">
+          </div>
+        </div>
+      </div>
+
+      <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-create-category">
+          <i class="fas fa-save"></i> Сохранить изменения
+        </button>
+        <a href="/admin/articles" class="btn btn-outline-secondary">
+          <i class="fas fa-times"></i> Отмена
+        </a>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+// Предпросмотр изображения
+const imageInput = document.getElementById('image');
+const imagePreview = document.getElementById('imagePreview');
+const previewImg = document.getElementById('previewImg');
+
+imageInput.addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      previewImg.src = e.target.result;
+      imagePreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    imagePreview.style.display = 'none';
+  }
+});
+</script>

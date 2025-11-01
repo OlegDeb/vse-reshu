@@ -1,0 +1,124 @@
+<div class="row">
+  <div class="col-md-8">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>{{title}}</h2>
+      <div>
+        <a href="/" class="btn btn-outline-secondary">
+          <i class="fas fa-home"></i> На главную
+        </a>
+      </div>
+    </div>
+
+    {{#if articles}}
+    <div class="row">
+      {{#each articles}}
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          {{#if this.image}}
+          <img src="{{this.image}}" class="card-img-top" alt="{{this.title}}" style="height: 200px; object-fit: cover;">
+          {{/if}}
+          <div class="card-body d-flex flex-column">
+            <div class="mb-2">
+              <span class="badge bg-secondary">{{this.category.name}}</span>
+              <span class="text-muted small ms-2">
+                <i class="far fa-calendar"></i> {{formatDate this.publishedAt}}
+              </span>
+            </div>
+            <h5 class="card-title">{{this.title}}</h5>
+            {{#if this.excerpt}}
+            <p class="card-text text-muted">{{this.excerpt}}</p>
+            {{/if}}
+            <div class="mt-auto">
+              <a href="/articles/{{this.slug}}" class="btn btn-primary">
+                Читать далее <i class="fas fa-arrow-right"></i>
+              </a>
+              <span class="text-muted small ms-3">
+                <i class="far fa-eye"></i> {{this.viewsCount}} просмотров
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+
+    <!-- Пагинация -->
+    {{#if (gt totalPages 1)}}
+    <nav aria-label="Навигация по страницам" class="mt-4">
+      <ul class="pagination justify-content-center">
+        {{#if hasPrevPage}}
+        <li class="page-item">
+          <a class="page-link" href="/articles?page={{prevPage}}{{#if currentCategory}}&category={{currentCategory.slug}}{{/if}}">Предыдущая</a>
+        </li>
+        {{else}}
+        <li class="page-item disabled">
+          <span class="page-link">Предыдущая</span>
+        </li>
+        {{/if}}
+        
+        {{#each pages}}
+        <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+          <a class="page-link" href="/articles?page={{this}}{{#if ../currentCategory}}&category={{../currentCategory.slug}}{{/if}}">{{this}}</a>
+        </li>
+        {{/each}}
+        
+        {{#if hasNextPage}}
+        <li class="page-item">
+          <a class="page-link" href="/articles?page={{nextPage}}{{#if currentCategory}}&category={{currentCategory.slug}}{{/if}}">Следующая</a>
+        </li>
+        {{else}}
+        <li class="page-item disabled">
+          <span class="page-link">Следующая</span>
+        </li>
+        {{/if}}
+      </ul>
+    </nav>
+    {{/if}}
+
+    {{else}}
+    <div class="alert alert-info text-center">
+      <i class="fas fa-info-circle fa-2x mb-3"></i>
+      <h5>Статей пока нет</h5>
+      <p class="mb-0">Публикации появятся в ближайшее время</p>
+    </div>
+    {{/if}}
+  </div>
+
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">
+          <i class="fas fa-filter"></i> Фильтры
+        </h5>
+        <form method="GET" action="/articles">
+          <div class="mb-3">
+            <label for="category" class="form-label">Категория</label>
+            <select class="form-select" id="category" name="category" onchange="this.form.submit()">
+              <option value="">Все категории</option>
+              {{#each categories}}
+              <option value="{{this.slug}}" {{#if (eq this.slug ../currentCategory.slug)}}selected{{/if}}>{{this.name}}</option>
+              {{/each}}
+            </select>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">
+          <i class="fas fa-list"></i> Категории статей
+        </h5>
+        <ul class="list-group">
+          {{#each categories}}
+          <li class="list-group-item">
+            <a href="/articles?category={{this.slug}}" class="text-decoration-none">
+              {{this.name}}
+            </a>
+          </li>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

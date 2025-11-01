@@ -17,39 +17,36 @@ import {
 
 const router = express.Router();
 
-// Список задач - доступен всем
+// Список задач - доступен всем (должен быть первым!)
 router.get('/', getTasks);
 
-// Мои задачи - требует аутентификации
+// Мои задачи - требует аутентификации (должен быть до /:id)
 router.get('/my-tasks', requireAuth, getMyTasks);
 
-// Создание задачи - требует аутентификации
+// Создание задачи - требует аутентификации (должен быть до /:id)
 router.get('/create', requireAuth, getCreateTask);
 router.post('/create', requireAuth, postCreateTask);
 
-// Просмотр задачи - доступен всем
-router.get('/:id', getTask);
-
-// Редактирование задачи - требует аутентификации
+// Редактирование задачи - требует аутентификации (должен быть до /:id)
 router.get('/:id/edit', requireAuth, getEditTask);
 router.post('/:id/edit', requireAuth, postEditTask);
 
-// Остальные роуты требуют аутентификации
-router.use(requireAuth);
+// Просмотр задачи - доступен всем (должен быть последним из /:id)
+router.get('/:id', getTask);
 
-// Оставить отклик
-router.post('/:id/response', postResponse);
+// Оставить отклик - требует аутентификации
+router.post('/:id/response', requireAuth, postResponse);
 
-// Принять отклик
-router.post('/:taskId/response/:responseId/accept', acceptResponse);
+// Принять отклик - требует аутентификации
+router.post('/:taskId/response/:responseId/accept', requireAuth, acceptResponse);
 
-// Редактировать отклик
-router.post('/:taskId/response/:responseId/edit', editResponse);
+// Редактировать отклик - требует аутентификации
+router.post('/:taskId/response/:responseId/edit', requireAuth, editResponse);
 
-// Удалить отклик
-router.post('/:taskId/response/:responseId/delete', deleteResponse);
+// Удалить отклик - требует аутентификации
+router.post('/:taskId/response/:responseId/delete', requireAuth, deleteResponse);
 
-// Закрыть задачу
-router.post('/:id/close', closeTask);
+// Закрыть задачу - требует аутентификации
+router.post('/:id/close', requireAuth, closeTask);
 
 export default router;

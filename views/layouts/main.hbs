@@ -4,6 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{{#if metaDescription}}{{metaDescription}}{{else}}Всё реши - платформа для поиска и предоставления услуг{{/if}}">
+    {{#if metaKeywords}}<meta name="keywords" content="{{metaKeywords}}">{{/if}}
+    <meta name="author" content="Всё реши">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="{{#if article}}article{{else}}website{{/if}}">
+    <meta property="og:title" content="{{title}}">
+    <meta property="og:description" content="{{#if metaDescription}}{{metaDescription}}{{else}}Всё реши - платформа для поиска и предоставления услуг{{/if}}">
+    {{#if article}}{{#if article.image}}<meta property="og:image" content="http://localhost:3000{{article.image}}">{{/if}}{{/if}}
+    <meta property="og:url" content="http://localhost:3000{{#if article}}{{article.url}}{{else}}{{/if}}">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{title}}">
+    <meta name="twitter:description" content="{{#if metaDescription}}{{metaDescription}}{{else}}Всё реши - платформа для поиска и предоставления услуг{{/if}}">
+    {{#if article}}{{#if article.image}}<meta name="twitter:image" content="http://localhost:3000{{article.image}}">{{/if}}{{/if}}
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
@@ -16,17 +36,19 @@
             </a>
             <div class="navbar-nav flex-row mx-auto d-none d-lg-flex">
                 <a class="nav-link text-white me-3" href="/tasks">ВСЕ ЗАДАЧИ</a>
+                <a class="nav-link text-white me-3" href="/articles">СТАТЬИ</a>
                 {{#if user}}
                     <a class="nav-link text-white" href="/tasks/my-tasks">МОИ ЗАДАЧИ</a>
                 {{/if}}
                 {{#if isAdmin}}
-                    <a class="nav-link text-white" href="/admin/categories">АДМИНКА</a>
+                    <a class="nav-link text-white" href="/admin/articles">АДМИНКА</a>
                 {{/if}}
             </div>
 
             <!-- Мобильное меню для центральных ссылок -->
             <div class="navbar-nav d-lg-none">
                 <a class="nav-link text-white" href="/tasks">Задачи</a>
+                <a class="nav-link text-white" href="/articles">Статьи</a>
                 {{#if user}}
                     <a class="nav-link text-white" href="/tasks/my-tasks">Мои задачи</a>
                 {{/if}}
