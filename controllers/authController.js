@@ -39,14 +39,21 @@ export const getLogin = (req, res) => {
 };
 
 export const postLogin = async (req, res) => {
-  const { email, password } = req.body;
+  const { emailOrUsername, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    // Ищем пользователя по email или username
+    const user = await User.findOne({
+      $or: [
+        { email: emailOrUsername },
+        { username: emailOrUsername }
+      ]
+    });
+    
     if (user && await bcrypt.compare(password, user.password)) {
       req.session.userId = user._id;
       res.redirect('/profile');
     } else {
-      res.render('login', { error: 'Неверный email или пароль' });
+      res.render('login', { error: 'Неверный логин/email или пароль' });
     }
   } catch (error) {
     res.render('login', { error: 'Ошибка входа' });
