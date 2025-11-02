@@ -27,7 +27,7 @@ export const getTasks = async (req, res) => {
     }
 
     const tasks = await Task.find(query)
-      .populate('author', 'firstName lastName username')
+      .populate('author', 'firstName lastName username avatar')
       .populate('category', 'name icon slug type')
       .sort({ createdAt: -1 })
       .skip(skip)

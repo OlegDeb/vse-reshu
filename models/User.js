@@ -31,6 +31,16 @@ const userSchema = new mongoose.Schema({
     enum: ['мужской', 'женский'],
     required: false
   },
+  avatar: {
+    type: String,
+    required: false
+  },
+  bio: {
+    type: String,
+    required: false,
+    maxlength: 1000,
+    trim: true
+  },
   role: { type: String, default: 'user' },
   createdAt: { type: Date, default: Date.now },
   lastLogin: { type: Date, default: null }

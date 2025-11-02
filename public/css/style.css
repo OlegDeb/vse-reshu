@@ -16,12 +16,22 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
 }
 
 /* Navbar стили */
 .navbar {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     background-color: white !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    width: 100%;
+    margin: 0 !important;
+    margin-bottom: 0 !important;
 }
 
 .navbar.bg-white {
@@ -65,12 +75,16 @@ body {
     background-color: var(--youdo-light-blue);
     padding: 2rem 0;
     margin-bottom: 2rem;
+    margin-top: 0 !important;
+    padding-top: calc(2rem + 76px) !important; /* Отступ для фиксированной навигационной панели включен в padding */
 }
 
 .page-header {
     background-color: var(--youdo-light-blue);
     padding: 2rem 0;
     margin-bottom: 2rem;
+    margin-top: 0 !important;
+    padding-top: calc(2rem + 76px) !important; /* Отступ для фиксированной навигационной панели включен в padding */
 }
 
 .page-header .container {
@@ -145,6 +159,17 @@ body {
 .task-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Ограничение текста описания задачи до двух строк с троеточием */
+.task-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
+    max-height: 3em; /* Примерно 2 строки при line-height 1.5 */
 }
 
 .task-price {
@@ -273,6 +298,142 @@ body {
     font-weight: 600;
 }
 
+/* Стили для вкладок профиля */
+.nav-tabs .nav-link {
+    color: #666;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    border-bottom-color: var(--youdo-blue);
+    color: var(--youdo-blue);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--youdo-blue);
+    border-bottom-color: var(--youdo-blue);
+    background-color: transparent;
+    font-weight: 600;
+}
+
+.nav-tabs .nav-link:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Стили для дашборда статистики */
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+    border: 2px solid transparent;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.stat-card-primary {
+    border-color: var(--youdo-blue);
+    background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+}
+
+.stat-card-primary .stat-icon {
+    background: var(--youdo-blue);
+    color: white;
+}
+
+.stat-card-info {
+    border-color: #17a2b8;
+    background: linear-gradient(135deg, #d1ecf1 0%, #ffffff 100%);
+}
+
+.stat-card-info .stat-icon {
+    background: #17a2b8;
+    color: white;
+}
+
+.stat-card-warning {
+    border-color: #ffc107;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffffff 100%);
+}
+
+.stat-card-warning .stat-icon {
+    background: #ffc107;
+    color: #333;
+}
+
+.stat-card-success {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #d4edda 0%, #ffffff 100%);
+}
+
+.stat-card-success .stat-icon {
+    background: #28a745;
+    color: white;
+}
+
+.stat-card-secondary {
+    border-color: #6c757d;
+    background: linear-gradient(135deg, #e9ecef 0%, #ffffff 100%);
+}
+
+.stat-card-secondary .stat-icon {
+    background: #6c757d;
+    color: white;
+}
+
+.stat-card-danger {
+    border-color: #dc3545;
+    background: linear-gradient(135deg, #f8d7da 0%, #ffffff 100%);
+}
+
+.stat-card-danger .stat-icon {
+    background: #dc3545;
+    color: white;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 /* Алерты */
 .alert {
     border-radius: 8px;
@@ -320,6 +481,9 @@ body {
 main {
     min-height: calc(100vh - 200px);
     padding-bottom: 2rem;
+    margin: 0 !important;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
 }
 
 /* Заголовки в карточках */

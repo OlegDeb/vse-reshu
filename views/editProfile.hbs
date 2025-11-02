@@ -11,7 +11,21 @@
                             <i class="bi bi-exclamation-triangle me-2"></i>{{error}}
                         </div>
                     {{/if}}
-                    <form action="/profile/edit" method="POST">
+                    
+                    <!-- Отображение текущего аватара -->
+                    {{#if user.avatar}}
+                    <div class="mb-4 text-center">
+                        <img src="{{user.avatar}}" alt="Аватар" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid var(--youdo-blue);">
+                    </div>
+                    {{/if}}
+                    
+                    <form action="/profile/edit" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="avatar" class="form-label">Фото профиля</label>
+        <input type="file" class="form-control" id="avatar" name="avatar" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+        <div class="form-text">Разрешены файлы: JPEG, PNG, GIF, WEBP. Максимальный размер: 2MB</div>
+    </div>
+    
     <div class="mb-3">
         <label for="username" class="form-label">Логин *</label>
         <input type="text" class="form-control" id="username" name="username"
@@ -61,6 +75,12 @@
         </select>
     </div>
 
+    <div class="mb-3">
+        <label for="bio" class="form-label">О себе</label>
+        <textarea class="form-control" id="bio" name="bio" rows="5" maxlength="1000"
+                  placeholder="Расскажите о себе...">{{user.bio}}</textarea>
+        <div class="form-text">Максимум 1000 символов</div>
+    </div>
 
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary">

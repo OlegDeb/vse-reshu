@@ -1,5 +1,13 @@
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import User from '../models/User.js';
+import Task from '../models/Task.js';
+import Response from '../models/Response.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const getRegister = (req, res) => {
   res.render('register', { title: 'Регистрация' });
@@ -73,8 +81,118 @@ export const getProfile = async (req, res) => {
     const user = await User.findById(req.session.userId);
     const userObj = user.toObject();
     userObj.createdAtFormatted = user.createdAt.toLocaleDateString('ru-RU');
-    res.render('profile', { user: userObj, title: 'Профиль' });
+    
+    // Загружаем задачи пользователя
+    const page = parseInt(req.query.page) || 1;
+    const limit = 6; // Показываем меньше заданий на странице профиля
+    const skip = (page - 1) * limit;
+    
+    // Получаем задачи пользователя (где он автор или исполнитель)
+    const tasks = await Task.find({
+      $or: [
+        { author: req.session.userId },
+        { acceptedResponse: { $exists: true } }
+      ]
+    })
+    .populate('author', 'username firstName lastName')
+    .populate('category', 'name icon')
+    .populate({
+      path: 'acceptedResponse',
+      populate: {
+        path: 'responder',
+        select: 'username firstName lastName'
+      }
+    })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+    
+    // Фильтруем задачи, где пользователь является автором или исполнителем
+    const filteredTasks = tasks.filter(task => {
+      if (task.author._id.toString() === req.session.userId) {
+        return true;
+      }
+      if (task.acceptedResponse && task.acceptedResponse.responder) {
+        return task.acceptedResponse.responder._id.toString() === req.session.userId;
+      }
+      return false;
+    });
+    
+    // Форматируем даты для отображения
+    filteredTasks.forEach(task => {
+      task.createdAtFormatted = task.createdAt.toLocaleDateString('ru-RU');
+    });
+    
+    const totalTasks = await Task.countDocuments({
+      $or: [
+        { author: req.session.userId },
+        { acceptedResponse: { $exists: true } }
+      ]
+    });
+    
+    // Приблизительный подсчет, так как мы фильтруем после загрузки
+    const totalPages = Math.ceil(totalTasks / limit);
+    const pages = [];
+    for (let i = 1; i <= totalPages && i <= 5; i++) {
+      pages.push(i);
+    }
+    
+    // Собираем статистику
+    // Задачи, где пользователь автор
+    const tasksAsAuthor = {
+      total: await Task.countDocuments({ author: req.session.userId }),
+      open: await Task.countDocuments({ author: req.session.userId, status: 'open' }),
+      inProgress: await Task.countDocuments({ author: req.session.userId, status: 'in_progress' }),
+      closed: await Task.countDocuments({ author: req.session.userId, status: 'closed' })
+    };
+
+    // Задачи, где пользователь исполнитель (принятые отклики)
+    const executorTasks = await Task.find({
+      acceptedResponse: { $exists: true }
+    }).populate({
+      path: 'acceptedResponse',
+      populate: {
+        path: 'responder',
+        select: '_id'
+      }
+    });
+    const tasksAsExecutor = executorTasks.filter(task => 
+      task.acceptedResponse && 
+      task.acceptedResponse.responder && 
+      task.acceptedResponse.responder._id.toString() === req.session.userId
+    ).length;
+
+    // Отклики пользователя
+    const responses = {
+      total: await Response.countDocuments({ responder: req.session.userId }),
+      accepted: await Response.countDocuments({ responder: req.session.userId, status: 'accepted' }),
+      pending: await Response.countDocuments({ responder: req.session.userId, status: 'pending' }),
+      rejected: await Response.countDocuments({ responder: req.session.userId, status: 'rejected' })
+    };
+
+    const stats = {
+      tasksAsAuthor,
+      tasksAsExecutor,
+      responses
+    };
+    
+    // Определяем активную вкладку из query параметра
+    const activeTab = req.query.tab || 'info';
+    
+    res.render('profile', {
+      user: userObj,
+      title: 'Профиль пользователя',
+      tasks: filteredTasks,
+      currentPage: page,
+      totalPages,
+      pages,
+      hasNext: page < totalPages,
+      hasPrev: page > 1,
+      activeTab: activeTab,
+      stats: stats
+    });
   } catch (error) {
+    console.error('Ошибка загрузки профиля:', error);
     res.redirect('/');
   }
 };
@@ -100,10 +218,32 @@ export const postEditProfile = async (req, res) => {
     return res.redirect('/login');
   }
 
-  const { username, firstName, lastName, phone, dateOfBirth, gender } = req.body;
-
   try {
     const user = await User.findById(req.session.userId);
+    
+    // Проверяем ошибку загрузки файла от multer
+    if (req.uploadError) {
+      return res.render('editProfile', {
+        user: user.toObject(),
+        title: 'Редактирование профиля',
+        genders: ['мужской', 'женский'],
+        error: req.uploadError
+      });
+    }
+    
+    // При использовании multer, req.body содержит текстовые поля формы
+    // Проверяем, что req.body существует, иначе используем пустой объект
+    if (!req.body) {
+      console.error('req.body is undefined');
+      return res.render('editProfile', {
+        user: user.toObject(),
+        title: 'Редактирование профиля',
+        genders: ['мужской', 'женский'],
+        error: 'Ошибка обработки формы'
+      });
+    }
+    
+    const { username, firstName, lastName, phone, dateOfBirth, gender, bio } = req.body;
 
     // Обновляем только разрешенные поля
     if (username && username !== user.username) {
@@ -135,6 +275,28 @@ export const postEditProfile = async (req, res) => {
       user.gender = gender;
     }
 
+    // Обрабатываем информацию "О себе"
+    if (bio !== undefined) {
+      user.bio = bio || '';
+    }
+
+    // Обрабатываем загрузку аватара
+    if (req.file) {
+      // Удаляем старый аватар, если он существует
+      if (user.avatar) {
+        const oldAvatarPath = path.join(__dirname, '../public', user.avatar);
+        try {
+          if (fs.existsSync(oldAvatarPath)) {
+            fs.unlinkSync(oldAvatarPath);
+          }
+        } catch (err) {
+          console.error('Ошибка удаления старого аватара:', err);
+        }
+      }
+      // Сохраняем путь к новому аватару
+      user.avatar = `/img/avatars/${req.file.filename}`;
+    }
+
     // Обновляем дату последнего входа
     user.lastLogin = new Date();
 
@@ -143,6 +305,11 @@ export const postEditProfile = async (req, res) => {
     res.redirect('/profile');
   } catch (error) {
     console.error('Ошибка обновления профиля:', error);
-    res.redirect('/profile');
+    res.render('editProfile', {
+      user: await User.findById(req.session.userId).then(u => u.toObject()),
+      title: 'Редактирование профиля',
+      genders: ['мужской', 'женский'],
+      error: 'Ошибка обновления профиля'
+    });
   }
 };

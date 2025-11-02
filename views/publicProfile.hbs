@@ -1,78 +1,192 @@
-<h2>Публичный профиль пользователя</h2>
-
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">
-                    {{#if user.firstName}}
-                        {{user.firstName}}
-                        {{#if user.lastName}}
-                            {{user.lastName}}
+<div class="container">
+    <div class="row">
+        <!-- Левая колонка: информация о пользователе -->
+        <div class="col-lg-3">
+            <div class="card task-card mb-4">
+                <div class="card-body">
+                    <!-- Аватар -->
+                    <div class="text-center mb-4">
+                        {{#if user.avatar}}
+                            <img src="{{user.avatar}}" alt="Аватар" class="rounded mb-3" style="width: 200px; height: 200px; object-fit: cover; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        {{else}}
+                            <div class="rounded d-flex align-items-center justify-content-center mb-3" style="width: 200px; height: 200px; background-color: var(--youdo-light-blue); box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
+                                <i class="bi bi-person-fill" style="font-size: 100px; color: var(--youdo-blue);"></i>
+                            </div>
                         {{/if}}
-                    {{else}}
-                        {{user.username}}
+                    </div>
+                    
+                    <!-- Основная информация (без контактных данных) -->
+                    {{#if user.firstName}}
+                    <p><strong>Имя:</strong> {{user.firstName}}</p>
                     {{/if}}
-                </h5>
-
-                {{#if user.firstName}}
-                <p class="card-text">
-                    <strong>Имя:</strong> {{user.firstName}}
                     {{#if user.lastName}}
-                        {{user.lastName}}
+                    <p><strong>Фамилия:</strong> {{user.lastName}}</p>
                     {{/if}}
-                </p>
-                {{/if}}
+                    <p><strong>Логин:</strong> {{user.username}}</p>
+                    
+                    <hr>
+                    
+                    <!-- Дополнительная информация (без контактных данных) -->
+                    {{#if user.dateOfBirth}}
+                    <p><strong>Возраст:</strong> {{calculateAge user.dateOfBirth}}</p>
+                    {{/if}}
 
-                <p class="card-text">
-                    <strong>Логин:</strong> {{user.username}}
-                </p>
+                    {{#if user.gender}}
+                    <p><strong>Пол:</strong> {{user.gender}}</p>
+                    {{/if}}
 
-                <p class="card-text">
-                    <strong>Дата регистрации:</strong> {{user.createdAtFormatted}}
-                </p>
-
-                {{#if isOwner}}
-                <div class="alert alert-info mt-3">
-                    <strong>Это ваш профиль</strong><br>
-                    <a href="/profile" class="btn btn-primary btn-sm mt-2">Перейти в личный кабинет</a>
-                </div>
-                {{/if}}
-
-                <!-- Здесь в будущем можно добавить разделы проектов, задач, отзывов -->
-                <div class="mt-4">
-                    <h6>Публичная активность</h6>
-                    <p class="text-muted">Разделы проектов, задач и отзывов будут добавлены позже.</p>
+                    <p><strong>Дата регистрации:</strong><br>
+                        <small class="text-muted">{{user.createdAtFormatted}}</small>
+                    </p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="d-grid gap-2">
-            <a href="/" class="btn btn-secondary">На главную</a>
-            {{#if isOwner}}
-                <a href="/profile/edit" class="btn btn-outline-primary">Редактировать профиль</a>
-            {{/if}}
-        </div>
+        <!-- Правая колонка: контент -->
+        <div class="col-lg-9">
+            <!-- Информация о себе -->
+            <div class="card task-card mb-4">
+                <div class="card-body">
+                    <h4 class="mb-4"><i class="bi bi-info-circle me-2"></i>О себе</h4>
+                    {{#if user.bio}}
+                        <div class="mb-4">
+                            <p class="text-muted" style="white-space: pre-wrap; line-height: 1.6;">{{user.bio}}</p>
+                        </div>
+                    {{else}}
+                        <p class="text-muted mb-4">{{#if isOwner}}Информация о себе не указана. <a href="/profile/edit">Добавить информацию о себе</a>{{else}}Информация о себе не указана.{{/if}}</p>
+                    {{/if}}
+                </div>
+            </div>
 
-        <!-- Здесь можно добавить блок ссылок на другие публичные страницы пользователя -->
-        <div class="mt-4">
-            <h6>Публичные страницы</h6>
-            <div class="list-group">
-                <a href="/users/{{user.username}}" class="list-group-item list-group-item-action active">
-                    Основной профиль
-                </a>
-                <!-- В будущем здесь будут ссылки на проекты, задачи и отзывы -->
-                <a href="#" class="list-group-item list-group-item-action disabled">
-                    Проекты (скоро)
-                </a>
-                <a href="#" class="list-group-item list-group-item-action disabled">
-                    Задачи (скоро)
-                </a>
-                <a href="#" class="list-group-item list-group-item-action disabled">
-                    Отзывы (скоро)
-                </a>
+            <!-- Дашборд со статистикой -->
+            <div class="card task-card">
+                <div class="card-body">
+                    <h4 class="mb-4"><i class="bi bi-bar-chart me-2"></i>Статистика</h4>
+                    
+                    <!-- Статистика по задачам (где пользователь заказчик) -->
+                    <div class="mb-4">
+                        <h5 class="mb-3"><i class="bi bi-briefcase me-2"></i>Мои задачи</h5>
+                        <div class="row g-3">
+                            <div class="col-md-3 col-sm-6">
+                                <div class="stat-card stat-card-primary">
+                                    <div class="stat-icon">
+                                        <i class="bi bi-list-task"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-value">{{stats.tasksAsAuthor.total}}</div>
+                                        <div class="stat-label">Всего создано</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="stat-card stat-card-info">
+                                    <div class="stat-icon">
+                                        <i class="bi bi-circle"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-value">{{stats.tasksAsAuthor.open}}</div>
+                                        <div class="stat-label">Открытых</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="stat-card stat-card-warning">
+                                    <div class="stat-icon">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-value">{{stats.tasksAsAuthor.inProgress}}</div>
+                                        <div class="stat-label">В работе</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="stat-card stat-card-success">
+                                    <div class="stat-icon">
+                                        <i class="bi bi-check-circle"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-value">{{stats.tasksAsAuthor.closed}}</div>
+                                        <div class="stat-label">Выполнено</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Статистика по исполнению -->
+                    <div class="mb-4">
+                        <h5 class="mb-3"><i class="bi bi-person-check me-2"></i>Как исполнитель</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="stat-card stat-card-secondary">
+                                    <div class="stat-icon">
+                                        <i class="bi bi-person-workspace"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-value">{{stats.tasksAsExecutor}}</div>
+                                        <div class="stat-label">Выполняю задач</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="stat-card stat-card-info">
+                                    <div class="stat-icon">
+                                        <i class="bi bi-chat-dots"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-value">{{stats.responses.total}}</div>
+                                        <div class="stat-label">Всего откликов</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Статистика по откликам -->
+                    <div>
+                        <h5 class="mb-3"><i class="bi bi-reply me-2"></i>Статус откликов</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4 col-sm-6">
+                                <div class="stat-card stat-card-success">
+                                    <div class="stat-icon">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-value">{{stats.responses.accepted}}</div>
+                                        <div class="stat-label">Принято</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                                <div class="stat-card stat-card-warning">
+                                    <div class="stat-icon">
+                                        <i class="bi bi-clock-history"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-value">{{stats.responses.pending}}</div>
+                                        <div class="stat-label">На рассмотрении</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                                <div class="stat-card stat-card-danger">
+                                    <div class="stat-icon">
+                                        <i class="bi bi-x-circle"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-value">{{stats.responses.rejected}}</div>
+                                        <div class="stat-label">Отклонено</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
