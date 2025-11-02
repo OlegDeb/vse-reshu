@@ -1,39 +1,65 @@
-<h2>Регистрация</h2>
-{{#if error}}
-<div class="alert alert-danger">{{error}}</div>
-{{/if}}
-<form action="/register" method="POST" class="col-md-6">
-    <div class="mb-3">
-        <label for="username" class="form-label">Логин *</label>
-        <input type="text" class="form-control" id="username" name="username"
-               pattern="[a-zA-Z0-9_-]+" title="Только латинские буквы, цифры, дефис и подчеркивание"
-               placeholder="example_user123" required>
-        <div class="form-text">Логин должен содержать только латинские буквы, цифры, дефис и подчеркивание</div>
-    </div>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card task-card">
+                <div class="card-header bg-light text-center">
+                    <h3 class="mb-0"><i class="bi bi-person-plus me-2"></i>Регистрация</h3>
+                </div>
+                <div class="card-body">
+                    {{#if error}}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>{{error}}
+                        </div>
+                    {{/if}}
+                    <form action="/register" method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Логин *</label>
+                            <input type="text" class="form-control" id="username" name="username"
+                                   pattern="[a-zA-Z0-9_-]+" title="Только латинские буквы, цифры, дефис и подчеркивание"
+                                   placeholder="example_user123" required>
+                            <div class="form-text">Логин должен содержать только латинские буквы, цифры, дефис и подчеркивание</div>
+                        </div>
 
-    <div class="mb-3">
-        <label for="firstName" class="form-label">Имя</label>
-        <input type="text" class="form-control" id="firstName" name="firstName"
-               placeholder="Иван">
-        <div class="form-text">Необязательное поле</div>
-    </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="firstName" class="form-label">Имя</label>
+                                    <input type="text" class="form-control" id="firstName" name="firstName"
+                                           placeholder="Иван">
+                                    <div class="form-text">Необязательное поле</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="lastName" class="form-label">Фамилия</label>
+                                    <input type="text" class="form-control" id="lastName" name="lastName"
+                                           placeholder="Иванов">
+                                    <div class="form-text">Необязательное поле</div>
+                                </div>
+                            </div>
+                        </div>
 
-    <div class="mb-3">
-        <label for="lastName" class="form-label">Фамилия</label>
-        <input type="text" class="form-control" id="lastName" name="lastName"
-               placeholder="Иванов">
-        <div class="form-text">Необязательное поле</div>
-    </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
 
-    <div class="mb-3">
-        <label for="email" class="form-label">Email *</label>
-        <input type="email" class="form-control" id="email" name="email" required>
-    </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Пароль *</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
 
-    <div class="mb-3">
-        <label for="password" class="form-label">Пароль *</label>
-        <input type="password" class="form-control" id="password" name="password" required>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-person-plus me-1"></i>Зарегистрироваться
+                            </button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p class="mb-0">Уже есть аккаунт? <a href="/login">Войти</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
-</form>
+</div>

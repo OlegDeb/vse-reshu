@@ -1,19 +1,12 @@
-<div class="row">
-  <div class="col-md-8">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>{{title}}</h2>
-      <div>
-        <a href="/" class="btn btn-outline-secondary">
-          <i class="fas fa-home"></i> На главную
-        </a>
-      </div>
-    </div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
 
-    {{#if articles}}
-    <div class="row">
+        {{#if articles}}
+      <div class="row">
       {{#each articles}}
       <div class="col-md-6 mb-4">
-        <div class="card h-100">
+        <div class="card task-card h-100">
           {{#if this.image}}
           <img src="{{this.image}}" class="card-img-top" alt="{{this.title}}" style="height: 200px; object-fit: cover;">
           {{/if}}
@@ -39,10 +32,10 @@
           </div>
         </div>
       </div>
-      {{/each}}
-    </div>
+        {{/each}}
+      </div>
 
-    <!-- Пагинация -->
+      <!-- Пагинация -->
     {{#if (gt totalPages 1)}}
     <nav aria-label="Навигация по страницам" class="mt-4">
       <ul class="pagination justify-content-center">
@@ -75,21 +68,23 @@
     </nav>
     {{/if}}
 
-    {{else}}
-    <div class="alert alert-info text-center">
+      {{else}}
+      <div class="alert alert-info text-center">
       <i class="fas fa-info-circle fa-2x mb-3"></i>
       <h5>Статей пока нет</h5>
-      <p class="mb-0">Публикации появятся в ближайшее время</p>
+        <p class="mb-0">Публикации появятся в ближайшее время</p>
+      </div>
+      {{/if}}
     </div>
-    {{/if}}
-  </div>
 
-  <div class="col-md-4">
-    <div class="card mb-4">
-      <div class="card-body">
-        <h5 class="card-title">
-          <i class="fas fa-filter"></i> Фильтры
+    <div class="col-md-4">
+    <div class="card task-card mb-4">
+      <div class="card-header bg-light">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-funnel-fill me-2"></i>Фильтры
         </h5>
+      </div>
+      <div class="card-body">
         <form method="GET" action="/articles">
           <div class="mb-3">
             <label for="category" class="form-label">Категория</label>
@@ -104,11 +99,13 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">
-          <i class="fas fa-list"></i> Категории статей
+    <div class="card task-card">
+      <div class="card-header bg-light">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-list-ul me-2"></i>Категории статей
         </h5>
+      </div>
+      <div class="card-body">
         <ul class="list-group">
           {{#each categories}}
           <li class="list-group-item">
@@ -121,4 +118,5 @@
       </div>
     </div>
   </div>
+</div>
 </div>

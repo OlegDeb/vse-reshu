@@ -1,10 +1,347 @@
 /* Кастомные стили для приложения */
 
+/* ============================================
+   Основные стили YouDo из new.html
+   ============================================ */
+
+:root {
+    --youdo-blue: #1e88e5;
+    --youdo-light-blue: #e3f2fd;
+    --youdo-green: #1e88e5;
+    --youdo-light-green: #e3f2fd;
+    --youdo-orange: #ff9800;
+    --youdo-light-orange: #fff3e0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+}
+
 /* Navbar стили */
 .navbar {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    background: linear-gradient(135deg, #689f38, #7cb342) !important;
+    background-color: white !important;
 }
+
+.navbar.bg-white {
+    background-color: white !important;
+}
+
+.navbar .navbar-brand {
+    font-weight: bold;
+    color: var(--youdo-blue) !important;
+}
+
+.navbar .navbar-brand:hover {
+    color: var(--youdo-blue) !important;
+}
+
+.navbar .nav-link {
+    font-weight: 500;
+    color: #333 !important;
+}
+
+.navbar .nav-link:hover {
+    color: var(--youdo-blue) !important;
+}
+
+.navbar .nav-link.active {
+    color: var(--youdo-blue) !important;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: var(--youdo-blue);
+    border-color: var(--youdo-blue);
+}
+
+.btn-primary:hover {
+    background-color: #1976d2;
+    border-color: #1976d2;
+}
+
+.hero-section {
+    background-color: var(--youdo-light-blue);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.page-header {
+    background-color: var(--youdo-light-blue);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.page-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.page-header .container > nav {
+    margin-left: auto;
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.page-header .breadcrumb {
+    margin: 0;
+    background: transparent;
+    padding: 0;
+}
+
+.page-header .breadcrumb-item a {
+    color: var(--youdo-blue);
+    text-decoration: none;
+}
+
+.page-header .breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+.page-header .breadcrumb-item.active {
+    color: #666;
+}
+
+.page-header .breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    padding: 0 0.5rem;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .page-header .container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .page-header .container > nav {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+.task-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+    margin-bottom: 1.5rem;
+    border: none;
+    background-color: white;
+}
+
+.task-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.task-price {
+    font-weight: bold;
+    color: var(--youdo-green);
+    font-size: 1.2rem;
+}
+
+.task-category {
+    background-color: var(--youdo-light-blue);
+    color: var(--youdo-blue);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.task-location {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.task-date {
+    color: #999;
+    font-size: 0.8rem;
+}
+
+.filter-section {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+}
+
+.category-badge {
+    background-color: var(--youdo-light-blue);
+    color: var(--youdo-blue);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.category-badge:hover {
+    background-color: var(--youdo-blue);
+    color: white;
+    text-decoration: none;
+}
+
+.category-badge.active {
+    background-color: var(--youdo-blue);
+    color: white;
+}
+
+.footer {
+    background-color: #333;
+    color: white;
+    padding: 3rem 0;
+    margin-top: 3rem;
+    border-top: 3px solid var(--youdo-blue);
+}
+
+.footer a {
+    color: #ddd;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: white;
+    text-decoration: none;
+}
+
+.footer .border-top {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.stats-badge {
+    background-color: var(--youdo-light-green);
+    color: var(--youdo-green);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.urgent-badge {
+    background-color: var(--youdo-light-orange);
+    color: var(--youdo-orange);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+/* Стили для форм */
+.form-control:focus {
+    border-color: var(--youdo-blue);
+    box-shadow: 0 0 0 0.2rem rgba(30, 136, 229, 0.25);
+}
+
+/* Стили для карточек */
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Пагинация */
+.pagination .page-link {
+    color: var(--youdo-blue);
+    background-color: white;
+    border-color: #dee2e6;
+}
+
+.pagination .page-link:hover {
+    color: var(--youdo-blue);
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: white;
+    border-color: var(--youdo-blue);
+    color: var(--youdo-blue);
+    font-weight: 600;
+}
+
+/* Алерты */
+.alert {
+    border-radius: 8px;
+}
+
+/* Стили для статьи */
+.article-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.article-card .article-divider {
+    margin: 1.5rem 0;
+    border: 0;
+    border-top: 1px solid #ced4da;
+    opacity: 0.8;
+}
+
+.article-card .article-content {
+    line-height: 1.8;
+    font-size: 1.05rem;
+    color: #333;
+}
+
+.article-card img {
+    border-radius: 8px;
+}
+
+/* Улучшенные стили для кнопок */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Основной контент */
+main {
+    min-height: calc(100vh - 200px);
+    padding-bottom: 2rem;
+}
+
+/* Заголовки в карточках */
+.card-header h2,
+.card-header h3,
+.card-header h5 {
+    color: #333;
+}
+
+/* Стили для пустых состояний */
+.text-center.text-muted {
+    padding: 3rem 1rem;
+}
+
+/* Отступы для контейнеров */
+.container.mt-4 {
+    padding-top: 2rem;
+}
+
+/* ============================================
+   Старые стили (для совместимости)
+   ============================================ */
 
 .navbar-brand img {
     transition: transform 0.2s ease;
@@ -34,9 +371,9 @@
 .category-card, .card.category-card {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    border: 2px solid #e8f5e8 !important;
-    background: linear-gradient(135deg, #f8fff8, #ffffff);
-    box-shadow: 0 2px 8px rgba(104, 159, 56, 0.1);
+    border: 2px solid #e3f2fd !important;
+    background: linear-gradient(135deg, #f5f9ff, #ffffff);
+    box-shadow: 0 2px 8px rgba(30, 136, 229, 0.1);
     position: relative;
     overflow: hidden;
     min-height: 120px;
@@ -49,7 +386,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #689f38, #7cb342);
+    background: linear-gradient(90deg, #1e88e5, #42a5f5);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -60,8 +397,8 @@
 
 .category-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(104, 159, 56, 0.2) !important;
-    border-color: #689f38 !important;
+    box-shadow: 0 8px 25px rgba(30, 136, 229, 0.2) !important;
+    border-color: #1e88e5 !important;
 }
 
 /* Стили для иконок категорий */
@@ -69,23 +406,23 @@
 .category-icon {
     opacity: 0.8;
     transition: all 0.3s ease;
-    color: #689f38 !important;
-    filter: drop-shadow(0 2px 4px rgba(104, 159, 56, 0.3));
+    color: #1e88e5 !important;
+    filter: drop-shadow(0 2px 4px rgba(30, 136, 229, 0.3));
 }
 
 .category-card:hover .category-icon {
     opacity: 1;
-    color: #7cb342 !important;
+    color: #42a5f5 !important;
     transform: scale(1.1);
-    filter: drop-shadow(0 4px 8px rgba(124, 179, 66, 0.4));
+    filter: drop-shadow(0 4px 8px rgba(66, 165, 245, 0.4));
 }
 
 
 .category-card:hover .category-icon {
     opacity: 1;
-    color: #7cb342 !important;
+    color: #42a5f5 !important;
     transform: scale(1.1);
-    filter: drop-shadow(0 4px 8px rgba(124, 179, 66, 0.4));
+    filter: drop-shadow(0 4px 8px rgba(66, 165, 245, 0.4));
 }
 
 /* Стили для текста в карточках */
@@ -97,15 +434,15 @@
 }
 
 .category-card:hover .card-title {
-    color: #689f38;
+    color: #1e88e5;
     transform: translateY(-2px);
 }
 
 /* Улучшенные карточки для белого фона */
 .category-card {
-    border: 2px solid #e8f5e8 !important;
-    background: linear-gradient(135deg, #f8fff8, #ffffff);
-    box-shadow: 0 2px 8px rgba(104, 159, 56, 0.1);
+    border: 2px solid #e3f2fd !important;
+    background: linear-gradient(135deg, #f5f9ff, #ffffff);
+    box-shadow: 0 2px 8px rgba(30, 136, 229, 0.1);
     position: relative;
     overflow: hidden;
 }
@@ -117,7 +454,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #689f38, #7cb342);
+    background: linear-gradient(90deg, #1e88e5, #42a5f5);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -127,8 +464,8 @@
 }
 
 .category-card:hover {
-    border-color: #689f38 !important;
-    box-shadow: 0 8px 25px rgba(104, 159, 56, 0.2) !important;
+    border-color: #1e88e5 !important;
+    box-shadow: 0 8px 25px rgba(30, 136, 229, 0.2) !important;
 }
 
 .category-card .card-title {
@@ -139,7 +476,7 @@
 }
 
 .category-card:hover .card-title {
-    color: #689f38;
+    color: #1e88e5;
     transform: translateY(-2px);
 }
 
@@ -164,7 +501,7 @@
 }
 
 .admin-container .table th {
-    background: linear-gradient(135deg, #689f38, #7cb342) !important;
+    background: linear-gradient(135deg, #1e88e5, #42a5f5) !important;
     color: white !important;
     border: none;
     font-weight: 600;
@@ -174,12 +511,12 @@
 }
 
 .admin-container .table td {
-    border-color: #e8f5e8;
+    border-color: #e3f2fd;
     vertical-align: middle;
 }
 
 .admin-container .table tbody tr:hover {
-    background-color: #f8fff8;
+    background-color: #f5f9ff;
 }
 
 /* Анимации для плавного появления */
@@ -217,9 +554,9 @@
 
 /* Специальные стили для кнопки создания категории */
 .btn-create-category {
-    background: linear-gradient(135deg, #689f38, #7cb342) !important;
+    background: linear-gradient(135deg, #1e88e5, #42a5f5) !important;
     border: none !important;
-    box-shadow: 0 4px 15px rgba(104, 159, 56, 0.3) !important;
+    box-shadow: 0 4px 15px rgba(30, 136, 229, 0.3) !important;
     font-weight: 600;
     letter-spacing: 0.5px;
     color: white !important;
@@ -229,9 +566,9 @@
 .category-card, .card.category-card {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    border: 2px solid #e8f5e8 !important;
-    background: linear-gradient(135deg, #f8fff8, #ffffff);
-    box-shadow: 0 2px 8px rgba(104, 159, 56, 0.1);
+    border: 2px solid #e3f2fd !important;
+    background: linear-gradient(135deg, #f5f9ff, #ffffff);
+    box-shadow: 0 2px 8px rgba(30, 136, 229, 0.1);
     position: relative;
     overflow: hidden;
     min-height: 120px;
@@ -244,7 +581,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #689f38, #7cb342);
+    background: linear-gradient(90deg, #1e88e5, #42a5f5);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -255,13 +592,13 @@
 
 .category-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(104, 159, 56, 0.2) !important;
-    border-color: #689f38 !important;
+    box-shadow: 0 8px 25px rgba(30, 136, 229, 0.2) !important;
+    border-color: #1e88e5 !important;
 }
 
 .btn-create-category:hover {
-    background: linear-gradient(135deg, #5d8c2e, #689f38) !important;
-    box-shadow: 0 6px 20px rgba(104, 159, 56, 0.4) !important;
+    background: linear-gradient(135deg, #1976d2, #1e88e5) !important;
+    box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4) !important;
     transform: translateY(-2px) !important;
 }
 
@@ -275,13 +612,13 @@
 }
 
 .admin-container .table .btn-outline-primary {
-    color: #689f38;
-    border-color: #689f38;
+    color: #1e88e5;
+    border-color: #1e88e5;
 }
 
 .admin-container .table .btn-outline-primary:hover {
-    background-color: #689f38;
-    border-color: #689f38;
+    background-color: #1e88e5;
+    border-color: #1e88e5;
     transform: translateY(-1px);
     color: white;
 }
@@ -307,7 +644,7 @@
 
 /* Стили для админ панели */
 .admin-header {
-    background: linear-gradient(135deg, #689f38, #7cb342);
+    background: linear-gradient(135deg, #1e88e5, #42a5f5);
     color: white;
     padding: 1rem 0;
     margin-bottom: 2rem;
@@ -331,13 +668,13 @@
 /* Анимация для кнопки создания категории */
 @keyframes pulse-create {
     0% {
-        box-shadow: 0 4px 15px rgba(104, 159, 56, 0.3);
+        box-shadow: 0 4px 15px rgba(30, 136, 229, 0.3);
     }
     50% {
-        box-shadow: 0 4px 25px rgba(104, 159, 56, 0.5);
+        box-shadow: 0 4px 25px rgba(30, 136, 229, 0.5);
     }
     100% {
-        box-shadow: 0 4px 15px rgba(104, 159, 56, 0.3);
+        box-shadow: 0 4px 15px rgba(30, 136, 229, 0.3);
     }
 }
 
@@ -357,8 +694,8 @@
 
 /* Стили для форм */
 .form-control:focus {
-    border-color: #689f38;
-    box-shadow: 0 0 0 0.2rem rgba(104, 159, 56, 0.25);
+    border-color: #1e88e5;
+    box-shadow: 0 0 0 0.2rem rgba(30, 136, 229, 0.25);
 }
 
 /* Стили для таблиц */
@@ -439,9 +776,9 @@
 }
 
 .category-type-btn {
-    background: linear-gradient(135deg, #f8fff8, #ffffff);
-    border: 2px solid #e8f5e8;
-    color: #689f38;
+    background: linear-gradient(135deg, #f5f5f5, #ffffff);
+    border: 2px solid #ddd;
+    color: #666;
     padding: 0.75rem 1.25rem;
     border-radius: 25px;
     font-weight: 500;
@@ -452,17 +789,17 @@
 
 .category-type-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(104, 159, 56, 0.2);
-    border-color: #689f38;
-    background: linear-gradient(135deg, #689f38, #7cb342);
-    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #ccc;
+    background: #f5f5f5;
+    color: #333;
 }
 
 .category-type-btn.active {
-    background: linear-gradient(135deg, #689f38, #7cb342);
-    border-color: #689f38;
-    color: white;
-    box-shadow: 0 4px 15px rgba(104, 159, 56, 0.3);
+    background-color: var(--youdo-light-blue);
+    border-color: var(--youdo-blue);
+    color: var(--youdo-blue);
+    box-shadow: 0 4px 15px rgba(30, 136, 229, 0.3);
 }
 
 .category-type-btn i {
@@ -500,7 +837,7 @@
     transform: translateX(-50%);
     width: 60px;
     height: 3px;
-    background: linear-gradient(90deg, #689f38, #7cb342);
+    background: linear-gradient(90deg, #1e88e5, #42a5f5);
     border-radius: 2px;
 }
 
@@ -537,12 +874,12 @@
 }
 
 .category-link:hover {
-    color: #689f38;
+    color: #1e88e5;
     text-decoration: none;
 }
 
 .category-arrow {
-    color: #689f38;
+    color: #1e88e5;
     margin-right: 0.75rem;
     font-size: 0.875rem;
     transition: all 0.3s ease;
@@ -551,7 +888,7 @@
 
 .category-link:hover .category-arrow {
     transform: translateX(5px);
-    color: #7cb342;
+    color: #42a5f5;
 }
 
 .category-name {

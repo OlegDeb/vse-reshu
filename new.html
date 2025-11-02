@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouDo - Все открытые задания</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Иконки Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --youdoo-blue: #1e88e5;
+            --youdoo-light-blue: #e3f2fd;
+            --youdoo-green: #4caf50;
+            --youdoo-light-green: #e8f5e9;
+            --youdoo-orange: #ff9800;
+            --youdoo-light-orange: #fff3e0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--youdoo-blue) !important;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background-color: var(--youdoo-blue);
+            border-color: var(--youdoo-blue);
+        }
+        
+        .hero-section {
+            background-color: var(--youdoo-light-blue);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .task-card {
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+        
+        .task-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .task-price {
+            font-weight: bold;
+            color: var(--youdoo-green);
+            font-size: 1.2rem;
+        }
+        
+        .task-category {
+            background-color: var(--youdoo-light-blue);
+            color: var(--youdoo-blue);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .task-location {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .task-date {
+            color: #999;
+            font-size: 0.8rem;
+        }
+        
+        .filter-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .category-badge {
+            background-color: var(--youdoo-light-blue);
+            color: var(--youdoo-blue);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .category-badge:hover {
+            background-color: var(--youdoo-blue);
+            color: white;
+        }
+        
+        .category-badge.active {
+            background-color: var(--youdoo-blue);
+            color: white;
+        }
+        
+        .footer {
+            background-color: #333;
+            color: white;
+            padding: 3rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer a {
+            color: #ddd;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            color: white;
+        }
+        
+        .stats-badge {
+            background-color: var(--youdoo-light-green);
+            color: var(--youdoo-green);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .urgent-badge {
+            background-color: var(--youdoo-light-orange);
+            color: var(--youdoo-orange);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигационная панель -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-check-square-fill me-2"></i>YouDo
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Задания</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Исполнители</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Как это работает</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="#" class="btn btn-outline-secondary me-2">Войти</a>
+                    <a href="#" class="btn btn-primary">Разместить задание</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Герой секция -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold">Найдите исполнителя для любой задачи</h1>
+                    <p class="lead">Более 2 миллионов проверенных исполнителей готовы помочь вам</p>
+                    <a href="#" class="btn btn-primary btn-lg">Разместить задание</a>
+                </div>
+                <div class="col-md-4 text-center">
+                    <i class="bi bi-people-fill" style="font-size: 8rem; color: var(--youdoo-blue);"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Основной контент -->
+    <div class="container">
+        <div class="row">
+            <!-- Боковая панель с фильтрами -->
+            <div class="col-lg-3">
+                <div class="filter-section">
+                    <h5 class="mb-3">Фильтры</h5>
+                    
+                    <div class="mb-4">
+                        <h6 class="mb-2">Категории</h6>
+                        <div>
+                            <span class="category-badge active">Все категории</span>
+                            <span class="category-badge">Ремонт и строительство</span>
+                            <span class="category-badge">Курьерские услуги</span>
+                            <span class="category-badge">Грузоперевозки</span>
+                            <span class="category-badge">Компьютерная помощь</span>
+                            <span class="category-badge">Уборка</span>
+                            <span class="category-badge">Репетиторы</span>
+                            <span class="category-badge">Фото и видео</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6 class="mb-2">Бюджет</h6>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">от</span>
+                            <input type="number" class="form-control" placeholder="0">
+                            <span class="input-group-text">₽</span>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text">до</span>
+                            <input type="number" class="form-control" placeholder="100000">
+                            <span class="input-group-text">₽</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6 class="mb-2">Срок выполнения</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="urgent">
+                            <label class="form-check-label" for="urgent">
+                                Срочные задания
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="today">
+                            <label class="form-check-label" for="today">
+                                Сегодня
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="week">
+                            <label class="form-check-label" for="week">
+                                На неделю
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6 class="mb-2">Местоположение</h6>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Город или район">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-geo-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary w-100">Применить фильтры</button>
+                </div>
+                
+                <div class="card task-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Станьте исполнителем</h5>
+                        <p class="card-text">Начните зарабатывать на YouDo, выполняя задания</p>
+                        <a href="#" class="btn btn-outline-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Список заданий -->
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Все открытые задания</h2>
+                    <div class="d-flex">
+                        <div class="dropdown me-2">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Сортировка: По дате
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">По дате</a></li>
+                                <li><a class="dropdown-item" href="#">По цене</a></li>
+                                <li><a class="dropdown-item" href="#">По рейтингу</a></li>
+                            </ul>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="view" id="list-view" checked>
+                            <label class="btn btn-outline-secondary" for="list-view">
+                                <i class="bi bi-list-ul"></i>
+                            </label>
+                            
+                            <input type="radio" class="btn-check" name="view" id="grid-view">
+                            <label class="btn btn-outline-secondary" for="grid-view">
+                                <i class="bi bi-grid-3x3-gap"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Карточки заданий -->
+                <div class="card task-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="card-title">Нужно собрать мебель из Икеа</h5>
+                                <p class="card-text">Требуется собрать шкаф и комод из Икеа. Есть инструкция. Нужно привезти свой инструмент.</p>
+                                <div class="mb-2">
+                                    <span class="task-category">Ремонт и строительство</span>
+                                    <span class="urgent-badge ms-2">Срочно</span>
+                                </div>
+                                <div class="task-location">
+                                    <i class="bi bi-geo-alt"></i> Москва, м. Аэропорт
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="task-price mb-2">3 000 ₽</div>
+                                <div class="task-date mb-3">Опубликовано 2 часа назад</div>
+                                <a href="#" class="btn btn-primary">Откликнуться</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card task-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="card-title">Перевезти пианино из квартиры на 5 этаже</h5>
+                                <p class="card-text">Нужно перевезти пианино с 5 этажа (без лифта) в новый дом на 3 этаже (есть лифт). Расстояние 5 км.</p>
+                                <div class="mb-2">
+                                    <span class="task-category">Грузоперевозки</span>
+                                    <span class="stats-badge ms-2">12 откликов</span>
+                                </div>
+                                <div class="task-location">
+                                    <i class="bi bi-geo-alt"></i> Санкт-Петербург, Центральный район
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="task-price mb-2">8 500 ₽</div>
+                                <div class="task-date mb-3">Опубликовано 5 часов назад</div>
+                                <a href="#" class="btn btn-primary">Откликнуться</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card task-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="card-title">Нужен репетитор по математике для ученика 9 класса</h5>
+                                <p class="card-text">Подготовка к ОГЭ по математике. Требуется опытный репетитор с рекомендациями. Занятия 2 раза в неделю.</p>
+                                <div class="mb-2">
+                                    <span class="task-category">Образование</span>
+                                    <span class="stats-badge ms-2">7 откликов</span>
+                                </div>
+                                <div class="task-location">
+                                    <i class="bi bi-geo-alt"></i> Екатеринбург, Ленинский район
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="task-price mb-2">1 200 ₽/час</div>
+                                <div class="task-date mb-3">Опубликовано вчера</div>
+                                <a href="#" class="btn btn-primary">Откликнуться</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card task-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="card-title">Сделать фотосессию для каталога одежды</h5>
+                                <p class="card-text">Нужен фотограф для съемки 30 моделей одежды для интернет-магазина. Требуется профессиональное оборудование и обработка фото.</p>
+                                <div class="mb-2">
+                                    <span class="task-category">Фото и видео</span>
+                                    <span class="urgent-badge ms-2">Срочно</span>
+                                </div>
+                                <div class="task-location">
+                                    <i class="bi bi-geo-alt"></i> Москва, ЦАО
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="task-price mb-2">25 000 ₽</div>
+                                <div class="task-date mb-3">Опубликовано 3 часа назад</div>
+                                <a href="#" class="btn btn-primary">Откликнуться</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card task-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="card-title">Установить Windows и программы на ноутбук</h5>
+                                <p class="card-text">Нужно установить Windows 10, офисный пакет, антивирус и настроить подключение к принтеру.</p>
+                                <div class="mb-2">
+                                    <span class="task-category">Компьютерная помощь</span>
+                                    <span class="stats-badge ms-2">9 откликов</span>
+                                </div>
+                                <div class="task-location">
+                                    <i class="bi bi-geo-alt"></i> Казань, Советский район
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="task-price mb-2">2 500 ₽</div>
+                                <div class="task-date mb-3">Опубликовано 6 часов назад</div>
+                                <a href="#" class="btn btn-primary">Откликнуться</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Пагинация -->
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Назад</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Вперед</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <h5>YouDo</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">О компании</a></li>
+                        <li><a href="#">Вакансии</a></li>
+                        <li><a href="#">Партнерская программа</a></li>
+                        <li><a href="#">Помощь</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Для заказчиков</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Разместить задание</a></li>
+                        <li><a href="#">Каталог исполнителей</a></li>
+                        <li><a href="#">Безопасная сделка</a></li>
+                        <li><a href="#">Статьи и советы</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Для исполнителей</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Стать исполнителем</a></li>
+                        <li><a href="#">Как получать заказы</a></li>
+                        <li><a href="#">Правила платформы</a></li>
+                        <li><a href="#">Отзывы</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Контакты</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="tel:+78001234567">8 (800) 123-45-67</a></li>
+                        <li><a href="mailto:support@youdo.com">support@youdo.com</a></li>
+                        <li>
+                            <div class="mt-3">
+                                <a href="#" class="me-2"><i class="bi bi-facebook" style="font-size: 1.5rem;"></i></a>
+                                <a href="#" class="me-2"><i class="bi bi-instagram" style="font-size: 1.5rem;"></i></a>
+                                <a href="#" class="me-2"><i class="bi bi-telegram" style="font-size: 1.5rem;"></i></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row pt-3 border-top">
+                <div class="col-md-6">
+                    <p>&copy; 2023 YouDo. Все права защищены.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="me-3">Политика конфиденциальности</a>
+                    <a href="#">Пользовательское соглашение</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

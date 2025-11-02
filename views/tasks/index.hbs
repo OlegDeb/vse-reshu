@@ -1,93 +1,159 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h1>Задачи</h1>
-  {{#if user}}
-    <a href="/tasks/create" class="btn btn-primary">Создать задачу</a>
-  {{/if}}
-</div>
-
-{{#if tasks.length}}
-  <div class="row">
-    {{#each tasks}}
-      <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <div class="d-flex align-items-center mb-2">
-              <i class="{{category.icon}} me-2"></i>
-              <span class="badge bg-secondary me-2">{{category.name}}</span>
-              <span class="badge {{#if (eq status 'open')}}bg-success{{else if (eq status 'in_progress')}}bg-warning{{else}}bg-secondary{{/if}}">
-                {{#if (eq status 'open')}}Открыта{{else if (eq status 'in_progress')}}В работе{{else}}Закрыта{{/if}}
-              </span>
+<div class="container">
+    <div class="row">
+        <!-- Основной контент с заданиями -->
+        <div class="col-lg-9">
+            {{#if user}}
+            <div class="d-flex justify-content-end mb-3">
+                <a href="/tasks/create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i>Разместить задание
+                </a>
             </div>
-            <h5 class="card-title">{{title}}</h5>
-            <p class="card-text text-truncate">{{description}}</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <small class="text-muted">
-                  Автор:
-                  {{#if author.firstName}}
-                    <a href="/users/{{author.username}}" target="_blank" class="text-decoration-none">{{author.firstName}} {{author.lastName}}</a>
-                  {{else}}
-                    <a href="/users/{{author.username}}" target="_blank" class="text-decoration-none">{{author.username}}</a>
-                  {{/if}}
-                </small>
-                {{#if acceptedResponse}}
-                  <br>
-                  <small class="text-muted">
-                    Исполнитель:
-                    {{#if acceptedResponse.responder.firstName}}
-                      <a href="/users/{{acceptedResponse.responder.username}}" target="_blank" class="text-decoration-none">{{acceptedResponse.responder.firstName}} {{acceptedResponse.responder.lastName}}</a>
-                    {{else}}
-                      <a href="/users/{{acceptedResponse.responder.username}}" target="_blank" class="text-decoration-none">{{acceptedResponse.responder.username}}</a>
-                    {{/if}}
-                  </small>
-                {{/if}}
-              </div>
-              <small class="text-muted">{{createdAtFormatted}}</small>
-            </div>
-          </div>
-          <div class="card-footer d-flex justify-content-between">
-            <a href="/tasks/{{_id}}" class="btn btn-outline-primary btn-sm">Просмотреть</a>
-            {{#if (eq ../user._id author._id)}}
-              {{#if (eq status 'open')}}
-                <a href="/tasks/{{_id}}/edit" class="btn btn-outline-warning btn-sm">Редактировать</a>
-              {{/if}}
             {{/if}}
-          </div>
+
+            {{#if tasks.length}}
+                {{#each tasks}}
+                <div class="card task-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="card-title">{{title}}</h5>
+                                <p class="card-text">{{description}}</p>
+                                <div class="mb-2">
+                                    <span class="task-category">
+                                        <i class="{{category.icon}} me-1"></i>{{category.name}}
+                                    </span>
+                                    {{#if (eq status 'in_progress')}}
+                                        <span class="stats-badge ms-2">В работе</span>
+                                    {{else if (eq status 'closed')}}
+                                        <span class="badge bg-secondary ms-2">Закрыта</span>
+                                    {{/if}}
+                                </div>
+                                <div class="task-location">
+                                    <i class="bi bi-geo-alt me-1"></i>
+                                    {{#if location}}{{location}}{{else}}Местоположение не указано{{/if}}
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                {{#if price}}
+                                <div class="task-price mb-2">{{price}} ₽</div>
+                                {{/if}}
+                                <div class="task-date mb-3">{{createdAtFormatted}}</div>
+                                <a href="/tasks/{{_id}}" class="btn btn-primary">Просмотреть</a>
+                                {{#if (eq ../user._id author._id)}}
+                                    {{#if (eq status 'open')}}
+                                        <div class="mt-2">
+                                            <a href="/tasks/{{_id}}/edit" class="btn btn-outline-secondary btn-sm">Редактировать</a>
+                                        </div>
+                                    {{/if}}
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+
+            <!-- Пагинация -->
+            <nav aria-label="Пагинация задач" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {{#if hasPrev}}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{subtract currentPage 1}}{{#if currentCategory}}&category={{currentCategory}}{{/if}}">Назад</a>
+                        </li>
+                    {{else}}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Назад</a>
+                        </li>
+                    {{/if}}
+
+                    {{#each pages}}
+                        <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+                            <a class="page-link" href="?page={{this}}{{#if ../currentCategory}}&category={{../currentCategory}}{{/if}}">{{this}}</a>
+                        </li>
+                    {{/each}}
+
+                    {{#if hasNext}}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{add currentPage 1}}{{#if currentCategory}}&category={{currentCategory}}{{/if}}">Вперед</a>
+                        </li>
+                    {{else}}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Вперед</a>
+                        </li>
+                    {{/if}}
+                </ul>
+            </nav>
+            {{else}}
+            <div class="text-center mt-5">
+                <h3>Задач пока нет</h3>
+                {{#if user}}
+                    <p>Будьте первым, кто создаст задачу!</p>
+                    <a href="/tasks/create" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Создать задачу
+                    </a>
+                {{else}}
+                    <p>Зарегистрируйтесь, чтобы создать задачу!</p>
+                    <a href="/register" class="btn btn-primary">Регистрация</a>
+                {{/if}}
+            </div>
+            {{/if}}
         </div>
-      </div>
-    {{/each}}
-  </div>
 
-  <!-- Пагинация -->
-  <nav aria-label="Пагинация задач">
-    <ul class="pagination justify-content-center">
-      {{#if hasPrev}}
-        <li class="page-item">
-          <a class="page-link" href="?page={{subtract currentPage 1}}">Предыдущая</a>
-        </li>
-      {{/if}}
+        <!-- Сайдбар с категориями -->
+        <div class="col-lg-3">
+            <div class="card task-card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-funnel-fill me-2"></i>Категории
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="accordion accordion-flush" id="categoriesAccordion">
+                        {{#each (entries categoriesByType)}}
+                        {{#with (lookup ../categoryTypes this.key)}}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{@index}}">
+                                <button class="accordion-button {{#unless @first}}collapsed{{/unless}}" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#collapse{{@index}}" 
+                                        aria-expanded="{{#if @first}}true{{else}}false{{/if}}" 
+                                        aria-controls="collapse{{@index}}">
+                                    <i class="{{this}} me-2"></i>{{../this.key}}
+                                </button>
+                            </h2>
+                            <div id="collapse{{@index}}" 
+                                 class="accordion-collapse collapse {{#if @first}}show{{/if}}" 
+                                 aria-labelledby="heading{{@index}}" 
+                                 data-bs-parent="#categoriesAccordion">
+                                <div class="accordion-body p-0">
+                                    <ul class="list-group list-group-flush">
+                                        {{#each ../this.value}}
+                                        <li class="list-group-item">
+                                            <a href="/tasks?category={{this._id}}" 
+                                               class="text-decoration-none {{#if (eq ../../../../currentCategory (toString this._id))}}fw-bold text-primary{{/if}}">
+                                                <i class="{{this.icon}} me-2"></i>{{this.name}}
+                                            </a>
+                                        </li>
+                                        {{/each}}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {{/with}}
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
 
-      {{#each pages}}
-        <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
-          <a class="page-link" href="?page={{this}}">{{this}}</a>
-        </li>
-      {{/each}}
-
-      {{#if hasNext}}
-        <li class="page-item">
-          <a class="page-link" href="?page={{add currentPage 1}}">Следующая</a>
-        </li>
-      {{/if}}
-    </ul>
-  </nav>
-{{else}}
-  <div class="text-center mt-5">
-    <h3>Задач пока нет</h3>
-    {{#if user}}
-      <p>Будьте первым, кто создаст задачу!</p>
-      <a href="/tasks/create" class="btn btn-primary">Создать задачу</a>
-    {{else}}
-      <p>Зарегистрируйтесь, чтобы создать задачу!</p>
-    {{/if}}
-  </div>
-{{/if}}
+            <div class="card task-card">
+                <div class="card-body">
+                    <h5 class="card-title">Станьте исполнителем</h5>
+                    <p class="card-text">Начните зарабатывать, выполняя задания</p>
+                    {{#if user}}
+                        <a href="/tasks" class="btn btn-outline-primary">Найти задания</a>
+                    {{else}}
+                        <a href="/register" class="btn btn-outline-primary">Зарегистрироваться</a>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

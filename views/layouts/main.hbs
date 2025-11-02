@@ -24,50 +24,173 @@
     <meta name="twitter:description" content="{{#if metaDescription}}{{metaDescription}}{{else}}Всё реши - платформа для поиска и предоставления услуг{{/if}}">
     {{#if article}}{{#if article.image}}<meta name="twitter:image" content="http://localhost:3000{{article.image}}">{{/if}}{{/if}}
     
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Иконки Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Основные стили -->
     <link href="/css/style.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #689f38;">
+    <!-- Навигационная панель -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="/img/logo/logo2.png" alt="Логотип" height="30" class="me-2">
+            <a class="navbar-brand" href="/">
+                <img src="/img/logo/logo.png" alt="Логотип" height="30" class="me-2">
             </a>
-            <div class="navbar-nav flex-row mx-auto d-none d-lg-flex">
-                <a class="nav-link text-white me-3" href="/tasks">ВСЕ ЗАДАЧИ</a>
-                <a class="nav-link text-white me-3" href="/articles">СТАТЬИ</a>
-                {{#if user}}
-                    <a class="nav-link text-white" href="/tasks/my-tasks">МОИ ЗАДАЧИ</a>
-                {{/if}}
-                {{#if isAdmin}}
-                    <a class="nav-link text-white" href="/admin/articles">АДМИНКА</a>
-                {{/if}}
-            </div>
-
-            <!-- Мобильное меню для центральных ссылок -->
-            <div class="navbar-nav d-lg-none">
-                <a class="nav-link text-white" href="/tasks">Задачи</a>
-                <a class="nav-link text-white" href="/articles">Статьи</a>
-                {{#if user}}
-                    <a class="nav-link text-white" href="/tasks/my-tasks">Мои задачи</a>
-                {{/if}}
-            </div>
-            <div class="navbar-nav ms-auto">
-                {{#if user}}
-                    <a class="nav-link text-white" href="/profile">Привет, {{#if user.firstName}}{{user.firstName}}{{else}}{{user.username}}{{/if}}</a>
-                    
-                    <a class="nav-link text-white" href="/logout">Выход</a>
-                {{else}}
-                    <a class="nav-link text-white" href="/register">Регистрация</a>
-                    <a class="nav-link text-white" href="/login">Вход</a>
-                {{/if}}
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {{#if (eq currentPath '/')}}active{{/if}}" href="/">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{#if (eq currentPath '/tasks')}}active{{/if}}" href="/tasks">Задания</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{#if (eq currentPath '/articles')}}active{{/if}}" href="/articles">Статьи</a>
+                    </li>
+                    {{#if user}}
+                        <li class="nav-item">
+                            <a class="nav-link {{#if (eq currentPath '/tasks/my-tasks')}}active{{/if}}" href="/tasks/my-tasks">Мои задания</a>
+                        </li>
+                    {{/if}}
+                    {{#if isAdmin}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/articles">Админка</a>
+                        </li>
+                    {{/if}}
+                </ul>
+                <div class="d-flex">
+                    {{#if user}}
+                        <a href="/profile" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-person-circle me-1"></i>
+                            {{#if user.firstName}}{{user.firstName}}{{else}}{{user.username}}{{/if}}
+                        </a>
+                        <a href="/logout" class="btn btn-outline-secondary me-2">Выход</a>
+                        <a href="/tasks/create" class="btn btn-primary">Разместить задание</a>
+                    {{else}}
+                        <a href="/login" class="btn btn-outline-secondary me-2">Войти</a>
+                        <a href="/register" class="btn btn-primary">Регистрация</a>
+                    {{/if}}
+                </div>
             </div>
         </div>
     </nav>
-    <main class="container mt-4{{#if isAdmin}} admin-container{{/if}}">
+
+    {{#unless (eq currentPath '/')}}
+    <!-- Заголовок страницы с хлебными крошками -->
+    <section class="page-header">
+        <div class="container">
+            {{#unless article}}
+            <div>
+                <h1>{{title}}</h1>
+            </div>
+            {{/unless}}
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Главная</a></li>
+                    {{#if (eq currentPath '/tasks')}}
+                        <li class="breadcrumb-item active">Задания</li>
+                    {{else if (eq currentPath '/articles')}}
+                        <li class="breadcrumb-item active">Статьи</li>
+                    {{else if (eq currentPath '/tasks/create')}}
+                        <li class="breadcrumb-item"><a href="/tasks">Задания</a></li>
+                        <li class="breadcrumb-item active">Создание задания</li>
+                    {{else if (eq currentPath '/tasks/my-tasks')}}
+                        <li class="breadcrumb-item"><a href="/tasks">Задания</a></li>
+                        <li class="breadcrumb-item active">Мои задания</li>
+                    {{else if (eq currentPath '/profile')}}
+                        <li class="breadcrumb-item active">Профиль</li>
+                    {{else if (eq currentPath '/login')}}
+                        <li class="breadcrumb-item active">Вход</li>
+                    {{else if (eq currentPath '/register')}}
+                        <li class="breadcrumb-item active">Регистрация</li>
+                    {{else if article}}
+                        <li class="breadcrumb-item"><a href="/articles">Статьи</a></li>
+                        {{#if currentCategory}}
+                            <li class="breadcrumb-item"><a href="/articles?category={{currentCategory.slug}}">{{currentCategory.name}}</a></li>
+                        {{/if}}
+                        <li class="breadcrumb-item active">{{article.title}}</li>
+                    {{else}}
+                        {{#if breadcrumbs}}
+                            {{#each breadcrumbs}}
+                                {{#if this.url}}
+                                    <li class="breadcrumb-item"><a href="{{this.url}}">{{this.name}}</a></li>
+                                {{else}}
+                                    <li class="breadcrumb-item active">{{this.name}}</li>
+                                {{/if}}
+                            {{/each}}
+                        {{else}}
+                            <li class="breadcrumb-item active">{{title}}</li>
+                        {{/if}}
+                    {{/if}}
+                </ol>
+            </nav>
+        </div>
+    </section>
+    {{/unless}}
+
+    <main>
         {{{body}}}
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <h5>Всё реши</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">О компании</a></li>
+                        <li><a href="#">Помощь</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Для заказчиков</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/tasks/create">Разместить задание</a></li>
+                        <li><a href="/tasks">Каталог заданий</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Для исполнителей</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/tasks">Найти задания</a></li>
+                        <li><a href="/register">Стать исполнителем</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Контакты</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="mailto:support@vse-reshu.com">support@vse-reshu.com</a></li>
+                        <li>
+                            <div class="mt-3">
+                                <a href="#" class="me-2"><i class="bi bi-facebook" style="font-size: 1.5rem;"></i></a>
+                                <a href="#" class="me-2"><i class="bi bi-instagram" style="font-size: 1.5rem;"></i></a>
+                                <a href="#" class="me-2"><i class="bi bi-telegram" style="font-size: 1.5rem;"></i></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row pt-3 border-top">
+                <div class="col-md-6">
+                    <p>&copy; 2023 Всё реши. Все права защищены.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="me-3">Политика конфиденциальности</a>
+                    <a href="#">Пользовательское соглашение</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

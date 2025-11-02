@@ -1,19 +1,7 @@
-<div class="row">
-  <div class="col-md-8">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Главная</a></li>
-        <li class="breadcrumb-item"><a href="/articles">Статьи</a></li>
-        {{#if currentCategory}}
-        <li class="breadcrumb-item">
-          <a href="/articles?category={{currentCategory.slug}}">{{currentCategory.name}}</a>
-        </li>
-        {{/if}}
-        <li class="breadcrumb-item active">{{article.title}}</li>
-      </ol>
-    </nav>
-
-    <article>
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+      <article class="article-card">
       <div class="mb-3">
         <span class="badge bg-secondary">{{article.category.name}}</span>
         <span class="text-muted small ms-2">
@@ -24,7 +12,9 @@
         </span>
       </div>
 
-      <h1 class="mb-4">{{article.title}}</h1>
+      <hr class="article-divider">
+
+      <h2 class="mb-4">{{article.title}}</h2>
 
       {{#if article.image}}
       <div class="mb-4">
@@ -52,7 +42,7 @@
         <div class="row">
           {{#each relatedArticles}}
           <div class="col-md-4 mb-3">
-            <div class="card h-100">
+            <div class="card task-card h-100">
               {{#if this.image}}
               <img src="{{this.image}}" class="card-img-top" alt="{{this.title}}" style="height: 150px; object-fit: cover;">
               {{/if}}
@@ -72,11 +62,13 @@
   </div>
 
   <div class="col-md-4">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">
-          <i class="fas fa-list"></i> Категории статей
+    <div class="card task-card">
+      <div class="card-header bg-light">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-list-ul me-2"></i>Категории статей
         </h5>
+      </div>
+      <div class="card-body">
         <ul class="list-group">
           {{#each categories}}
           <li class="list-group-item">

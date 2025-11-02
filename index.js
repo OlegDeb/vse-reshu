@@ -126,6 +126,14 @@ app.engine('hbs', engine({
         result.push(i);
       }
       return result;
+    },
+    entries: (obj) => {
+      if (!obj) return [];
+      return Object.entries(obj).map(([key, value]) => ({ key, value }));
+    },
+    toString: (val) => {
+      if (val && val.toString) return val.toString();
+      return String(val || '');
     }
   },
   runtimeOptions: {
@@ -148,6 +156,12 @@ app.use(session({
   store: MongoStore.create({ mongoUrl: localMongoURI }),
   cookie: { maxAge: 1000 * 60 * 60 * 24 } // 24 часа
 }));
+
+// Middleware для установки текущего пути
+app.use((req, res, next) => {
+  res.locals.currentPath = req.path;
+  next();
+});
 
 // Middleware для передачи пользователя в шаблоны
 app.use(async (req, res, next) => {

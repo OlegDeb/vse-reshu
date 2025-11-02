@@ -18,15 +18,22 @@ export const getTasks = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
+    const categoryFilter = req.query.category;
 
-    const tasks = await Task.find({ status: 'open' })
+    // Формируем запрос с фильтром по категории
+    const query = { status: 'open' };
+    if (categoryFilter) {
+      query.category = categoryFilter;
+    }
+
+    const tasks = await Task.find(query)
       .populate('author', 'firstName lastName username')
-      .populate('category', 'name icon')
+      .populate('category', 'name icon slug type')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
-    const totalTasks = await Task.countDocuments({ status: 'open' });
+    const totalTasks = await Task.countDocuments(query);
     const totalPages = Math.ceil(totalTasks / limit);
 
     // Форматируем даты для отображения
@@ -40,6 +47,16 @@ export const getTasks = async (req, res) => {
       pages.push(i);
     }
 
+    // Получаем все категории, сгруппированные по типам
+    const allCategories = await Category.find().sort({ type: 1, name: 1 });
+    const categoriesByType = {};
+    allCategories.forEach(category => {
+      if (!categoriesByType[category.type]) {
+        categoriesByType[category.type] = [];
+      }
+      categoriesByType[category.type].push(category);
+    });
+
     res.render('tasks/index', {
       tasks,
       currentPage: page,
@@ -47,9 +64,13 @@ export const getTasks = async (req, res) => {
       pages,
       hasNext: page < totalPages,
       hasPrev: page > 1,
-      title: 'Задачи'
+      title: 'Задания',
+      categoriesByType,
+      categoryTypes: CATEGORY_TYPES,
+      currentCategory: categoryFilter
     });
   } catch (error) {
+    console.error('Error loading tasks:', error);
     res.render('error', { message: 'Ошибка загрузки задач' });
   }
 };
