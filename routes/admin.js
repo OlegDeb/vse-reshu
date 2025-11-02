@@ -26,6 +26,14 @@ import {
   postAdminDelete,
   postAdminToggleStatus
 } from '../controllers/articlesController.js';
+import {
+  getAdminIndex as getPagesIndex,
+  getAdminCreate as getPagesCreate,
+  postAdminCreate as postPagesCreate,
+  getAdminEdit as getPagesEdit,
+  postAdminEdit as postPagesEdit,
+  postAdminDelete as postPagesDelete
+} from '../controllers/pagesController.js';
 import upload from '../config/multer.js';
 
 const router = express.Router();
@@ -58,5 +66,13 @@ router.get('/articles/:id/edit', getAdminEdit);
 router.post('/articles/:id/edit', upload.single('image'), postAdminEdit);
 router.post('/articles/:id/delete', postAdminDelete);
 router.post('/articles/:id/toggle-status', postAdminToggleStatus);
+
+// Страницы
+router.get('/pages', getPagesIndex);
+router.get('/pages/create', getPagesCreate);
+router.post('/pages/create', postPagesCreate);
+router.get('/pages/:id/edit', getPagesEdit);
+router.post('/pages/:id/edit', postPagesEdit);
+router.post('/pages/:id/delete', postPagesDelete);
 
 export default router;

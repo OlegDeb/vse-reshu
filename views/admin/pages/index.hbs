@@ -26,49 +26,44 @@
     <div class="admin-content">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h2 class="mb-0">Категории статей</h2>
-          <p class="text-muted mb-0">Управление категориями для статей</p>
+          <h2 class="mb-0">Управление страницами</h2>
+          <p class="text-muted mb-0">Создание, редактирование и удаление информационных страниц</p>
         </div>
-        <a href="/admin/article-categories/create" class="btn btn-create-category btn-lg">
+        <a href="/admin/pages/create" class="btn btn-create-category btn-lg">
           <i class="fas fa-plus-circle me-2"></i>
-          Создать категорию
+          Создать страницу
         </a>
       </div>
 
-{{#if categories}}
+{{#if pages}}
 <div class="table-responsive">
   <table class="table table-hover">
     <thead>
       <tr>
         <th>Название</th>
         <th>Slug</th>
-        <th>Описание</th>
         <th>Дата создания</th>
         <th>Последнее обновление</th>
         <th>Действия</th>
       </tr>
     </thead>
     <tbody>
-      {{#each categories}}
+      {{#each pages}}
       <tr>
-        <td><strong>{{this.name}}</strong></td>
+        <td><strong>{{this.title}}</strong></td>
         <td><code class="small">{{this.slug}}</code></td>
-        <td>
-          {{#if this.description}}
-          <span class="text-muted small">{{this.description}}</span>
-          {{else}}
-          <span class="text-muted">—</span>
-          {{/if}}
-        </td>
         <td><small>{{formatDate this.createdAt}}</small></td>
         <td><small>{{formatDate this.updatedAt}}</small></td>
         <td>
           <div class="d-flex gap-2" role="group">
-            <a href="/admin/article-categories/{{this._id}}/edit" class="btn btn-outline-primary btn-sm" title="Редактировать">
+            <a href="/page/{{this.slug}}" class="btn btn-outline-info btn-sm" title="Просмотреть" target="_blank">
+              <i class="fas fa-eye"></i>
+            </a>
+            <a href="/admin/pages/{{this._id}}/edit" class="btn btn-outline-primary btn-sm" title="Редактировать">
               <i class="fas fa-edit"></i>
             </a>
-            <form action="/admin/article-categories/{{this._id}}/delete" method="POST" style="display: inline;">
-              <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Удалить категорию?')" title="Удалить">
+            <form action="/admin/pages/{{this._id}}/delete" method="POST" style="display: inline;">
+              <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Удалить страницу?')" title="Удалить">
                 <i class="fas fa-trash"></i>
               </button>
             </form>
@@ -79,16 +74,51 @@
     </tbody>
   </table>
 </div>
+
+<!-- Пагинация -->
+{{#if (gt totalPages 1)}}
+<nav aria-label="Навигация по страницам">
+  <ul class="pagination justify-content-center">
+    {{#if hasPrevPage}}
+    <li class="page-item">
+      <a class="page-link" href="/admin/pages?page={{prevPage}}">Предыдущая</a>
+    </li>
+    {{else}}
+    <li class="page-item disabled">
+      <span class="page-link">Предыдущая</span>
+    </li>
+    {{/if}}
+    
+        {{#each pageNumbers}}
+        <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+          <a class="page-link" href="/admin/pages?page={{this}}">{{this}}</a>
+        </li>
+        {{/each}}
+    
+    {{#if hasNextPage}}
+    <li class="page-item">
+      <a class="page-link" href="/admin/pages?page={{nextPage}}">Следующая</a>
+    </li>
+    {{else}}
+    <li class="page-item disabled">
+      <span class="page-link">Следующая</span>
+    </li>
+    {{/if}}
+  </ul>
+</nav>
+{{/if}}
+
 {{else}}
 <div class="alert alert-info text-center">
   <i class="fas fa-info-circle fa-2x mb-3"></i>
-  <h5>Нет категорий статей</h5>
-  <p class="mb-0">Создайте первую категорию для статей</p>
-  <a href="/admin/article-categories/create" class="btn btn-create-category mt-3">
-    <i class="fas fa-plus-circle"></i> Создать категорию
+  <h5>Нет страниц</h5>
+  <p class="mb-0">Создайте первую страницу</p>
+  <a href="/admin/pages/create" class="btn btn-create-category mt-3">
+    <i class="fas fa-plus-circle"></i> Создать страницу
   </a>
 </div>
 {{/if}}
     </div>
   </div>
 </div>
+

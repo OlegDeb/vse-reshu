@@ -61,6 +61,33 @@ body {
     font-weight: 600;
 }
 
+.navbar .dropdown-toggle::after {
+    margin-left: 0.5rem;
+}
+
+.navbar .dropdown-menu {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border: none;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.navbar .dropdown-item {
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.navbar .dropdown-item:hover {
+    background-color: var(--youdo-light-blue);
+    color: var(--youdo-blue);
+}
+
+.navbar .dropdown-item i {
+    width: 20px;
+    text-align: center;
+}
+
 .btn-primary {
     background-color: var(--youdo-blue);
     border-color: var(--youdo-blue);
@@ -89,14 +116,14 @@ body {
 
 .page-header .container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    flex-wrap: wrap;
+    text-align: center;
     gap: 1rem;
 }
 
-.page-header .container > nav {
-    margin-left: auto;
+.page-header-content {
+    width: 100%;
 }
 
 .page-header h1 {
@@ -104,12 +131,18 @@ body {
     font-size: 1.75rem;
     font-weight: 600;
     color: #333;
+    text-align: center;
+}
+
+.page-header-breadcrumb {
+    width: 100%;
 }
 
 .page-header .breadcrumb {
     margin: 0;
     background: transparent;
     padding: 0;
+    justify-content: center;
 }
 
 .page-header .breadcrumb-item a {
@@ -134,16 +167,28 @@ body {
 @media (max-width: 768px) {
     .page-header .container {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
     }
     
-    .page-header .container > nav {
-        margin-left: 0;
+    .page-header-breadcrumb {
         width: 100%;
     }
     
     .page-header h1 {
         font-size: 1.5rem;
+    }
+
+    .admin-wrapper {
+        padding: 1rem;
+    }
+
+    .admin-nav-menu {
+        flex-direction: column;
+    }
+
+    .admin-nav-item {
+        width: 100%;
+        justify-content: center;
     }
 }
 
@@ -653,6 +698,66 @@ main {
 }
 
 /* Стили для админ панели */
+.admin-wrapper {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.admin-sidebar {
+    border-bottom: 2px solid var(--youdo-light-blue);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.admin-nav-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.admin-nav-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: #f8f9fa;
+    color: #333;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border: 2px solid transparent;
+}
+
+.admin-nav-item:hover {
+    background-color: var(--youdo-light-blue);
+    color: var(--youdo-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(30, 136, 229, 0.2);
+}
+
+.admin-nav-item.active {
+    background-color: var(--youdo-blue);
+    color: white;
+    border-color: var(--youdo-blue);
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+}
+
+.admin-nav-item.active:hover {
+    background-color: #1976d2;
+    color: white;
+}
+
+.admin-nav-item i {
+    font-size: 1.1rem;
+}
+
+.admin-content {
+    background-color: transparent;
+}
+
 .admin-container {
     padding: 2rem 0;
 }
@@ -674,8 +779,14 @@ main {
     font-size: 0.85rem;
 }
 
-.admin-container .table td {
+.admin-container .table td,
+.admin-wrapper .table td,
+.admin-wrapper .table tbody td {
     border-color: #e3f2fd;
+    vertical-align: middle !important;
+}
+
+.admin-wrapper .table tbody tr {
     vertical-align: middle;
 }
 

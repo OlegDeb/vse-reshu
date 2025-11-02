@@ -1,0 +1,98 @@
+<div class="container mt-4">
+  <div class="admin-wrapper">
+    <!-- Меню админки -->
+    <div class="admin-sidebar mb-4">
+      <nav class="admin-nav-menu">
+        <a href="/admin/articles" class="admin-nav-item {{#if (eq currentPath '/admin/articles')}}active{{/if}}">
+          <i class="bi bi-file-text me-2"></i>
+          <span>Статьи</span>
+        </a>
+        <a href="/admin/pages" class="admin-nav-item {{#if (eq currentPath '/admin/pages')}}active{{/if}}">
+          <i class="bi bi-file-earmark-text me-2"></i>
+          <span>Страницы</span>
+        </a>
+        <a href="/admin/categories" class="admin-nav-item {{#if (eq currentPath '/admin/categories')}}active{{/if}}">
+          <i class="bi bi-tags me-2"></i>
+          <span>Категории задач</span>
+        </a>
+        <a href="/admin/article-categories" class="admin-nav-item {{#if (eq currentPath '/admin/article-categories')}}active{{/if}}">
+          <i class="bi bi-collection me-2"></i>
+          <span>Категории статей</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="admin-content">
+      <h2 class="mb-4">Создать страницу</h2>
+
+      {{#if error}}
+      <div class="alert alert-danger">{{error}}</div>
+      {{/if}}
+
+      <form action="/admin/pages/create" method="POST">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title">Основная информация</h5>
+                
+                <div class="mb-3">
+                  <label for="title" class="form-label">Название страницы *</label>
+                  <input type="text" class="form-control" id="title" name="title" required value="{{formData.title}}">
+                  <small class="form-text text-muted">Максимум 200 символов</small>
+                </div>
+
+                <div class="mb-3">
+                  <label for="slug" class="form-label">URL (slug)</label>
+                  <input type="text" class="form-control" id="slug" name="slug" value="{{formData.slug}}">
+                  <small class="form-text text-muted">Если не указан, будет сгенерирован автоматически из названия</small>
+                </div>
+
+                <div class="mb-3">
+                  <label for="content" class="form-label">Содержимое страницы *</label>
+                  <textarea class="form-control" id="content" name="content" rows="15" required>{{formData.content}}</textarea>
+                  <small class="form-text text-muted">Текстовое поле без визуального редактора</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title">SEO мета-теги</h5>
+                
+                <div class="mb-3">
+                  <label for="metaTitle" class="form-label">Meta Title</label>
+                  <input type="text" class="form-control" id="metaTitle" name="metaTitle" value="{{formData.metaTitle}}">
+                  <small class="form-text text-muted">Максимум 60 символов. Если не заполнено, будет использовано название страницы</small>
+                </div>
+
+                <div class="mb-3">
+                  <label for="metaDescription" class="form-label">Meta Description</label>
+                  <textarea class="form-control" id="metaDescription" name="metaDescription" rows="2">{{formData.metaDescription}}</textarea>
+                  <small class="form-text text-muted">Максимум 160 символов. Краткое описание для поисковых систем</small>
+                </div>
+
+                <div class="mb-3">
+                  <label for="metaKeywords" class="form-label">Meta Keywords</label>
+                  <input type="text" class="form-control" id="metaKeywords" name="metaKeywords" value="{{formData.metaKeywords}}">
+                  <small class="form-text text-muted">Максимум 255 символов. Ключевые слова через запятую</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex">
+          <button type="submit" class="btn btn-create-category">
+            <i class="fas fa-save"></i> Создать страницу
+          </button>
+          <a href="/admin/pages" class="btn btn-outline-secondary">
+            <i class="fas fa-times"></i> Отмена
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+

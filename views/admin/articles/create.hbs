@@ -1,10 +1,36 @@
-<h2>Создать статью</h2>
+<div class="container mt-4">
+  <div class="admin-wrapper">
+    <!-- Меню админки -->
+    <div class="admin-sidebar mb-4">
+      <nav class="admin-nav-menu">
+        <a href="/admin/articles" class="admin-nav-item {{#if (eq currentPath '/admin/articles')}}active{{/if}}">
+          <i class="bi bi-file-text me-2"></i>
+          <span>Статьи</span>
+        </a>
+        <a href="/admin/pages" class="admin-nav-item {{#if (eq currentPath '/admin/pages')}}active{{/if}}">
+          <i class="bi bi-file-earmark-text me-2"></i>
+          <span>Страницы</span>
+        </a>
+        <a href="/admin/categories" class="admin-nav-item {{#if (eq currentPath '/admin/categories')}}active{{/if}}">
+          <i class="bi bi-tags me-2"></i>
+          <span>Категории задач</span>
+        </a>
+        <a href="/admin/article-categories" class="admin-nav-item {{#if (eq currentPath '/admin/article-categories')}}active{{/if}}">
+          <i class="bi bi-collection me-2"></i>
+          <span>Категории статей</span>
+        </a>
+      </nav>
+    </div>
 
-{{#if error}}
-<div class="alert alert-danger">{{error}}</div>
-{{/if}}
+    <!-- Основной контент -->
+    <div class="admin-content">
+      <h2 class="mb-4">Создать статью</h2>
 
-<form action="/admin/articles/create" method="POST" enctype="multipart/form-data">
+      {{#if error}}
+      <div class="alert alert-danger">{{error}}</div>
+      {{/if}}
+
+      <form action="/admin/articles/create" method="POST" enctype="multipart/form-data">
   <div class="row">
     <div class="col-md-8">
       <div class="card mb-3">
@@ -128,5 +154,8 @@ imageInput.addEventListener('change', function(e) {
   } else {
     imagePreview.style.display = 'none';
   }
-});
+  });
 </script>
+    </div>
+  </div>
+</div>

@@ -1,26 +1,42 @@
-<div class="admin-nav mb-4">
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/admin/articles">Статьи</a></li>
-      <li class="breadcrumb-item"><a href="/admin/categories">Категории задач</a></li>
-      <li class="breadcrumb-item"><a href="/admin/article-categories">Категории статей</a></li>
-    </ol>
-  </nav>
-</div>
+<div class="container mt-4">
+  <div class="admin-wrapper">
+    <!-- Меню админки -->
+    <div class="admin-sidebar mb-4">
+      <nav class="admin-nav-menu">
+        <a href="/admin/articles" class="admin-nav-item {{#if (eq currentPath '/admin/articles')}}active{{/if}}">
+          <i class="bi bi-file-text me-2"></i>
+          <span>Статьи</span>
+        </a>
+        <a href="/admin/pages" class="admin-nav-item {{#if (eq currentPath '/admin/pages')}}active{{/if}}">
+          <i class="bi bi-file-earmark-text me-2"></i>
+          <span>Страницы</span>
+        </a>
+        <a href="/admin/categories" class="admin-nav-item {{#if (eq currentPath '/admin/categories')}}active{{/if}}">
+          <i class="bi bi-tags me-2"></i>
+          <span>Категории задач</span>
+        </a>
+        <a href="/admin/article-categories" class="admin-nav-item {{#if (eq currentPath '/admin/article-categories')}}active{{/if}}">
+          <i class="bi bi-collection me-2"></i>
+          <span>Категории статей</span>
+        </a>
+      </nav>
+    </div>
 
-<div class="d-flex justify-content-between align-items-center mb-4 admin-container">
-  <div>
-    <h2 class="mb-0">Категории задач</h2>
-    <p class="text-muted mb-0">Выберите тип категории для просмотра услуг</p>
-  </div>
-  <a href="/admin/categories/create" class="btn btn-create-category btn-lg">
-    <i class="fas fa-plus-circle me-2"></i>
-    Создать категорию
-  </a>
-</div>
+    <!-- Основной контент -->
+    <div class="admin-content">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-0">Категории задач</h2>
+          <p class="text-muted mb-0">Выберите тип категории для просмотра услуг</p>
+        </div>
+        <a href="/admin/categories/create" class="btn btn-create-category btn-lg">
+          <i class="fas fa-plus-circle me-2"></i>
+          Создать категорию
+        </a>
+      </div>
 
 {{#if selectedType}}
-<div class="d-flex justify-content-between align-items-center mb-3 admin-container">
+<div class="d-flex justify-content-between align-items-center mb-3">
   <h3 class="mb-0"><i class="fas fa-list"></i> Категории типа: {{selectedType}}</h3>
   <div>
     <a href="/admin/categories/create" class="btn btn-create-category me-2">
@@ -56,14 +72,16 @@
         <td><small>{{formatDate this.createdAt}}</small></td>
         <td><small>{{formatDate this.updatedAt}}</small></td>
         <td>
-          <a href="/admin/categories/{{this._id}}/edit" class="btn btn-outline-primary btn-sm">
-            <i class="fas fa-edit"></i> Редактировать
-          </a>
-          <form action="/admin/categories/{{this._id}}/delete" method="POST" style="display: inline;" class="ms-1">
-            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Удалить категорию?')">
-              <i class="fas fa-trash"></i> Удалить
-            </button>
-          </form>
+          <div class="d-flex gap-2" role="group">
+            <a href="/admin/categories/{{this._id}}/edit" class="btn btn-outline-primary btn-sm" title="Редактировать">
+              <i class="fas fa-edit"></i>
+            </a>
+            <form action="/admin/categories/{{this._id}}/delete" method="POST" style="display: inline;">
+              <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Удалить категорию?')" title="Удалить">
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
+          </div>
         </td>
       </tr>
       {{/each}}
@@ -102,3 +120,6 @@
   </div>
   {{/if}}
 {{/if}}
+    </div>
+  </div>
+</div>

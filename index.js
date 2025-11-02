@@ -14,6 +14,7 @@ import taskRoutes from './routes/tasks.js';
 import messageRoutes from './routes/messages.js';
 import publicProfileRoutes from './routes/publicProfile.js';
 import articlesRoutes from './routes/articles.js';
+import pagesRoutes from './routes/pages.js';
 import User from './models/User.js';
 import Category, { CATEGORY_TYPES } from './models/Category.js';
 
@@ -134,6 +135,10 @@ app.engine('hbs', engine({
     toString: (val) => {
       if (val && val.toString) return val.toString();
       return String(val || '');
+    },
+    contains: (str, substring) => {
+      if (!str || !substring) return false;
+      return String(str).includes(String(substring));
     }
   },
   runtimeOptions: {
@@ -266,6 +271,7 @@ app.use('/', authRoutes);
 app.use('/', publicProfileRoutes);
 app.use('/', messageRoutes);
 app.use('/', articlesRoutes);
+app.use('/', pagesRoutes);
 app.use('/admin', adminRoutes);
 app.use('/tasks', taskRoutes);
 

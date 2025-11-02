@@ -1,23 +1,39 @@
-<div class="admin-nav mb-4">
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/admin/articles">Статьи</a></li>
-      <li class="breadcrumb-item"><a href="/admin/categories">Категории задач</a></li>
-      <li class="breadcrumb-item"><a href="/admin/article-categories">Категории статей</a></li>
-    </ol>
-  </nav>
-</div>
+<div class="container mt-4">
+  <div class="admin-wrapper">
+    <!-- Меню админки -->
+    <div class="admin-sidebar mb-4">
+      <nav class="admin-nav-menu">
+        <a href="/admin/articles" class="admin-nav-item {{#if (eq currentPath '/admin/articles')}}active{{/if}}">
+          <i class="bi bi-file-text me-2"></i>
+          <span>Статьи</span>
+        </a>
+        <a href="/admin/pages" class="admin-nav-item {{#if (eq currentPath '/admin/pages')}}active{{/if}}">
+          <i class="bi bi-file-earmark-text me-2"></i>
+          <span>Страницы</span>
+        </a>
+        <a href="/admin/categories" class="admin-nav-item {{#if (eq currentPath '/admin/categories')}}active{{/if}}">
+          <i class="bi bi-tags me-2"></i>
+          <span>Категории задач</span>
+        </a>
+        <a href="/admin/article-categories" class="admin-nav-item {{#if (eq currentPath '/admin/article-categories')}}active{{/if}}">
+          <i class="bi bi-collection me-2"></i>
+          <span>Категории статей</span>
+        </a>
+      </nav>
+    </div>
 
-<div class="d-flex justify-content-between align-items-center mb-4 admin-container">
-  <div>
-    <h2 class="mb-0">Управление статьями</h2>
-    <p class="text-muted mb-0">Создание, редактирование и удаление статей</p>
-  </div>
-  <a href="/admin/articles/create" class="btn btn-create-category btn-lg">
-    <i class="fas fa-plus-circle me-2"></i>
-    Создать статью
-  </a>
-</div>
+    <!-- Основной контент -->
+    <div class="admin-content">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-0">Управление статьями</h2>
+          <p class="text-muted mb-0">Создание, редактирование и удаление статей</p>
+        </div>
+        <a href="/admin/articles/create" class="btn btn-create-category btn-lg">
+          <i class="fas fa-plus-circle me-2"></i>
+          Создать статью
+        </a>
+      </div>
 
 <!-- Фильтры -->
 <div class="card mb-4">
@@ -92,22 +108,22 @@
         <td><span class="badge bg-info">{{this.viewsCount}}</span></td>
         <td><small>{{formatDate this.updatedAt}}</small></td>
         <td>
-          <div class="btn-group" role="group">
-            <a href="/admin/articles/{{this._id}}/edit" class="btn btn-outline-primary btn-sm">
-              <i class="fas fa-edit"></i> Редактировать
+          <div class="d-flex gap-2" role="group">
+            <a href="/admin/articles/{{this._id}}/edit" class="btn btn-outline-primary btn-sm" title="Редактировать">
+              <i class="fas fa-edit"></i>
             </a>
             <form action="/admin/articles/{{this._id}}/toggle-status" method="POST" style="display: inline;">
-              <button type="submit" class="btn btn-outline-secondary btn-sm">
+              <button type="submit" class="btn btn-outline-secondary btn-sm" title="{{#if (eq this.status "published")}}Снять с публикации{{else}}Опубликовать{{/if}}">
                 {{#if (eq this.status "published")}}
-                <i class="fas fa-eye-slash"></i> Снять
+                <i class="fas fa-eye-slash"></i>
                 {{else}}
-                <i class="fas fa-eye"></i> Опубликовать
+                <i class="fas fa-eye"></i>
                 {{/if}}
               </button>
             </form>
             <form action="/admin/articles/{{this._id}}/delete" method="POST" style="display: inline;">
-              <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Удалить статью?')">
-                <i class="fas fa-trash"></i> Удалить
+              <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Удалить статью?')" title="Удалить">
+                <i class="fas fa-trash"></i>
               </button>
             </form>
           </div>
@@ -161,3 +177,6 @@
   </a>
 </div>
 {{/if}}
+    </div>
+  </div>
+</div>

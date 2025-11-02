@@ -54,23 +54,29 @@
                     <li class="nav-item">
                         <a class="nav-link {{#if (eq currentPath '/articles')}}active{{/if}}" href="/articles">Статьи</a>
                     </li>
-                    {{#if isAdmin}}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/articles">Админка</a>
-                        </li>
-                    {{/if}}
                 </ul>
                 <div class="d-flex align-items-center">
                     {{#if user}}
-                        <a href="/profile" class="nav-link d-flex align-items-center me-3">
-                            {{#if user.avatar}}
-                                <img src="{{user.avatar}}" alt="Аватар" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
-                            {{else}}
-                                <i class="bi bi-person-circle me-1"></i>
-                            {{/if}}
-                            <span>Привет, {{#if user.firstName}}{{user.firstName}}{{else}}{{user.username}}{{/if}}!</span>
-                        </a>
-                        <a href="/logout" class="nav-link me-3">Выход</a>
+                        <div class="dropdown">
+                            <a href="#" class="nav-link d-flex align-items-center dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{#if user.avatar}}
+                                    <img src="{{user.avatar}}" alt="Аватар" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                                {{else}}
+                                    <i class="bi bi-person-circle me-1" style="font-size: 1.5rem;"></i>
+                                {{/if}}
+                                <span>Привет, {{#if user.firstName}}{{user.firstName}}{{else}}{{user.username}}{{/if}}!</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i>Профиль</a></li>
+                                <li><a class="dropdown-item" href="/tasks/create"><i class="bi bi-plus-circle me-2"></i>Разместить задание</a></li>
+                                {{#if isAdmin}}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/admin/articles"><i class="bi bi-shield-check me-2"></i>Админка</a></li>
+                                {{/if}}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Выход</a></li>
+                            </ul>
+                        </div>
                     {{else}}
                         <a href="/login" class="nav-link me-3">Войти</a>
                         <a href="/register" class="btn btn-primary">Регистрация</a>
@@ -81,16 +87,24 @@
     </nav>
 
     {{#unless (eq currentPath '/')}}
+    {{#unless (contains currentPath '/admin')}}
     <!-- Заголовок страницы с хлебными крошками -->
     <section class="page-header">
         <div class="container">
             {{#unless article}}
-            <div>
+            {{#unless page}}
+            <div class="page-header-content">
                 <h1>{{title}}</h1>
             </div>
             {{/unless}}
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
+            {{#if page}}
+            <div class="page-header-content">
+                <h1>{{page.title}}</h1>
+            </div>
+            {{/if}}
+            {{/unless}}
+            <nav aria-label="breadcrumb" class="page-header-breadcrumb">
+                <ol class="breadcrumb justify-content-center">
                     <li class="breadcrumb-item"><a href="/">Главная</a></li>
                     {{#if (eq currentPath '/tasks')}}
                         <li class="breadcrumb-item active">Задания</li>
@@ -114,6 +128,8 @@
                             <li class="breadcrumb-item"><a href="/articles?category={{currentCategory.slug}}">{{currentCategory.name}}</a></li>
                         {{/if}}
                         <li class="breadcrumb-item active">{{article.title}}</li>
+                    {{else if page}}
+                        <li class="breadcrumb-item active">{{page.title}}</li>
                     {{else}}
                         {{#if breadcrumbs}}
                             {{#each breadcrumbs}}
@@ -131,6 +147,7 @@
             </nav>
         </div>
     </section>
+    {{/unless}}
     {{/unless}}
 
     <main>
