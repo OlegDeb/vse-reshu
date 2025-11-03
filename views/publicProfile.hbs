@@ -6,8 +6,8 @@
                 <div class="card-body">
                     <!-- Аватар -->
                     <div class="text-center mb-4">
-                        {{#if user.avatar}}
-                            <img src="{{user.avatar}}" alt="Аватар" class="rounded mb-3" style="width: 200px; height: 200px; object-fit: cover; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        {{#if profileUser.avatar}}
+                            <img src="{{profileUser.avatar}}" alt="Аватар" class="rounded mb-3" style="width: 200px; height: 200px; object-fit: cover; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         {{else}}
                             <div class="rounded d-flex align-items-center justify-content-center mb-3" style="width: 200px; height: 200px; background-color: var(--youdo-light-blue); box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto;">
                                 <i class="bi bi-person-fill" style="font-size: 100px; color: var(--youdo-blue);"></i>
@@ -16,27 +16,27 @@
                     </div>
                     
                     <!-- Основная информация (без контактных данных) -->
-                    {{#if user.firstName}}
-                    <p><strong>Имя:</strong> {{user.firstName}}</p>
+                    {{#if profileUser.firstName}}
+                    <p><strong>Имя:</strong> {{profileUser.firstName}}</p>
                     {{/if}}
-                    {{#if user.lastName}}
-                    <p><strong>Фамилия:</strong> {{user.lastName}}</p>
+                    {{#if profileUser.lastName}}
+                    <p><strong>Фамилия:</strong> {{profileUser.lastName}}</p>
                     {{/if}}
-                    <p><strong>Логин:</strong> {{user.username}}</p>
+                    <p><strong>Логин:</strong> {{profileUser.username}}</p>
                     
                     <hr>
                     
                     <!-- Дополнительная информация (без контактных данных) -->
-                    {{#if user.dateOfBirth}}
-                    <p><strong>Возраст:</strong> {{calculateAge user.dateOfBirth}}</p>
+                    {{#if profileUser.dateOfBirth}}
+                    <p><strong>Возраст:</strong> {{calculateAge profileUser.dateOfBirth}}</p>
                     {{/if}}
 
-                    {{#if user.gender}}
-                    <p><strong>Пол:</strong> {{user.gender}}</p>
+                    {{#if profileUser.gender}}
+                    <p><strong>Пол:</strong> {{profileUser.gender}}</p>
                     {{/if}}
 
                     <p><strong>Дата регистрации:</strong><br>
-                        <small class="text-muted">{{user.createdAtFormatted}}</small>
+                        <small class="text-muted">{{profileUser.createdAtFormatted}}</small>
                     </p>
                 </div>
             </div>
@@ -48,9 +48,9 @@
             <div class="card task-card mb-4">
                 <div class="card-body">
                     <h4 class="mb-4"><i class="bi bi-info-circle me-2"></i>О себе</h4>
-                    {{#if user.bio}}
+                    {{#if profileUser.bio}}
                         <div class="mb-4">
-                            <p class="text-muted" style="white-space: pre-wrap; line-height: 1.6;">{{user.bio}}</p>
+                            <p class="text-muted" style="white-space: pre-wrap; line-height: 1.6;">{{profileUser.bio}}</p>
                         </div>
                     {{else}}
                         <p class="text-muted mb-4">{{#if isOwner}}Информация о себе не указана. <a href="/profile/edit">Добавить информацию о себе</a>{{else}}Информация о себе не указана.{{/if}}</p>

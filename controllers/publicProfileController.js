@@ -75,7 +75,7 @@ export const getPublicProfile = async (req, res) => {
 
     res.render('publicProfile', {
       title: `Профиль ${user.firstName || user.username}`,
-      user: publicUserData,
+      profileUser: publicUserData,
       stats: stats,
       isOwner: isOwner,
       currentUserId: req.session.userId || null
