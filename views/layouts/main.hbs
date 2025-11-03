@@ -49,10 +49,10 @@
                         <a class="nav-link {{#if (eq currentPath '/')}}active{{/if}}" href="/">Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{#if (eq currentPath '/tasks')}}active{{/if}}" href="/tasks">Задания</a>
+                        <a class="nav-link {{#if (or (eq currentPath '/tasks') (contains currentPath '/tasks/'))}}active{{/if}}" href="/tasks">Задания</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{#if (eq currentPath '/articles')}}active{{/if}}" href="/articles">Статьи</a>
+                        <a class="nav-link {{#if (or (eq currentPath '/articles') (contains currentPath '/articles/'))}}active{{/if}}" href="/articles">Статьи</a>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center">
@@ -94,7 +94,23 @@
             {{#unless article}}
             {{#unless page}}
             <div class="page-header-content">
-                <h1>{{title}}</h1>
+                <h1>
+                    {{#if (contains currentPath '/tasks/category/')}}
+                        {{#if currentCategory}}
+                            <i class="{{currentCategory.icon}} me-2"></i>{{currentCategory.name}}
+                        {{else}}
+                            {{title}}
+                        {{/if}}
+                    {{else if (eq currentPath '/tasks')}}
+                        {{#if currentCategory}}
+                            <i class="{{currentCategory.icon}} me-2"></i>{{currentCategory.name}}
+                        {{else}}
+                            {{title}}
+                        {{/if}}
+                    {{else}}
+                        {{title}}
+                    {{/if}}
+                </h1>
             </div>
             {{/unless}}
             {{#if page}}
@@ -106,16 +122,26 @@
             <nav aria-label="breadcrumb" class="page-header-breadcrumb">
                 <ol class="breadcrumb justify-content-center">
                     <li class="breadcrumb-item"><a href="/">Главная</a></li>
-                    {{#if (eq currentPath '/tasks')}}
+                    {{#if (contains currentPath '/tasks/category/')}}
+                        <li class="breadcrumb-item"><a href="/tasks">Задания</a></li>
+                        {{#if currentCategory}}
+                            <li class="breadcrumb-item active">{{currentCategory.name}}</li>
+                        {{else}}
+                            <li class="breadcrumb-item active">Категория</li>
+                        {{/if}}
+                    {{else if (eq currentPath '/tasks')}}
                         <li class="breadcrumb-item active">Задания</li>
+                    {{else if (contains currentPath '/tasks/')}}
+                        <li class="breadcrumb-item"><a href="/tasks">Задания</a></li>
+                        {{#if (eq currentPath '/tasks/create')}}
+                            <li class="breadcrumb-item active">Создание задания</li>
+                        {{else if (eq currentPath '/tasks/my-tasks')}}
+                            <li class="breadcrumb-item active">Мои задания</li>
+                        {{else}}
+                            <li class="breadcrumb-item active">Просмотр задачи</li>
+                        {{/if}}
                     {{else if (eq currentPath '/articles')}}
                         <li class="breadcrumb-item active">Статьи</li>
-                    {{else if (eq currentPath '/tasks/create')}}
-                        <li class="breadcrumb-item"><a href="/tasks">Задания</a></li>
-                        <li class="breadcrumb-item active">Создание задания</li>
-                    {{else if (eq currentPath '/tasks/my-tasks')}}
-                        <li class="breadcrumb-item"><a href="/tasks">Задания</a></li>
-                        <li class="breadcrumb-item active">Мои задания</li>
                     {{else if (eq currentPath '/profile')}}
                         <li class="breadcrumb-item active">Профиль</li>
                     {{else if (eq currentPath '/login')}}

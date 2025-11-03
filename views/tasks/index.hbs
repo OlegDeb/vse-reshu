@@ -76,7 +76,7 @@
                 <ul class="pagination justify-content-center">
                     {{#if hasPrev}}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{subtract currentPage 1}}{{#if currentCategory}}&category={{currentCategory}}{{/if}}">Назад</a>
+                            <a class="page-link" href="{{#if currentCategory}}/tasks/category/{{currentCategory.slug}}{{else}}/tasks{{/if}}?page={{subtract currentPage 1}}">Назад</a>
                         </li>
                     {{else}}
                         <li class="page-item disabled">
@@ -86,13 +86,13 @@
 
                     {{#each pages}}
                         <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
-                            <a class="page-link" href="?page={{this}}{{#if ../currentCategory}}&category={{../currentCategory}}{{/if}}">{{this}}</a>
+                            <a class="page-link" href="{{#if ../currentCategory}}/tasks/category/{{../currentCategory.slug}}{{else}}/tasks{{/if}}?page={{this}}">{{this}}</a>
                         </li>
                     {{/each}}
 
                     {{#if hasNext}}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{add currentPage 1}}{{#if currentCategory}}&category={{currentCategory}}{{/if}}">Вперед</a>
+                            <a class="page-link" href="{{#if currentCategory}}/tasks/category/{{currentCategory.slug}}{{else}}/tasks{{/if}}?page={{add currentPage 1}}">Вперед</a>
                         </li>
                     {{else}}
                         <li class="page-item disabled">
@@ -156,8 +156,8 @@
                                     <ul class="list-group list-group-flush">
                                         {{#each ../this.value}}
                                         <li class="list-group-item">
-                                            <a href="/tasks?category={{this._id}}" 
-                                               class="text-decoration-none {{#if (eq ../../../../currentCategory (toString this._id))}}fw-bold text-primary{{/if}}">
+                                            <a href="/tasks/category/{{this.slug}}" 
+                                               class="text-decoration-none {{#if (eq ../../../../currentCategory._id this._id)}}fw-bold text-primary{{/if}}">
                                                 <i class="{{this.icon}} me-2"></i>{{this.name}}
                                             </a>
                                         </li>

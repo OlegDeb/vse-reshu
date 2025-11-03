@@ -11,66 +11,125 @@ export const requireAuth = (req, res, next) => {
   next();
 };
 
-// Получить список задач
+// Вспомогательная функция для получения задач с категорией
+const getTasksWithCategory = async (categorySlug, page = 1) => {
+  const limit = 10;
+  const skip = (page - 1) * limit;
+  
+  // Формируем запрос с фильтром по категории
+  const query = { status: 'open' };
+  let categoryFilter = null;
+  if (categorySlug) {
+    categoryFilter = await Category.findOne({ slug: categorySlug });
+    if (categoryFilter) {
+      query.category = categoryFilter._id;
+    } else {
+      // Если категория не найдена, возвращаем null
+      return null;
+    }
+  }
+
+  const tasks = await Task.find(query)
+    .populate('author', 'firstName lastName username avatar')
+    .populate('category', 'name icon slug type')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const totalTasks = await Task.countDocuments(query);
+  const totalPages = Math.ceil(totalTasks / limit);
+
+  // Форматируем даты для отображения
+  tasks.forEach(task => {
+    task.createdAtFormatted = task.createdAt.toLocaleDateString('ru-RU');
+  });
+
+  // Создаем массив страниц для пагинации
+  const pages = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pages.push(i);
+  }
+
+  // Получаем все категории, сгруппированные по типам
+  const allCategories = await Category.find().sort({ type: 1, name: 1 });
+  const categoriesByType = {};
+  allCategories.forEach(category => {
+    if (!categoriesByType[category.type]) {
+      categoriesByType[category.type] = [];
+    }
+    categoriesByType[category.type].push(category);
+  });
+
+  return {
+    tasks,
+    currentPage: page,
+    totalPages,
+    pages,
+    hasNext: page < totalPages,
+    hasPrev: page > 1,
+    categoriesByType,
+    categoryFilter
+  };
+};
+
+// Получить список задач (для обратной совместимости с query параметром)
 export const getTasks = async (req, res) => {
   try {
     console.log('getTasks called');
     const page = parseInt(req.query.page) || 1;
-    const limit = 10;
-    const skip = (page - 1) * limit;
-    const categoryFilter = req.query.category;
+    const categorySlug = req.query.category;
 
-    // Формируем запрос с фильтром по категории
-    const query = { status: 'open' };
-    if (categoryFilter) {
-      query.category = categoryFilter;
+    const result = await getTasksWithCategory(categorySlug, page);
+    
+    if (!result) {
+      return res.render('error', { message: 'Категория не найдена' });
     }
-
-    const tasks = await Task.find(query)
-      .populate('author', 'firstName lastName username avatar')
-      .populate('category', 'name icon slug type')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    const totalTasks = await Task.countDocuments(query);
-    const totalPages = Math.ceil(totalTasks / limit);
-
-    // Форматируем даты для отображения
-    tasks.forEach(task => {
-      task.createdAtFormatted = task.createdAt.toLocaleDateString('ru-RU');
-    });
-
-    // Создаем массив страниц для пагинации
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
-    }
-
-    // Получаем все категории, сгруппированные по типам
-    const allCategories = await Category.find().sort({ type: 1, name: 1 });
-    const categoriesByType = {};
-    allCategories.forEach(category => {
-      if (!categoriesByType[category.type]) {
-        categoriesByType[category.type] = [];
-      }
-      categoriesByType[category.type].push(category);
-    });
 
     res.render('tasks/index', {
-      tasks,
-      currentPage: page,
-      totalPages,
-      pages,
-      hasNext: page < totalPages,
-      hasPrev: page > 1,
+      tasks: result.tasks,
+      currentPage: result.currentPage,
+      totalPages: result.totalPages,
+      pages: result.pages,
+      hasNext: result.hasNext,
+      hasPrev: result.hasPrev,
       title: 'Задания',
-      categoriesByType,
+      categoriesByType: result.categoriesByType,
       categoryTypes: CATEGORY_TYPES,
-      currentCategory: categoryFilter
+      currentCategory: result.categoryFilter
     });
+
   } catch (error) {
     console.error('Error loading tasks:', error);
+    res.render('error', { message: 'Ошибка загрузки задач' });
+  }
+};
+
+// Получить список задач по категории (ЧПУ)
+export const getTasksByCategory = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const categorySlug = req.params.slug;
+
+    const result = await getTasksWithCategory(categorySlug, page);
+    
+    if (!result) {
+      return res.render('error', { message: 'Категория не найдена' });
+    }
+
+    res.render('tasks/index', {
+      tasks: result.tasks,
+      currentPage: result.currentPage,
+      totalPages: result.totalPages,
+      pages: result.pages,
+      hasNext: result.hasNext,
+      hasPrev: result.hasPrev,
+      title: result.categoryFilter ? result.categoryFilter.name : 'Задания',
+      categoriesByType: result.categoriesByType,
+      categoryTypes: CATEGORY_TYPES,
+      currentCategory: result.categoryFilter
+    });
+  } catch (error) {
+    console.error('Error loading tasks by category:', error);
     res.render('error', { message: 'Ошибка загрузки задач' });
   }
 };

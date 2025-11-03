@@ -1,289 +1,353 @@
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>{{task.title}}</h1>
-        {{#if isAuthor}}
-            <div class="d-flex gap-2">
-                {{#if (eq task.status 'open')}}
-                    <a href="/tasks/{{task._id}}/edit" class="btn btn-warning">
-                        <i class="bi bi-pencil me-1"></i>Редактировать
-                    </a>
-                {{/if}}
-                {{#if (eq task.status 'in_progress')}}
-                    <form action="/tasks/{{task._id}}/close" method="POST" class="d-inline">
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-check-circle me-1"></i>Закрыть задачу
-                        </button>
-                    </form>
-                {{/if}}
-            </div>
-        {{/if}}
-    </div>
-
+<div class="container mt-4 mb-4">
     <div class="row">
-        <div class="col-md-8">
-            <div class="card task-card mb-4">
-                <div class="card-body">
-                    <div class="mb-3">
-                        <span class="task-category">
-                            <i class="{{task.category.icon}} me-1"></i>{{task.category.name}}
-                        </span>
-                        <span class="badge ms-2 {{#if (eq task.status 'open')}}bg-success{{else if (eq task.status 'in_progress')}}bg-warning{{else}}bg-secondary{{/if}}">
-                            {{#if (eq task.status 'open')}}Открыта{{else if (eq task.status 'in_progress')}}В работе{{else}}Закрыта{{/if}}
-                        </span>
-                    </div>
-                    <p class="card-text">{{task.description}}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="task-location">
-                            <i class="bi bi-person-circle me-1"></i>
-                            Автор:
-                            <a href="/users/{{task.author.username}}" target="_blank" class="text-decoration-none">
-                                {{#if task.author.firstName}}
-                                    {{task.author.firstName}} {{task.author.lastName}}
-                                {{else}}
-                                    {{task.author.username}}
-                                {{/if}}
-                            </a>
+        <!-- Основной контент в белом блоке -->
+        <div class="col-lg-8">
+            <div class="card task-card">
+                <div class="card-body p-4">
+                    <!-- Заголовок и действия -->
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 pb-4 border-bottom gap-3">
+                        <div class="flex-grow-1">
+                            <h1 class="mb-2" style="color: #1565c0; font-size: 2rem;">{{task.title}}</h1>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="task-category">
+                                    <i class="{{task.category.icon}} me-1"></i>{{task.category.name}}
+                                </span>
+                                <span class="badge {{#if (eq task.status 'open')}}bg-success{{else if (eq task.status 'in_progress')}}bg-warning{{else}}bg-secondary{{/if}}">
+                                    {{#if (eq task.status 'open')}}Открыта{{else if (eq task.status 'in_progress')}}В работе{{else}}Закрыта{{/if}}
+                                </span>
+                            </div>
                         </div>
-                        <div class="task-date">{{task.createdAtFormatted}}</div>
-                    </div>
-                </div>
-            </div>
-
-            <h3 class="mt-4 mb-3">
-                <i class="bi bi-chat-dots me-2"></i>Отклики 
-                {{#if responses.length}}
-                    <span class="badge bg-primary">{{responses.length}}</span>
-                {{/if}}
-            </h3>
-
-            {{#if user}}
-                {{#if (eq task.status 'open')}}
-                    {{#unless isAuthor}}
-                        {{#unless hasResponded}}
-                            <div class="card task-card mb-4">
-                                <div class="card-header bg-light">
-                                    <i class="bi bi-pencil-square me-2"></i>Оставить отклик
-                                </div>
-                                <div class="card-body">
-                                    <form action="/tasks/{{task._id}}/response" method="POST">
-                                        <div class="mb-3">
-                                            <label for="message" class="form-label">Ваше предложение</label>
-                                            <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="bi bi-send me-1"></i>Отправить отклик
+                        {{#if isAuthor}}
+                            <div class="d-flex gap-2">
+                                {{#if (eq task.status 'open')}}
+                                    <a href="/tasks/{{task._id}}/edit" class="btn btn-outline-warning">
+                                        <i class="bi bi-pencil me-1"></i>Редактировать
+                                    </a>
+                                {{/if}}
+                                {{#if (eq task.status 'in_progress')}}
+                                    <form action="/tasks/{{task._id}}/close" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="bi bi-check-circle me-1"></i>Закрыть задачу
                                         </button>
                                     </form>
+                                {{/if}}
+                            </div>
+                        {{/if}}
+                    </div>
+
+                    <!-- Описание задачи -->
+                    <div class="mb-4 pb-4 border-bottom">
+                        <div class="task-description-full">
+                            {{task.description}}
+                        </div>
+                    </div>
+
+                    <!-- Информация о задаче -->
+                    <div class="mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-person-circle me-2" style="font-size: 1.5rem; color: var(--youdo-blue);"></i>
+                                <div>
+                                    <small class="text-muted d-block">Заказчик</small>
+                                    <a href="/users/{{task.author.username}}" target="_blank" class="text-decoration-none fw-bold">
+                                        {{#if task.author.firstName}}
+                                            {{task.author.firstName}} {{task.author.lastName}}
+                                        {{else}}
+                                            {{task.author.username}}
+                                        {{/if}}
+                                    </a>
                                 </div>
                             </div>
-                        {{/unless}}
-                    {{/unless}}
-                {{/if}}
-            {{else}}
-                <div class="alert alert-info mb-4">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <strong>Хотите ответить на задачу?</strong>
-                    <a href="/login" class="alert-link">Войдите в аккаунт</a> или
-                    <a href="/register" class="alert-link">зарегистрируйтесь</a>, чтобы оставить отклик.
-                </div>
-            {{/if}}
-
-            {{#each responses}}
-                {{#if (or ../isAuthor isOwnResponse)}}
-                <div class="card task-card mb-3 {{#if (eq status 'accepted')}}border-success border-2{{else if (eq status 'rejected')}}border-danger border-2{{/if}}">
-                    <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <strong>
-              {{#if responder.name}}
-                <a href="/users/{{responder.username}}" target="_blank" class="text-decoration-none">
-                  {{responder.name}}{{#if (eq responder._id ../currentUserId)}} (Вы){{/if}}
-                </a>
-              {{else}}
-                <a href="/users/{{responder.username}}" target="_blank" class="text-decoration-none">
-                  {{responder.username}}{{#if (eq responder._id ../currentUserId)}} (Вы){{/if}}
-                </a>
-              {{/if}}
-            </strong>
-            <div>
-              {{#if (eq status 'accepted')}}
-                <span class="badge bg-success">Принят</span>
-              {{else if (eq status 'rejected')}}
-                <span class="badge bg-danger">Отклонен</span>
-              {{else}}
-                <span class="badge bg-secondary">Ожидает</span>
-              {{/if}}
-            </div>
-          </div>
-          <div id="response-display-{{_id}}">
-            <p class="mb-2">{{message}}</p>
-            <small class="text-muted">{{createdAtFormatted}}</small>
-          </div>
-
-          <div id="response-edit-{{_id}}" style="display: none;">
-            <form action="/tasks/{{../task._id}}/response/{{_id}}/edit" method="POST" class="mt-2">
-              <div class="mb-3">
-                <textarea class="form-control" name="message" rows="3" required>{{message}}</textarea>
-              </div>
-              <button type="submit" class="btn btn-success btn-sm">Сохранить</button>
-              <button type="button" class="btn btn-secondary btn-sm ms-2" onclick="cancelEdit('{{_id}}')">Отмена</button>
-            </form>
-          </div>
-
-          {{#if ../isAuthor}}
-            {{#if (eq status 'pending')}}
-              <div class="mt-2">
-                <form action="/tasks/{{../task._id}}/response/{{_id}}/accept" method="POST" class="d-inline">
-                  <button type="submit" class="btn btn-success btn-sm">Принять</button>
-                </form>
-                <button type="button" class="btn btn-danger btn-sm ms-2" onclick="rejectResponse('{{_id}}')">Отклонить</button>
-              </div>
-            {{/if}}
-          {{else if isOwnResponse}}
-            {{#if (eq status 'pending')}}
-              <div class="mt-2" id="response-actions-{{_id}}">
-                <button type="button" class="btn btn-primary btn-sm" onclick="editResponse('{{_id}}')">Редактировать</button>
-                <button type="button" class="btn btn-danger btn-sm ms-2" onclick="deleteResponse('{{_id}}')">Удалить</button>
-              </div>
-            {{/if}}
-          {{/if}}
-        </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-calendar me-2" style="font-size: 1.5rem; color: var(--youdo-blue);"></i>
+                                <div>
+                                    <small class="text-muted d-block">Дата создания</small>
+                                    <span class="fw-bold">{{task.createdAtFormatted}}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                {{/if}}
-            {{else}}
-                <div class="text-center text-muted mt-4">
-                    <p><i class="bi bi-chat-dots me-2"></i>Пока нет откликов</p>
-                </div>
-            {{/each}}
-
-    <!-- Переписка между участниками задачи -->
-    {{#if (and user (or (eq task.status 'in_progress') (eq task.status 'closed')))}}
-      {{#if (or isAuthor hasResponded)}}
-        <div class="card mt-4">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Переписка
-              {{#if (eq task.status 'closed')}}
-                <span class="badge bg-secondary ms-2">Задача закрыта</span>
-              {{/if}}
-            </h5>
-            <div class="d-flex align-items-center gap-2">
-              <button type="button" class="btn btn-sm btn-outline-primary" onclick="loadMessages()">
-                <i class="fas fa-sync-alt"></i> Обновить
-              </button>
-              <small class="text-muted">
-                {{#if isAuthor}}
-                  Общение с исполнителем
-                {{else}}
-                  Общение с заказчиком
-                {{/if}}
-                {{#if (eq task.status 'closed')}}
-                  <span class="ms-1 text-warning">(задача закрыта)</span>
-                {{/if}}
-              </small>
             </div>
-          </div>
-          <div class="card-body">
-            {{#if (eq task.status 'closed')}}
-              <div class="alert alert-warning text-center mb-3">
-                <i class="fas fa-info-circle me-2"></i>
-                <strong>Задача закрыта</strong> - переписка доступна для обсуждения результатов работы
-              </div>
-            {{/if}}
-            <div id="messages-container" style="height: 300px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 15px; margin-bottom: 15px;">
-              <div class="text-center text-muted">
-                <div class="spinner-border spinner-border-sm" role="status">
-                  <span class="visually-hidden">Загрузка сообщений...</span>
                 </div>
-                <div>Загрузка сообщений...</div>
-              </div>
             </div>
 
-            <form id="message-form">
-              <div class="input-group">
-                <textarea class="form-control" id="message-input" name="message" rows="2" placeholder="Напишите сообщение..." maxlength="1000" required></textarea>
-                <button class="btn btn-primary" type="submit" id="send-button">
-                  <i class="fas fa-paper-plane"></i> Отправить
-                </button>
-              </div>
-              <div class="form-text">Максимум 1000 символов</div>
-            </form>
-          </div>
-        </div>
-      {{/if}}
-    {{/if}}
-  </div>
+                    <!-- Отклики в отдельном белом блоке -->
+                    <div class="mt-4">
+                        <div class="card task-card">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h3 class="mb-0">
+                                        <i class="bi bi-chat-dots me-2"></i>Отклики
+                                        {{#if responses.length}}
+                                            <span class="badge bg-primary">{{responses.length}}</span>
+                                        {{/if}}
+                                    </h3>
+                                </div>
 
+                                {{#if user}}
+                                    {{#if (eq task.status 'open')}}
+                                        {{#unless isAuthor}}
+                                            {{#unless hasResponded}}
+                                                <div class="mb-4 p-3 border border-primary rounded">
+                                                    <h5 class="mb-3 text-primary">
+                                                        <i class="bi bi-pencil-square me-2"></i>Оставить отклик
+                                                    </h5>
+                                                    <form action="/tasks/{{task._id}}/response" method="POST">
+                                                        <div class="mb-3">
+                                                            <label for="message" class="form-label fw-bold">Ваше предложение</label>
+                                                            <textarea class="form-control" id="message" name="message" rows="4" 
+                                                                      placeholder="Опишите, как вы будете выполнять эту задачу..." required></textarea>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">
+                                                            <i class="bi bi-send me-1"></i>Отправить отклик
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            {{/unless}}
+                                        {{/unless}}
+                                    {{/if}}
+                                {{else}}
+                                    <div class="alert alert-info mb-4">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        <strong>Хотите ответить на задачу?</strong>
+                                        <a href="/login" class="alert-link">Войдите в аккаунт</a> или
+                                        <a href="/register" class="alert-link">зарегистрируйтесь</a>, чтобы оставить отклик.
+                                    </div>
+                                {{/if}}
+
+                                <!-- Список откликов -->
+                                {{#if responses.length}}
+                                    {{#each responses}}
+                                        {{#if (or ../isAuthor isOwnResponse)}}
+                                        <div class="mb-3 p-3 rounded {{#if (eq status 'accepted')}}border border-success border-2 bg-light{{else if (eq status 'rejected')}}border border-secondary border-2 opacity-75{{else}}border{{/if}}">
+                                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                             style="width: 48px; height: 48px; background-color: var(--youdo-light-blue);">
+                                                            <i class="bi bi-person-fill" style="font-size: 24px; color: var(--youdo-blue);"></i>
+                                                        </div>
+                                                        <div>
+                                                            <strong class="d-block">
+                                                                {{#if responder.firstName}}
+                                                                    {{responder.firstName}} {{responder.lastName}}
+                                                                {{else}}
+                                                                    {{responder.username}}
+                                                                {{/if}}
+                                                                {{#if (eq responder._id ../currentUserId)}}
+                                                                    <span class="badge bg-info ms-2">Вы</span>
+                                                                {{/if}}
+                                                            </strong>
+                                                            <small class="text-muted">{{createdAtFormatted}}</small>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        {{#if (eq status 'accepted')}}
+                                                            <span class="badge bg-success">
+                                                                <i class="bi bi-check-circle me-1"></i>Принят
+                                                            </span>
+                                                        {{else if (eq status 'rejected')}}
+                                                            <span class="badge bg-secondary">Отклонен</span>
+                                                        {{else}}
+                                                            <span class="badge bg-warning">Ожидает</span>
+                                                        {{/if}}
+                                                    </div>
+                                                </div>
+
+                                                <div id="response-display-{{_id}}">
+                                                    <div class="p-3 bg-light rounded mb-3" style="border-left: 3px solid var(--youdo-blue);">
+                                                        <p class="mb-0" style="white-space: pre-wrap;">{{message}}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div id="response-edit-{{_id}}" style="display: none;">
+                                                    <form action="/tasks/{{../task._id}}/response/{{_id}}/edit" method="POST" class="mt-2">
+                                                        <div class="mb-3">
+                                                            <textarea class="form-control" name="message" rows="4" required>{{message}}</textarea>
+                                                        </div>
+                                                        <div class="d-flex gap-2">
+                                                            <button type="submit" class="btn btn-success btn-sm">
+                                                                <i class="bi bi-check me-1"></i>Сохранить
+                                                            </button>
+                                                            <button type="button" class="btn btn-secondary btn-sm" onclick="cancelEdit('{{_id}}')">
+                                                                <i class="bi bi-x me-1"></i>Отмена
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                                {{#if ../isAuthor}}
+                                                    {{#if (eq status 'pending')}}
+                                                        <div class="d-flex gap-2 mt-3">
+                                                            <form action="/tasks/{{../task._id}}/response/{{_id}}/accept" method="POST" class="d-inline">
+                                                                <button type="submit" class="btn btn-success btn-sm">
+                                                                    <i class="bi bi-check-circle me-1"></i>Принять отклик
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    {{/if}}
+                                                {{else if isOwnResponse}}
+                                                    {{#if (eq status 'pending')}}
+                                                        <div class="d-flex gap-2 mt-3" id="response-actions-{{_id}}">
+                                                            <button type="button" class="btn btn-primary btn-sm" onclick="editResponse('{{_id}}')">
+                                                                <i class="bi bi-pencil me-1"></i>Редактировать
+                                                            </button>
+                                                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteResponse('{{_id}}')">
+                                                                <i class="bi bi-trash me-1"></i>Удалить
+                                                            </button>
+                                                        </div>
+                                                    {{/if}}
+                                                {{/if}}
+                                        </div>
+                                        {{/if}}
+                                    {{/each}}
+                                {{else}}
+                                    <div class="text-center py-5">
+                                        <i class="bi bi-chat-dots" style="font-size: 3rem; color: #ddd;"></i>
+                                        <p class="text-muted mt-3 mb-0">
+                                            <i class="bi bi-info-circle me-2"></i>Пока нет откликов
+                                        </p>
+                                    </div>
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Переписка между участниками задачи в отдельном белом блоке -->
+                    {{#if (and user (or (eq task.status 'in_progress') (eq task.status 'closed')))}}
+                        {{#if (or isAuthor hasResponded)}}
+                            <div class="mt-4">
+                                <div class="card task-card">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5 class="mb-0">
+                                                <i class="bi bi-chat-left-text me-2"></i>Переписка
+                                                {{#if (eq task.status 'closed')}}
+                                                    <span class="badge bg-secondary ms-2">Задача закрыта</span>
+                                                {{/if}}
+                                            </h5>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="loadMessages()">
+                                                <i class="bi bi-arrow-clockwise me-1"></i>Обновить
+                                            </button>
+                                        </div>
+                                        {{#if (eq task.status 'closed')}}
+                                            <div class="alert alert-warning mb-3">
+                                                <i class="bi bi-info-circle me-2"></i>
+                                                <strong>Задача закрыта</strong> - переписка доступна для обсуждения результатов работы
+                                            </div>
+                                        {{/if}}
+                                        <div id="messages-container" style="height: 400px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 15px; margin-bottom: 15px; background-color: #f8f9fa;">
+                                            <div class="text-center text-muted">
+                                                <div class="spinner-border spinner-border-sm" role="status">
+                                                    <span class="visually-hidden">Загрузка сообщений...</span>
+                                                </div>
+                                                <div class="mt-2">Загрузка сообщений...</div>
+                                            </div>
+                                        </div>
+
+                                        <form id="message-form">
+                                            <div class="input-group">
+                                                <textarea class="form-control" id="message-input" name="message" rows="3" 
+                                                          placeholder="Напишите сообщение..." maxlength="1000" required></textarea>
+                                                <button class="btn btn-primary" type="submit" id="send-button">
+                                                    <i class="bi bi-send me-1"></i>Отправить
+                                                </button>
+                                            </div>
+                                            <small class="form-text text-muted">Максимум 1000 символов. Для отправки используйте Ctrl+Enter</small>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {{/if}}
+                    {{/if}}
         </div>
 
-        <div class="col-md-4">
-            <div class="card task-card">
+        <!-- Сайдбар в отдельном белом блоке -->
+        <div class="col-lg-4">
+            <div class="card task-card sticky-top" style="top: 20px;">
                 <div class="card-header bg-light">
-                    <i class="bi bi-info-circle me-2"></i>Информация о задаче
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Информация о задаче
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <p><strong>Статус:</strong>
-                        <span class="badge ms-2 {{#if (eq task.status 'open')}}bg-success{{else if (eq task.status 'in_progress')}}bg-warning{{else}}bg-secondary{{/if}}">
+                    <div class="mb-3 pb-3 border-bottom">
+                        <small class="text-muted d-block mb-1">Статус</small>
+                        <span class="badge {{#if (eq task.status 'open')}}bg-success{{else if (eq task.status 'in_progress')}}bg-warning{{else}}bg-secondary{{/if}}" style="font-size: 0.9rem;">
                             {{#if (eq task.status 'open')}}Открыта{{else if (eq task.status 'in_progress')}}В работе{{else}}Закрыта{{/if}}
                         </span>
-                    </p>
+                    </div>
+
+                    <div class="mb-3 pb-3 border-bottom">
+                        <small class="text-muted d-block mb-1">Категория</small>
+                        <div class="d-flex align-items-center">
+                            <i class="{{task.category.icon}} me-2" style="color: var(--youdo-blue);"></i>
+                            <span class="fw-bold">{{task.category.name}}</span>
+                        </div>
+                    </div>
+
                     {{#if task.acceptedResponse}}
-                        <p><strong>Исполнитель:</strong>
-                            <a href="/users/{{task.acceptedResponse.responder.username}}" target="_blank" class="text-decoration-none">
+                        <div class="mb-3 pb-3 border-bottom">
+                            <small class="text-muted d-block mb-1">Исполнитель</small>
+                            <a href="/users/{{task.acceptedResponse.responder.username}}" target="_blank" class="text-decoration-none fw-bold d-flex align-items-center">
+                                <i class="bi bi-person-check me-2" style="color: var(--youdo-blue);"></i>
                                 {{#if task.acceptedResponse.responder.firstName}}
                                     {{task.acceptedResponse.responder.firstName}} {{task.acceptedResponse.responder.lastName}}
                                 {{else}}
                                     {{task.acceptedResponse.responder.username}}
                                 {{/if}}
                             </a>
-                        </p>
+                        </div>
                     {{/if}}
-                    <p><strong>Создано:</strong><br>
-                        <small class="text-muted">{{task.createdAtFormatted}}</small>
-                    </p>
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Создано</small>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-calendar3 me-2" style="color: var(--youdo-blue);"></i>
+                            <span>{{task.createdAtFormatted}}</span>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Кнопка возврата -->
+            <div class="mt-3">
+                <a href="/tasks" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-arrow-left me-1"></i>Вернуться к списку
+                </a>
             </div>
         </div>
     </div>
-
-    <a href="/tasks" class="btn btn-secondary mt-3">
-        <i class="bi bi-arrow-left me-1"></i>Вернуться к списку
-    </a>
 </div>
 
 <script>
 function rejectResponse(responseId) {
   if (confirm('Вы уверены, что хотите отклонить этот отклик?')) {
-    // Для простоты, пока что оставим без действия, можно добавить AJAX позже
     alert('Функция отклонения будет реализована');
   }
 }
 
 function editResponse(responseId) {
-  // Скрыть отображение отклика
   document.getElementById('response-display-' + responseId).style.display = 'none';
-  // Скрыть кнопки действий
   document.getElementById('response-actions-' + responseId).style.display = 'none';
-  // Показать форму редактирования
   document.getElementById('response-edit-' + responseId).style.display = 'block';
 }
 
 function cancelEdit(responseId) {
-  // Показать отображение отклика
   document.getElementById('response-display-' + responseId).style.display = 'block';
-  // Показать кнопки действий
-  document.getElementById('response-actions-' + responseId).style.display = 'block';
-  // Скрыть форму редактирования
+  const actionsEl = document.getElementById('response-actions-' + responseId);
+  if (actionsEl) actionsEl.style.display = 'block';
   document.getElementById('response-edit-' + responseId).style.display = 'none';
 }
 
 function deleteResponse(responseId) {
   if (confirm('Вы уверены, что хотите удалить свой отклик?')) {
-    // Создаем форму для отправки запроса на удаление
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/tasks/' + '{{task._id}}' + '/response/' + responseId + '/delete';
 
-    // Добавляем CSRF токен, если используется
     const csrfInput = document.createElement('input');
     csrfInput.type = 'hidden';
     csrfInput.name = '_csrf';
@@ -297,6 +361,7 @@ function deleteResponse(responseId) {
 
 // Глобальные переменные для работы с сообщениями
 const taskId = '{{task._id}}';
+const currentUserId = '{{currentUserId}}';
 
 // Загрузка сообщений
 async function loadMessages() {
@@ -323,7 +388,7 @@ function displayMessages(messages) {
   const container = document.getElementById('messages-container');
 
   if (messages.length === 0) {
-    container.innerHTML = '<div class="text-center text-muted">Пока нет сообщений</div>';
+    container.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-chat-left me-2"></i>Пока нет сообщений</div>';
     return;
   }
 
@@ -331,27 +396,24 @@ function displayMessages(messages) {
   messages.forEach(message => {
     const isSystemMessage = message.isSystemMessage || false;
     if (isSystemMessage) {
-      // Системное сообщение - отображается по центру
       html += `
-        <div class="alert alert-info text-center" style="max-width: 80%; margin: 10px auto; background-color: #e3f2fd;">
-          <div class="d-flex justify-content-center align-items-center mb-1">
-            <small class="text-muted">${new Date(message.createdAt).toLocaleString('ru-RU')}</small>
-          </div>
-          <div><strong>🔔 Системное уведомление:</strong> ${message.message.replace(/\n/g, '<br>')}</div>
+        <div class="alert alert-info text-center mb-3" style="max-width: 85%; margin: 10px auto;">
+          <small class="d-block text-muted mb-1">${new Date(message.createdAt).toLocaleString('ru-RU')}</small>
+          <div><strong>🔔 Системное уведомление:</strong><br>${message.message.replace(/\n/g, '<br>')}</div>
         </div>
       `;
     } else {
-      const isOwn = message.sender && message.sender._id === '{{currentUserId}}';
-      const messageClass = isOwn ? 'alert alert-primary ms-auto' : 'alert alert-secondary me-auto';
-      const messageStyle = isOwn ? 'margin-left: auto; margin-right: 0;' : 'margin-left: 0; margin-right: auto;';
+      const isOwn = message.sender && message.sender._id === currentUserId;
+      const messageClass = isOwn ? 'alert alert-primary ms-auto' : 'alert alert-light me-auto';
+      const messageStyle = isOwn ? 'margin-left: auto; margin-right: 0; max-width: 75%;' : 'margin-left: 0; margin-right: auto; max-width: 75%;';
 
       html += `
-        <div class="${messageClass}" style="max-width: 70%; ${messageStyle}">
-          <div class="d-flex justify-content-between align-items-start mb-1">
+        <div class="${messageClass} mb-3" style="${messageStyle}">
+          <div class="d-flex justify-content-between align-items-start mb-2">
             <strong>${isOwn ? 'Вы' : (message.sender.firstName || message.sender.username)}</strong>
-            <small class="text-muted">${new Date(message.createdAt).toLocaleString('ru-RU')}</small>
+            <small class="text-muted">${new Date(message.createdAt).toLocaleString('ru-RU', {hour: '2-digit', minute: '2-digit'})}</small>
           </div>
-          <div>${message.message.replace(/\n/g, '<br>')}</div>
+          <div style="white-space: pre-wrap;">${message.message.replace(/\n/g, '<br>')}</div>
         </div>
       `;
     }
@@ -376,7 +438,7 @@ async function sendMessage(message) {
 
     if (data.success) {
       document.getElementById('message-input').value = '';
-      loadMessages(); // Перезагружаем сообщения
+      loadMessages();
     } else {
       alert('Ошибка отправки сообщения: ' + data.error);
     }
@@ -392,10 +454,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const messageInput = document.getElementById('message-input');
 
   if (messageForm) {
-    // Загружаем сообщения сразу при открытии страницы
     loadMessages();
 
-    // Обработка отправки формы
     messageForm.addEventListener('submit', function(e) {
       e.preventDefault();
       const message = messageInput.value.trim();
@@ -405,7 +465,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    // Обработка Ctrl+Enter для отправки
     messageInput.addEventListener('keydown', function(e) {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
@@ -417,5 +476,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
-
 </script>

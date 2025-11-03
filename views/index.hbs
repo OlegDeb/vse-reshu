@@ -50,7 +50,7 @@
               {{#if this}}
                 {{#each this}}
                 <div class="category-item">
-                  <a href="/tasks?category={{this.slug}}" class="category-link">
+                  <a href="/tasks/category/{{this.slug}}" class="category-link">
                     <i class="fas fa-chevron-right category-arrow"></i>
                     <span class="category-name">{{this.name}}</span>
                   </a>
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
       sectionTitle.textContent = type;
       categoriesContainer.innerHTML = categories.map(category => `
         <div class="category-item">
-          <a href="/tasks?category=${category.slug}" class="category-link">
+          <a href="/tasks/category/${category.slug}" class="category-link">
             <i class="fas fa-chevron-right category-arrow"></i>
             <span class="category-name">${category.name}</span>
           </a>

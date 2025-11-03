@@ -256,6 +256,16 @@ body {
     font-size: 0.8rem;
 }
 
+.task-description-full {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #333;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 0;
+    margin-left: 0;
+}
+
 .filter-section {
     background-color: white;
     border-radius: 8px;

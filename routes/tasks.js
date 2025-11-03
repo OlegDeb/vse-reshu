@@ -2,6 +2,7 @@ import express from 'express';
 import {
   requireAuth,
   getTasks,
+  getTasksByCategory,
   getCreateTask,
   postCreateTask,
   getTask,
@@ -26,6 +27,9 @@ router.get('/my-tasks', requireAuth, getMyTasks);
 // Создание задачи - требует аутентификации (должен быть до /:id)
 router.get('/create', requireAuth, getCreateTask);
 router.post('/create', requireAuth, postCreateTask);
+
+// Задачи по категории (ЧПУ) - должен быть до /:id
+router.get('/category/:slug', getTasksByCategory);
 
 // Редактирование задачи - требует аутентификации (должен быть до /:id)
 router.get('/:id/edit', requireAuth, getEditTask);
