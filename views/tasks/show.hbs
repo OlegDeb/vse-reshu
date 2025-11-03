@@ -7,15 +7,7 @@
                     <!-- Заголовок и действия -->
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 pb-4 border-bottom gap-3">
                         <div class="flex-grow-1">
-                            <h1 class="mb-2" style="color: #1565c0; font-size: 2rem;">{{task.title}}</h1>
-                            <div class="d-flex align-items-center gap-2 flex-wrap">
-                                <span class="task-category">
-                                    <i class="{{task.category.icon}} me-1"></i>{{task.category.name}}
-                                </span>
-                                <span class="badge {{#if (eq task.status 'open')}}bg-success{{else if (eq task.status 'in_progress')}}bg-warning{{else}}bg-secondary{{/if}}">
-                                    {{#if (eq task.status 'open')}}Открыта{{else if (eq task.status 'in_progress')}}В работе{{else}}Закрыта{{/if}}
-                                </span>
-                            </div>
+                            <h1 class="mb-0" style="color: #1565c0; font-size: 2rem;">{{task.title}}</h1>
                         </div>
                         {{#if isAuthor}}
                             <div class="d-flex gap-2">
@@ -47,7 +39,15 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="d-flex align-items-center">
-                                <i class="bi bi-person-circle me-2" style="font-size: 1.5rem; color: var(--youdo-blue);"></i>
+                                {{#if task.author.avatar}}
+                                    <img src="{{task.author.avatar}}" alt="{{task.author.firstName}} {{task.author.lastName}}" 
+                                         class="rounded-circle me-3" style="width: 48px; height: 48px; object-fit: cover;">
+                                {{else}}
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 48px; height: 48px; background-color: var(--youdo-light-blue);">
+                                        <i class="bi bi-person-fill" style="font-size: 24px; color: var(--youdo-blue);"></i>
+                                    </div>
+                                {{/if}}
                                 <div>
                                     <small class="text-muted d-block">Заказчик</small>
                                     <a href="/users/{{task.author.username}}" target="_blank" class="text-decoration-none fw-bold">

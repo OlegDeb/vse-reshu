@@ -183,7 +183,7 @@ export const getTask = async (req, res) => {
     console.log('Loading task with ID:', req.params.id);
 
     const task = await Task.findById(req.params.id)
-      .populate('author', 'firstName lastName username')
+      .populate('author', 'firstName lastName username avatar')
       .populate('category', 'name icon')
       .populate({
         path: 'acceptedResponse',
