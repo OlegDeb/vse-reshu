@@ -1,0 +1,160 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-0">Модерация пользователей</h2>
+    <p class="text-muted mb-0">Управление пользователями, предупреждения и баны</p>
+  </div>
+</div>
+
+{{#if success}}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <i class="fas fa-check-circle me-2"></i>
+  {{success}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/if}}
+
+{{#if error}}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <i class="fas fa-exclamation-triangle me-2"></i>
+  {{error}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/if}}
+
+<!-- Фильтры -->
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="GET" action="/admin/users" class="row g-3">
+      <div class="col-md-4">
+        <label for="banStatus" class="form-label">Статус бана</label>
+        <select class="form-select" id="banStatus" name="banStatus">
+          <option value="">Все пользователи</option>
+          <option value="none" {{#if (eq currentBanStatus "none")}}selected{{/if}}>Не забанены</option>
+          <option value="temporary" {{#if (eq currentBanStatus "temporary")}}selected{{/if}}>Временный бан</option>
+          <option value="permanent" {{#if (eq currentBanStatus "permanent")}}selected{{/if}}>Постоянный бан</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="search" class="form-label">Поиск</label>
+        <input type="text" class="form-control" id="search" name="search" placeholder="Логин, email, имя, фамилия..." value="{{currentSearch}}">
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary me-2 w-100">
+          <i class="fas fa-search"></i> Найти
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{{#if users.length}}
+<div class="table-responsive">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Пользователь</th>
+        <th>Email</th>
+        <th>Роль</th>
+        <th>Предупреждения</th>
+        <th>Статус бана</th>
+        <th>Дата регистрации</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each users}}
+      <tr>
+        <td>
+          <div class="d-flex align-items-center">
+            {{#if this.avatar}}
+              <img src="{{this.avatar}}" alt="{{this.username}}" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+            {{else}}
+              <i class="bi bi-person-circle me-2"></i>
+            {{/if}}
+            <div>
+              <strong>{{#if this.firstName}}{{this.firstName}} {{this.lastName}}{{else}}{{this.username}}{{/if}}</strong>
+              <br>
+              <small class="text-muted">@{{this.username}}</small>
+            </div>
+          </div>
+        </td>
+        <td>{{this.email}}</td>
+        <td>
+          {{#if (eq this.role "admin")}}
+          <span class="badge bg-danger">Админ</span>
+          {{else}}
+          <span class="badge bg-secondary">Пользователь</span>
+          {{/if}}
+        </td>
+        <td>
+          {{#if this.warnings.length}}
+          <span class="badge bg-warning">{{this.warnings.length}}</span>
+          {{else}}
+          <span class="text-muted">0</span>
+          {{/if}}
+        </td>
+        <td>
+          {{#if (eq this.banStatus "none")}}
+          <span class="badge bg-success">Активен</span>
+          {{else if (eq this.banStatus "temporary")}}
+          <span class="badge bg-warning">Временный бан</span>
+          {{#if this.banUntil}}
+          <br><small class="text-muted">до {{this.banUntilFormatted}}</small>
+          {{/if}}
+          {{else}}
+          <span class="badge bg-danger">Постоянный бан</span>
+          {{/if}}
+        </td>
+        <td><small>{{this.createdAtFormatted}}</small></td>
+        <td>
+          <a href="/admin/users/{{this._id}}" class="btn btn-outline-primary btn-sm" title="Просмотр">
+            <i class="fas fa-eye"></i>
+          </a>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+<!-- Пагинация -->
+{{#if (gt totalPages 1)}}
+<nav aria-label="Навигация по страницам">
+  <ul class="pagination justify-content-center">
+    {{#if hasPrevPage}}
+    <li class="page-item">
+      <a class="page-link" href="/admin/users?page={{prevPage}}{{#if currentBanStatus}}&banStatus={{currentBanStatus}}{{/if}}{{#if currentSearch}}&search={{currentSearch}}{{/if}}">Предыдущая</a>
+    </li>
+    {{else}}
+    <li class="page-item disabled">
+      <span class="page-link">Предыдущая</span>
+    </li>
+    {{/if}}
+    
+    {{#each pages}}
+    <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+      <a class="page-link" href="/admin/users?page={{this}}{{#if ../currentBanStatus}}&banStatus={{../currentBanStatus}}{{/if}}{{#if ../currentSearch}}&search={{../currentSearch}}{{/if}}">{{this}}</a>
+    </li>
+    {{/each}}
+    
+    {{#if hasNextPage}}
+    <li class="page-item">
+      <a class="page-link" href="/admin/users?page={{nextPage}}{{#if currentBanStatus}}&banStatus={{currentBanStatus}}{{/if}}{{#if currentSearch}}&search={{currentSearch}}{{/if}}">Следующая</a>
+    </li>
+    {{else}}
+    <li class="page-item disabled">
+      <span class="page-link">Следующая</span>
+    </li>
+    {{/if}}
+  </ul>
+</nav>
+{{/if}}
+
+{{else}}
+<div class="alert alert-info text-center">
+  <i class="fas fa-info-circle fa-2x mb-3"></i>
+  <h5>Пользователи не найдены</h5>
+  <p class="mb-0">Попробуйте изменить параметры поиска</p>
+</div>
+{{/if}}
+

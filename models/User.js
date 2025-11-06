@@ -52,6 +52,21 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  // Система модерации
+  warnings: [{
+    reason: { type: String, required: true },
+    issuedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    issuedAt: { type: Date, default: Date.now }
+  }],
+  banStatus: {
+    type: String,
+    enum: ['none', 'temporary', 'permanent'],
+    default: 'none'
+  },
+  banUntil: { type: Date, default: null },
+  banReason: { type: String, default: null },
+  bannedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  bannedAt: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now },
   lastLogin: { type: Date, default: null }
 }, { timestamps: { createdAt: false, updatedAt: true } });

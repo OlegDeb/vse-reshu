@@ -6,11 +6,46 @@ import City from '../models/City.js';
 import Rating from '../models/Rating.js';
 import User from '../models/User.js';
 
-// Middleware для проверки аутентификации
-export const requireAuth = (req, res, next) => {
+// Middleware для проверки аутентификации и бана
+export const requireAuth = async (req, res, next) => {
   if (!req.session.userId) {
     return res.redirect('/login');
   }
+  
+  try {
+    const user = await User.findById(req.session.userId);
+    if (!user) {
+      req.session.destroy();
+      return res.redirect('/login');
+    }
+    
+    // Проверяем бан
+    if (user.banStatus === 'permanent') {
+      req.session.destroy();
+      return res.redirect('/login?error=' + encodeURIComponent('Ваш аккаунт заблокирован навсегда. Причина: ' + (user.banReason || 'Не указана')));
+    }
+    
+    if (user.banStatus === 'temporary' && user.banUntil) {
+      const now = new Date();
+      if (now < user.banUntil) {
+        const banUntilFormatted = user.banUntil.toLocaleString('ru-RU');
+        req.session.destroy();
+        return res.redirect('/login?error=' + encodeURIComponent(`Ваш аккаунт заблокирован до ${banUntilFormatted}. Причина: ${user.banReason || 'Не указана'}`));
+      } else {
+        // Временный бан истек, снимаем бан
+        user.banStatus = 'none';
+        user.banUntil = null;
+        user.banReason = null;
+        user.bannedBy = null;
+        user.bannedAt = null;
+        await user.save();
+      }
+    }
+  } catch (error) {
+    console.error('Ошибка проверки пользователя:', error);
+    return res.redirect('/login');
+  }
+  
   next();
 };
 

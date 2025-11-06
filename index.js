@@ -172,11 +172,37 @@ app.use((req, res, next) => {
   next();
 });
 
-// Middleware для передачи пользователя в шаблоны
+// Middleware для передачи пользователя в шаблоны и проверки бана
 app.use(async (req, res, next) => {
   if (req.session.userId) {
     try {
       const user = await User.findById(req.session.userId);
+      
+      // Проверяем бан (кроме страниц выхода и админки)
+      if (user && req.path !== '/logout' && !req.path.startsWith('/admin')) {
+        if (user.banStatus === 'permanent') {
+          req.session.destroy();
+          return res.redirect('/login?error=' + encodeURIComponent('Ваш аккаунт заблокирован навсегда. Причина: ' + (user.banReason || 'Не указана')));
+        }
+        
+        if (user.banStatus === 'temporary' && user.banUntil) {
+          const now = new Date();
+          if (now < user.banUntil) {
+            const banUntilFormatted = user.banUntil.toLocaleString('ru-RU');
+            req.session.destroy();
+            return res.redirect('/login?error=' + encodeURIComponent(`Ваш аккаунт заблокирован до ${banUntilFormatted}. Причина: ${user.banReason || 'Не указана'}`));
+          } else {
+            // Временный бан истек, снимаем бан
+            user.banStatus = 'none';
+            user.banUntil = null;
+            user.banReason = null;
+            user.bannedBy = null;
+            user.bannedAt = null;
+            await user.save();
+          }
+        }
+      }
+      
       res.locals.user = user;
       res.locals.isAdmin = user && user.role === 'admin';
     } catch (err) {

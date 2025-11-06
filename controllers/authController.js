@@ -43,7 +43,8 @@ export const postRegister = async (req, res) => {
 };
 
 export const getLogin = (req, res) => {
-  res.render('login', { title: 'Вход' });
+  const error = req.query.error ? decodeURIComponent(req.query.error) : null;
+  res.render('login', { title: 'Вход', error });
 };
 
 export const postLogin = async (req, res) => {
@@ -58,6 +59,27 @@ export const postLogin = async (req, res) => {
     });
     
     if (user && await bcrypt.compare(password, user.password)) {
+      // Проверяем статус бана
+      if (user.banStatus === 'permanent') {
+        return res.render('login', { error: 'Ваш аккаунт заблокирован навсегда. Причина: ' + (user.banReason || 'Не указана') });
+      }
+      
+      if (user.banStatus === 'temporary' && user.banUntil) {
+        const now = new Date();
+        if (now < user.banUntil) {
+          const banUntilFormatted = user.banUntil.toLocaleString('ru-RU');
+          return res.render('login', { error: `Ваш аккаунт заблокирован до ${banUntilFormatted}. Причина: ${user.banReason || 'Не указана'}` });
+        } else {
+          // Временный бан истек, снимаем бан
+          user.banStatus = 'none';
+          user.banUntil = null;
+          user.banReason = null;
+          user.bannedBy = null;
+          user.bannedAt = null;
+          await user.save();
+        }
+      }
+      
       req.session.userId = user._id;
       res.redirect('/profile');
     } else {

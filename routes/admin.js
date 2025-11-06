@@ -50,6 +50,15 @@ import {
   postRejectTask,
   postPendingTask
 } from '../controllers/tasksAdminController.js';
+import {
+  getUsersIndex,
+  getUserShow,
+  postAddWarning,
+  postRemoveWarning,
+  postTemporaryBan,
+  postPermanentBan,
+  postUnban
+} from '../controllers/usersModerationController.js';
 import upload from '../config/multer.js';
 
 const router = express.Router();
@@ -106,5 +115,14 @@ router.get('/tasks/:id', getTasksAdminShow);
 router.post('/tasks/:id/approve', postApproveTask);
 router.post('/tasks/:id/reject', postRejectTask);
 router.post('/tasks/:id/pending', postPendingTask);
+
+// Модерация пользователей
+router.get('/users', getUsersIndex);
+router.get('/users/:id', getUserShow);
+router.post('/users/:id/warning', postAddWarning);
+router.post('/users/:id/warning/:warningId/remove', postRemoveWarning);
+router.post('/users/:id/ban/temporary', postTemporaryBan);
+router.post('/users/:id/ban/permanent', postPermanentBan);
+router.post('/users/:id/unban', postUnban);
 
 export default router;
