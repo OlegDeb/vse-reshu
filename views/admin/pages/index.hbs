@@ -1,39 +1,13 @@
-<div class="container mt-4">
-  <div class="admin-wrapper">
-    <!-- Меню админки -->
-    <div class="admin-sidebar mb-4">
-      <nav class="admin-nav-menu">
-        <a href="/admin/articles" class="admin-nav-item {{#if (eq currentPath '/admin/articles')}}active{{/if}}">
-          <i class="bi bi-file-text me-2"></i>
-          <span>Статьи</span>
-        </a>
-        <a href="/admin/pages" class="admin-nav-item {{#if (eq currentPath '/admin/pages')}}active{{/if}}">
-          <i class="bi bi-file-earmark-text me-2"></i>
-          <span>Страницы</span>
-        </a>
-        <a href="/admin/categories" class="admin-nav-item {{#if (eq currentPath '/admin/categories')}}active{{/if}}">
-          <i class="bi bi-tags me-2"></i>
-          <span>Категории задач</span>
-        </a>
-        <a href="/admin/article-categories" class="admin-nav-item {{#if (eq currentPath '/admin/article-categories')}}active{{/if}}">
-          <i class="bi bi-collection me-2"></i>
-          <span>Категории статей</span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- Основной контент -->
-    <div class="admin-content">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 class="mb-0">Управление страницами</h2>
-          <p class="text-muted mb-0">Создание, редактирование и удаление информационных страниц</p>
-        </div>
-        <a href="/admin/pages/create" class="btn btn-create-category btn-lg">
-          <i class="fas fa-plus-circle me-2"></i>
-          Создать страницу
-        </a>
-      </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-0">Управление страницами</h2>
+    <p class="text-muted mb-0">Создание, редактирование и удаление информационных страниц</p>
+  </div>
+  <a href="/admin/pages/create" class="btn btn-create-category btn-lg">
+    <i class="fas fa-plus-circle me-2"></i>
+    Создать страницу
+  </a>
+</div>
 
 {{#if pages}}
 <div class="table-responsive">
@@ -89,11 +63,11 @@
     </li>
     {{/if}}
     
-        {{#each pageNumbers}}
-        <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
-          <a class="page-link" href="/admin/pages?page={{this}}">{{this}}</a>
-        </li>
-        {{/each}}
+    {{#each pageNumbers}}
+    <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+      <a class="page-link" href="/admin/pages?page={{this}}">{{this}}</a>
+    </li>
+    {{/each}}
     
     {{#if hasNextPage}}
     <li class="page-item">
@@ -118,7 +92,3 @@
   </a>
 </div>
 {{/if}}
-    </div>
-  </div>
-</div>
-

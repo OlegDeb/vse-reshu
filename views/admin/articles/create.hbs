@@ -1,35 +1,8 @@
-<div class="container mt-4">
-  <div class="admin-wrapper">
-    <!-- Меню админки -->
-    <div class="admin-sidebar mb-4">
-      <nav class="admin-nav-menu">
-        <a href="/admin/articles" class="admin-nav-item {{#if (eq currentPath '/admin/articles')}}active{{/if}}">
-          <i class="bi bi-file-text me-2"></i>
-          <span>Статьи</span>
-        </a>
-        <a href="/admin/pages" class="admin-nav-item {{#if (eq currentPath '/admin/pages')}}active{{/if}}">
-          <i class="bi bi-file-earmark-text me-2"></i>
-          <span>Страницы</span>
-        </a>
-        <a href="/admin/categories" class="admin-nav-item {{#if (eq currentPath '/admin/categories')}}active{{/if}}">
-          <i class="bi bi-tags me-2"></i>
-          <span>Категории задач</span>
-        </a>
-        <a href="/admin/article-categories" class="admin-nav-item {{#if (eq currentPath '/admin/article-categories')}}active{{/if}}">
-          <i class="bi bi-collection me-2"></i>
-          <span>Категории статей</span>
-        </a>
-      </nav>
-    </div>
-
     <!-- Основной контент -->
-    <div class="admin-content">
       <h2 class="mb-4">Создать статью</h2>
-
       {{#if error}}
       <div class="alert alert-danger">{{error}}</div>
       {{/if}}
-
       <form action="/admin/articles/create" method="POST" enctype="multipart/form-data">
   <div class="row">
     <div class="col-md-8">
@@ -42,13 +15,11 @@
             <input type="text" class="form-control" id="title" name="title" required value="{{formData.title}}">
             <small class="form-text text-muted">Максимум 200 символов</small>
           </div>
-
           <div class="mb-3">
             <label for="content" class="form-label">Содержимое статьи *</label>
             <textarea class="form-control" id="content" name="content" rows="15" required>{{formData.content}}</textarea>
             <small class="form-text text-muted">Текстовое поле без визуального редактора</small>
           </div>
-
           <div class="mb-3">
             <label for="excerpt" class="form-label">Краткое описание</label>
             <textarea class="form-control" id="excerpt" name="excerpt" rows="3">{{formData.excerpt}}</textarea>
@@ -56,7 +27,6 @@
           </div>
         </div>
       </div>
-
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">SEO мета-теги</h5>
@@ -66,13 +36,11 @@
             <input type="text" class="form-control" id="metaTitle" name="metaTitle" value="{{formData.metaTitle}}">
             <small class="form-text text-muted">Максимум 60 символов. Если не заполнено, будет использовано название статьи</small>
           </div>
-
           <div class="mb-3">
             <label for="metaDescription" class="form-label">Meta Description</label>
             <textarea class="form-control" id="metaDescription" name="metaDescription" rows="2">{{formData.metaDescription}}</textarea>
             <small class="form-text text-muted">Максимум 160 символов. Краткое описание для поисковых систем</small>
           </div>
-
           <div class="mb-3">
             <label for="metaKeywords" class="form-label">Meta Keywords</label>
             <input type="text" class="form-control" id="metaKeywords" name="metaKeywords" value="{{formData.metaKeywords}}">
@@ -80,8 +48,6 @@
           </div>
         </div>
       </div>
-    </div>
-
     <div class="col-md-4">
       <div class="card mb-3">
         <div class="card-body">
@@ -96,7 +62,6 @@
               {{/each}}
             </select>
           </div>
-
           <div class="mb-3">
             <label for="status" class="form-label">Статус</label>
             <select class="form-select" id="status" name="status">
@@ -107,7 +72,6 @@
           </div>
         </div>
       </div>
-
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">Изображение</h5>
@@ -117,13 +81,11 @@
             <input type="file" class="form-control" id="image" name="image" accept="image/*">
             <small class="form-text text-muted">JPG, PNG, GIF, WEBP. Максимум 5MB</small>
           </div>
-
           <div id="imagePreview" style="display: none;">
             <img id="previewImg" src="" alt="Preview" class="img-fluid rounded">
           </div>
         </div>
       </div>
-
       <div class="d-grid gap-2">
         <button type="submit" class="btn btn-create-category">
           <i class="fas fa-save"></i> Создать статью
@@ -132,16 +94,12 @@
           <i class="fas fa-times"></i> Отмена
         </a>
       </div>
-    </div>
-  </div>
 </form>
-
 <script>
 // Предпросмотр изображения
 const imageInput = document.getElementById('image');
 const imagePreview = document.getElementById('imagePreview');
 const previewImg = document.getElementById('previewImg');
-
 imageInput.addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (file) {
@@ -156,6 +114,3 @@ imageInput.addEventListener('change', function(e) {
   }
   });
 </script>
-    </div>
-  </div>
-</div>

@@ -1,0 +1,20 @@
+    <!-- Основной контент -->
+      <h2 class="mb-4">Редактировать город</h2>
+      {{#if error}}
+      <div class="alert alert-danger">{{error}}</div>
+      {{/if}}
+      <form action="/admin/cities/{{city._id}}/edit" method="POST">
+  <div class="mb-3">
+    <label for="name" class="form-label">Название</label>
+    <input type="text" class="form-control" id="name" name="name" value="{{city.name}}" required>
+  <div class="mb-3">
+    <label for="region" class="form-label">Регион</label>
+    <select class="form-control" id="region" name="region" required>
+      <option value="">Выберите регион</option>
+      {{#each regionTypes}}
+      <option value="{{this}}" {{#if (eq this ../city.region)}}selected{{/if}}>{{this}}</option>
+      {{/each}}
+    </select>
+  <button type="submit" class="btn btn-primary">Обновить</button>
+  <a href="/admin/cities" class="btn btn-secondary">Отмена</a>
+</form>

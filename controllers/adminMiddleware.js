@@ -5,6 +5,8 @@ const adminMiddleware = async (req, res, next) => {
     try {
       const user = await User.findById(req.session.userId);
       if (user && user.role === 'admin') {
+        // Устанавливаем layout для админки
+        res.locals.layout = 'admin';
         return next();
       }
     } catch (error) {

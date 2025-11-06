@@ -1,0 +1,28 @@
+    <!-- Меню админки -->
+    <div class="admin-nav-menu">
+      <a href="/admin/articles" class="admin-nav-item {{#if (eq currentPath '/admin/articles')}}active{{/if}}">
+        <i class="bi bi-file-text"></i>
+        <span>Статьи</span>
+      </a>
+      <a href="/admin/pages" class="admin-nav-item {{#if (eq currentPath '/admin/pages')}}active{{/if}}">
+        <i class="bi bi-file-earmark-text"></i>
+        <span>Страницы</span>
+      </a>
+      <a href="/admin/tasks" class="admin-nav-item {{#if (contains currentPath '/admin/tasks')}}active{{/if}}">
+        <i class="bi bi-check-square"></i>
+        <span>Модерация задач</span>
+      </a>
+      <a href="/admin/categories" class="admin-nav-item {{#if (eq currentPath '/admin/categories')}}active{{/if}}">
+        <i class="bi bi-tags"></i>
+        <span>Категории задач</span>
+      </a>
+      <a href="/admin/article-categories" class="admin-nav-item {{#if (eq currentPath '/admin/article-categories')}}active{{/if}}">
+        <i class="bi bi-collection"></i>
+        <span>Категории статей</span>
+      </a>
+      <a href="/admin/cities" class="admin-nav-item {{#if (eq currentPath '/admin/cities')}}active{{/if}}">
+        <i class="bi bi-geo-alt"></i>
+        <span>Города</span>
+      </a>
+    </div>
+

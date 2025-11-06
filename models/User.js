@@ -42,6 +42,16 @@ const userSchema = new mongoose.Schema({
     trim: true
   },
   role: { type: String, default: 'user' },
+  averageRating: {
+    type: Number,
+    min: 0,
+    max: 5,
+    default: null
+  },
+  totalRatings: {
+    type: Number,
+    default: 0
+  },
   createdAt: { type: Date, default: Date.now },
   lastLogin: { type: Date, default: null }
 }, { timestamps: { createdAt: false, updatedAt: true } });

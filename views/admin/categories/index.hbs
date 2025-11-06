@@ -1,39 +1,13 @@
-<div class="container mt-4">
-  <div class="admin-wrapper">
-    <!-- Меню админки -->
-    <div class="admin-sidebar mb-4">
-      <nav class="admin-nav-menu">
-        <a href="/admin/articles" class="admin-nav-item {{#if (eq currentPath '/admin/articles')}}active{{/if}}">
-          <i class="bi bi-file-text me-2"></i>
-          <span>Статьи</span>
-        </a>
-        <a href="/admin/pages" class="admin-nav-item {{#if (eq currentPath '/admin/pages')}}active{{/if}}">
-          <i class="bi bi-file-earmark-text me-2"></i>
-          <span>Страницы</span>
-        </a>
-        <a href="/admin/categories" class="admin-nav-item {{#if (eq currentPath '/admin/categories')}}active{{/if}}">
-          <i class="bi bi-tags me-2"></i>
-          <span>Категории задач</span>
-        </a>
-        <a href="/admin/article-categories" class="admin-nav-item {{#if (eq currentPath '/admin/article-categories')}}active{{/if}}">
-          <i class="bi bi-collection me-2"></i>
-          <span>Категории статей</span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- Основной контент -->
-    <div class="admin-content">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 class="mb-0">Категории задач</h2>
-          <p class="text-muted mb-0">Выберите тип категории для просмотра услуг</p>
-        </div>
-        <a href="/admin/categories/create" class="btn btn-create-category btn-lg">
-          <i class="fas fa-plus-circle me-2"></i>
-          Создать категорию
-        </a>
-      </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-0">Категории задач</h2>
+    <p class="text-muted mb-0">Выберите тип категории для просмотра услуг</p>
+  </div>
+  <a href="/admin/categories/create" class="btn btn-create-category btn-lg">
+    <i class="fas fa-plus-circle me-2"></i>
+    Создать категорию
+  </a>
+</div>
 
 {{#if selectedType}}
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -97,29 +71,26 @@
 {{/if}}
 
 {{else}}
-  {{#if typesArray}}
-  <div class="row">
-    {{#each typesArray}}
-    <div class="col-6 col-md-4 col-lg-3 mb-4">
-      <div class="card h-100 category-card">
-        <div class="card-body text-center">
-          <a href="/admin/categories/type/{{this.name}}" class="text-decoration-none">
-            <div class="mb-3">
-              <i class="{{this.icon}} fa-3x category-icon"></i>
-            </div>
-            <h6 class="card-title">{{this.name}}</h6>
-          </a>
-        </div>
+{{#if typesArray}}
+<div class="row">
+  {{#each typesArray}}
+  <div class="col-6 col-md-4 col-lg-3 mb-4">
+    <div class="card h-100 category-card">
+      <div class="card-body text-center">
+        <a href="/admin/categories/type/{{this.name}}" class="text-decoration-none">
+          <div class="mb-3">
+            <i class="{{this.icon}} fa-3x category-icon"></i>
+          </div>
+          <h6 class="card-title">{{this.name}}</h6>
+        </a>
       </div>
     </div>
-    {{/each}}
   </div>
-  {{else}}
-  <div class="alert alert-warning">
-    <i class="fas fa-exclamation-triangle"></i> Типы категорий не загружены
-  </div>
-  {{/if}}
-{{/if}}
-    </div>
-  </div>
+  {{/each}}
 </div>
+{{else}}
+<div class="alert alert-warning">
+  <i class="fas fa-exclamation-triangle"></i> Типы категорий не загружены
+</div>
+{{/if}}
+{{/if}}

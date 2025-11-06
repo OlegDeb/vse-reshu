@@ -15,6 +15,11 @@ import {
   editResponse,
   deleteResponse
 } from '../controllers/tasksController.js';
+import {
+  createRating,
+  getTaskRatings,
+  canRate
+} from '../controllers/ratingsController.js';
 
 const router = express.Router();
 
@@ -52,5 +57,10 @@ router.post('/:taskId/response/:responseId/delete', requireAuth, deleteResponse)
 
 // Закрыть задачу - требует аутентификации
 router.post('/:id/close', requireAuth, closeTask);
+
+// Рейтинги для задачи
+router.get('/:taskId/ratings', getTaskRatings);
+router.post('/:taskId/ratings', requireAuth, createRating);
+router.get('/:taskId/can-rate', canRate);
 
 export default router;

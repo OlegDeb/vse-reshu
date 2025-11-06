@@ -1,0 +1,93 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-0">Города</h2>
+    <p class="text-muted mb-0">Выберите регион для просмотра городов</p>
+  </div>
+  <a href="/admin/cities/create" class="btn btn-create-category btn-lg">
+    <i class="fas fa-plus-circle me-2"></i>
+    Создать город
+  </a>
+</div>
+
+{{#if selectedRegion}}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0"><i class="fas fa-list"></i> Города региона: {{selectedRegion}}</h3>
+  <div>
+    <a href="/admin/cities/create" class="btn btn-create-category me-2">
+      <i class="fas fa-plus-circle"></i> Создать город
+    </a>
+    <a href="/admin/cities" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left"></i> Назад к регионам
+    </a>
+  </div>
+</div>
+
+{{#if cities}}
+<div class="table-responsive">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Название</th>
+        <th>Регион</th>
+        <th>Slug</th>
+        <th>Дата создания</th>
+        <th>Последнее обновление</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each cities}}
+      <tr>
+        <td><strong>{{this.name}}</strong></td>
+        <td>
+          <span class="badge bg-secondary">{{this.region}}</span>
+        </td>
+        <td><code class="small">{{this.slug}}</code></td>
+        <td><small>{{formatDate this.createdAt}}</small></td>
+        <td><small>{{formatDate this.updatedAt}}</small></td>
+        <td>
+          <div class="d-flex gap-2" role="group">
+            <a href="/admin/cities/{{this._id}}/edit" class="btn btn-outline-primary btn-sm" title="Редактировать">
+              <i class="fas fa-edit"></i>
+            </a>
+            <form action="/admin/cities/{{this._id}}/delete" method="POST" style="display: inline;">
+              <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Удалить город?')" title="Удалить">
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+{{else}}
+<div class="alert alert-info text-center">
+  <i class="fas fa-info-circle fa-2x mb-3"></i>
+  <h5>Нет городов в этом регионе</h5>
+  <p class="mb-0">Создайте первый город в этом регионе</p>
+</div>
+{{/if}}
+
+{{else}}
+{{#if regionsArray}}
+<div class="row">
+  {{#each regionsArray}}
+  <div class="col-6 col-md-4 col-lg-3 mb-4">
+    <div class="card h-100 category-card">
+      <div class="card-body text-center">
+        <a href="/admin/cities/region/{{this.name}}" class="text-decoration-none">
+          <h6 class="card-title">{{this.name}}</h6>
+        </a>
+      </div>
+    </div>
+  </div>
+  {{/each}}
+</div>
+{{else}}
+<div class="alert alert-warning">
+  <i class="fas fa-exclamation-triangle"></i> Регионы не загружены
+</div>
+{{/if}}
+{{/if}}

@@ -41,6 +41,30 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="locationType" class="form-label">Место выполнения *</label>
+                                    <select class="form-select" id="locationType" name="locationType" required>
+                                        <option value="city" {{#if (eq task.locationType 'city')}}selected{{/if}}>В указанном месте</option>
+                                        <option value="remote" {{#if (eq task.locationType 'remote')}}selected{{/if}}>Удаленно</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3" id="cityContainer">
+                                    <label for="city" class="form-label">Город *</label>
+                                    <select class="form-select" id="city" name="city">
+                                        <option value="">Выберите город</option>
+                                        {{#each cities}}
+                                            <option value="{{_id}}" {{#if ../task.city}}{{#if (eq _id ../task.city._id)}}selected{{/if}}{{/if}}>{{name}}</option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="description" class="form-label">Описание *</label>
                             <textarea class="form-control" id="description" name="description" rows="5" required>{{task.description}}</textarea>
@@ -95,6 +119,22 @@ document.getElementById('categoryType').addEventListener('change', function() {
     });
 });
 
+// Управление видимостью поля города
+document.getElementById('locationType').addEventListener('change', function() {
+  const locationType = this.value;
+  const cityContainer = document.getElementById('cityContainer');
+  const citySelect = document.getElementById('city');
+  
+  if (locationType === 'remote') {
+    cityContainer.style.display = 'none';
+    citySelect.removeAttribute('required');
+    citySelect.value = '';
+  } else {
+    cityContainer.style.display = 'block';
+    citySelect.setAttribute('required', 'required');
+  }
+});
+
 // При загрузке страницы устанавливаем правильный тип категории для текущей задачи
 document.addEventListener('DOMContentLoaded', function() {
   const categoryTypeSelect = document.getElementById('categoryType');
@@ -122,6 +162,19 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(error => {
         console.error('Ошибка загрузки категорий:', error);
       });
+  }
+
+  // Управление видимостью поля города при загрузке страницы
+  const locationType = document.getElementById('locationType').value;
+  const cityContainer = document.getElementById('cityContainer');
+  const citySelect = document.getElementById('city');
+  
+  if (locationType === 'remote') {
+    cityContainer.style.display = 'none';
+    citySelect.removeAttribute('required');
+  } else {
+    cityContainer.style.display = 'block';
+    citySelect.setAttribute('required', 'required');
   }
 });
 </script>

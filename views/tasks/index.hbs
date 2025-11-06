@@ -48,7 +48,13 @@
                                 <!-- Местоположение -->
                                 <div class="task-location">
                                     <i class="bi bi-geo-alt me-1"></i>
-                                    {{#if location}}{{location}}{{else}}Местоположение не указано{{/if}}
+                                    {{#if (eq locationType 'remote')}}
+                                        <span class="text-success">Удаленно</span>
+                                    {{else if city}}
+                                        {{city.name}}
+                                    {{else}}
+                                        Местоположение не указано
+                                    {{/if}}
                                 </div>
                                 <!-- Категория -->
                                 <span class="task-category">

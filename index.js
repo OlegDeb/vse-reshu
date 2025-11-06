@@ -70,6 +70,10 @@ app.engine('hbs', engine({
   layoutsDir: path.join(__dirname, 'views', 'layouts'),
   defaultLayout: 'main',
   extname: 'hbs',
+  partialsDir: [
+    path.join(__dirname, 'views', 'partials'),
+    path.join(__dirname, 'views', 'admin', 'partials')
+  ],
   helpers: {
     eq: (a, b) => a === b,
     ne: (a, b) => a !== b,

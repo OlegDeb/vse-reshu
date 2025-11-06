@@ -1,35 +1,8 @@
-<div class="container mt-4">
-  <div class="admin-wrapper">
-    <!-- Меню админки -->
-    <div class="admin-sidebar mb-4">
-      <nav class="admin-nav-menu">
-        <a href="/admin/articles" class="admin-nav-item {{#if (eq currentPath '/admin/articles')}}active{{/if}}">
-          <i class="bi bi-file-text me-2"></i>
-          <span>Статьи</span>
-        </a>
-        <a href="/admin/pages" class="admin-nav-item {{#if (eq currentPath '/admin/pages')}}active{{/if}}">
-          <i class="bi bi-file-earmark-text me-2"></i>
-          <span>Страницы</span>
-        </a>
-        <a href="/admin/categories" class="admin-nav-item {{#if (eq currentPath '/admin/categories')}}active{{/if}}">
-          <i class="bi bi-tags me-2"></i>
-          <span>Категории задач</span>
-        </a>
-        <a href="/admin/article-categories" class="admin-nav-item {{#if (eq currentPath '/admin/article-categories')}}active{{/if}}">
-          <i class="bi bi-collection me-2"></i>
-          <span>Категории статей</span>
-        </a>
-      </nav>
-    </div>
-
     <!-- Основной контент -->
-    <div class="admin-content">
       <h2 class="mb-4">Редактировать страницу</h2>
-
       {{#if error}}
       <div class="alert alert-danger">{{error}}</div>
       {{/if}}
-
       <form action="/admin/pages/{{page._id}}/edit" method="POST">
         <div class="row">
           <div class="col-md-8">
@@ -42,13 +15,11 @@
                   <input type="text" class="form-control" id="title" name="title" required value="{{page.title}}">
                   <small class="form-text text-muted">Максимум 200 символов</small>
                 </div>
-
                 <div class="mb-3">
                   <label for="slug" class="form-label">URL (slug)</label>
                   <input type="text" class="form-control" id="slug" name="slug" value="{{page.slug}}">
                   <small class="form-text text-muted">Если не указан, будет сгенерирован автоматически из названия</small>
                 </div>
-
                 <div class="mb-3">
                   <label for="content" class="form-label">Содержимое страницы *</label>
                   <textarea class="form-control" id="content" name="content" rows="15" required>{{page.content}}</textarea>
@@ -56,7 +27,6 @@
                 </div>
               </div>
             </div>
-
             <div class="card mb-3">
               <div class="card-body">
                 <h5 class="card-title">SEO мета-теги</h5>
@@ -66,13 +36,11 @@
                   <input type="text" class="form-control" id="metaTitle" name="metaTitle" value="{{page.metaTitle}}">
                   <small class="form-text text-muted">Максимум 60 символов. Если не заполнено, будет использовано название страницы</small>
                 </div>
-
                 <div class="mb-3">
                   <label for="metaDescription" class="form-label">Meta Description</label>
                   <textarea class="form-control" id="metaDescription" name="metaDescription" rows="2">{{page.metaDescription}}</textarea>
                   <small class="form-text text-muted">Максимум 160 символов. Краткое описание для поисковых систем</small>
                 </div>
-
                 <div class="mb-3">
                   <label for="metaKeywords" class="form-label">Meta Keywords</label>
                   <input type="text" class="form-control" id="metaKeywords" name="metaKeywords" value="{{page.metaKeywords}}">
@@ -80,7 +48,6 @@
                 </div>
               </div>
             </div>
-
             <div class="card mb-3">
               <div class="card-body">
                 <h5 class="card-title">Информация</h5>
@@ -91,7 +58,6 @@
             </div>
           </div>
         </div>
-
         <div class="d-grid gap-2 d-md-flex">
           <button type="submit" class="btn btn-create-category">
             <i class="fas fa-save"></i> Сохранить изменения
@@ -101,7 +67,3 @@
           </a>
         </div>
       </form>
-    </div>
-  </div>
-</div>
-

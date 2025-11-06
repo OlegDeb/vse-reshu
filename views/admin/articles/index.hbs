@@ -1,39 +1,13 @@
-<div class="container mt-4">
-  <div class="admin-wrapper">
-    <!-- Меню админки -->
-    <div class="admin-sidebar mb-4">
-      <nav class="admin-nav-menu">
-        <a href="/admin/articles" class="admin-nav-item {{#if (eq currentPath '/admin/articles')}}active{{/if}}">
-          <i class="bi bi-file-text me-2"></i>
-          <span>Статьи</span>
-        </a>
-        <a href="/admin/pages" class="admin-nav-item {{#if (eq currentPath '/admin/pages')}}active{{/if}}">
-          <i class="bi bi-file-earmark-text me-2"></i>
-          <span>Страницы</span>
-        </a>
-        <a href="/admin/categories" class="admin-nav-item {{#if (eq currentPath '/admin/categories')}}active{{/if}}">
-          <i class="bi bi-tags me-2"></i>
-          <span>Категории задач</span>
-        </a>
-        <a href="/admin/article-categories" class="admin-nav-item {{#if (eq currentPath '/admin/article-categories')}}active{{/if}}">
-          <i class="bi bi-collection me-2"></i>
-          <span>Категории статей</span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- Основной контент -->
-    <div class="admin-content">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 class="mb-0">Управление статьями</h2>
-          <p class="text-muted mb-0">Создание, редактирование и удаление статей</p>
-        </div>
-        <a href="/admin/articles/create" class="btn btn-create-category btn-lg">
-          <i class="fas fa-plus-circle me-2"></i>
-          Создать статью
-        </a>
-      </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-0">Управление статьями</h2>
+    <p class="text-muted mb-0">Создание, редактирование и удаление статей</p>
+  </div>
+  <a href="/admin/articles/create" class="btn btn-create-category btn-lg">
+    <i class="fas fa-plus-circle me-2"></i>
+    Создать статью
+  </a>
+</div>
 
 <!-- Фильтры -->
 <div class="card mb-4">
@@ -148,11 +122,11 @@
     </li>
     {{/if}}
     
-        {{#each pages}}
-        <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
-          <a class="page-link" href="/admin/articles?page={{this}}{{#if ../currentStatus}}&status={{../currentStatus}}{{/if}}{{#if ../currentCategory}}&category={{../currentCategory}}{{/if}}">{{this}}</a>
-        </li>
-        {{/each}}
+    {{#each pages}}
+    <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+      <a class="page-link" href="/admin/articles?page={{this}}{{#if ../currentStatus}}&status={{../currentStatus}}{{/if}}{{#if ../currentCategory}}&category={{../currentCategory}}{{/if}}">{{this}}</a>
+    </li>
+    {{/each}}
     
     {{#if hasNextPage}}
     <li class="page-item">
@@ -177,6 +151,3 @@
   </a>
 </div>
 {{/if}}
-    </div>
-  </div>
-</div>

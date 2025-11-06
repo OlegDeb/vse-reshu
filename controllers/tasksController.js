@@ -2,6 +2,9 @@ import Task from '../models/Task.js';
 import Response from '../models/Response.js';
 import Message from '../models/Message.js';
 import Category, { CATEGORY_TYPES } from '../models/Category.js';
+import City from '../models/City.js';
+import Rating from '../models/Rating.js';
+import User from '../models/User.js';
 
 // Middleware для проверки аутентификации
 export const requireAuth = (req, res, next) => {
@@ -17,7 +20,7 @@ const getTasksWithCategory = async (categorySlug, page = 1) => {
   const skip = (page - 1) * limit;
   
   // Формируем запрос с фильтром по категории
-  const query = { status: 'open' };
+  const query = { status: 'open', moderationStatus: 'approved' };
   let categoryFilter = null;
   if (categorySlug) {
     categoryFilter = await Category.findOne({ slug: categorySlug });
@@ -32,6 +35,7 @@ const getTasksWithCategory = async (categorySlug, page = 1) => {
   const tasks = await Task.find(query)
     .populate('author', 'firstName lastName username avatar')
     .populate('category', 'name icon slug type')
+    .populate('city', 'name region')
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);
@@ -138,6 +142,7 @@ export const getTasksByCategory = async (req, res) => {
 export const getCreateTask = async (req, res) => {
   try {
     const categories = await Category.find();
+    const cities = await City.find().sort({ name: 1 });
     // Создаем массив типов категорий для удобства работы в шаблоне
     const typesArray = Object.entries(CATEGORY_TYPES).map(([name, icon]) => ({
       name,
@@ -146,6 +151,7 @@ export const getCreateTask = async (req, res) => {
 
     res.render('tasks/create', {
       categories,
+      cities,
       categoryTypes: CATEGORY_TYPES,
       typesArray: typesArray,
       title: 'Создать задачу'
@@ -157,20 +163,39 @@ export const getCreateTask = async (req, res) => {
 
 // Создание задачи
 export const postCreateTask = async (req, res) => {
-  const { title, description, category } = req.body;
+  const { title, description, category, locationType, city } = req.body;
   try {
-    const task = new Task({
+    const taskData = {
       title,
       description,
       category,
+      locationType: locationType || 'city',
       author: req.session.userId
-    });
+    };
+
+    // Если выбрана локация "город", добавляем город
+    if (locationType === 'city' && city) {
+      taskData.city = city;
+    } else if (locationType === 'remote') {
+      taskData.city = null;
+    }
+
+    const task = new Task(taskData);
     await task.save();
     res.redirect('/tasks');
   } catch (error) {
+    console.error('Ошибка создания задачи:', error);
     const categories = await Category.find();
+    const cities = await City.find().sort({ name: 1 });
+    const typesArray = Object.entries(CATEGORY_TYPES).map(([name, icon]) => ({
+      name,
+      icon
+    }));
     res.render('tasks/create', {
       categories,
+      cities,
+      categoryTypes: CATEGORY_TYPES,
+      typesArray: typesArray,
       error: 'Ошибка создания задачи',
       title: 'Создать задачу'
     });
@@ -185,6 +210,7 @@ export const getTask = async (req, res) => {
     const task = await Task.findById(req.params.id)
       .populate('author', 'firstName lastName username avatar')
       .populate('category', 'name icon')
+      .populate('city', 'name region')
       .populate({
         path: 'acceptedResponse',
         populate: {
@@ -196,6 +222,18 @@ export const getTask = async (req, res) => {
     if (!task) {
       console.log('Task not found with ID:', req.params.id);
       return res.render('error', { message: 'Задача не найдена' });
+    }
+
+    // Проверяем модерацию - если задача не одобрена и пользователь не админ и не автор
+    let isAdmin = false;
+    if (req.session.userId) {
+      const user = await User.findById(req.session.userId);
+      isAdmin = user && user.role === 'admin';
+    }
+    const isAuthor = req.session.userId ? task.author._id.toString() === req.session.userId : false;
+    
+    if (task.moderationStatus !== 'approved' && !isAdmin && !isAuthor) {
+      return res.render('error', { message: 'Задача находится на модерации или была отклонена' });
     }
 
     console.log('Task found:', task.title);
@@ -213,12 +251,45 @@ export const getTask = async (req, res) => {
       response.isOwnResponse = response.responder._id.toString() === req.session.userId;
     });
 
-    const isAuthor = req.session.userId ? task.author._id.toString() === req.session.userId : false;
     const hasResponded = req.session.userId ? responses.some(r => r.responder._id.toString() === req.session.userId) : false;
+
+    // Загружаем рейтинги для задачи
+    const ratings = await Rating.find({ task: req.params.id })
+      .populate('rater', 'firstName lastName username avatar')
+      .populate('rated', 'firstName lastName username')
+      .sort({ createdAt: -1 });
+
+    // Форматируем даты рейтингов
+    ratings.forEach(rating => {
+      rating.createdAtFormatted = rating.createdAt.toLocaleDateString('ru-RU');
+    });
+
+    // Проверяем, оставлял ли текущий пользователь рейтинг
+    let userRating = null;
+    if (req.session.userId) {
+      userRating = await Rating.findOne({
+        task: req.params.id,
+        rater: req.session.userId
+      });
+    }
+
+    // Определяем, кого может оценить пользователь
+    let canRateUserId = null;
+    if (req.session.userId && task.status === 'closed') {
+      if (isAuthor && task.acceptedResponse && task.acceptedResponse.responder) {
+        canRateUserId = task.acceptedResponse.responder._id.toString();
+      } else if (task.acceptedResponse && task.acceptedResponse.responder && 
+                 task.acceptedResponse.responder._id.toString() === req.session.userId) {
+        canRateUserId = task.author._id.toString();
+      }
+    }
 
     res.render('tasks/show', {
       task,
       responses,
+      ratings,
+      userRating,
+      canRateUserId,
       isAuthor,
       hasResponded,
       currentUserId: req.session.userId || null,
@@ -345,7 +416,7 @@ export const acceptResponse = async (req, res) => {
 export const closeTask = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
-    if (!task || task.author.toString() !== req.session.userId || task.status !== 'in_progress') {
+    if (!task || task.author.toString() !== req.session.userId || (task.status !== 'in_progress' && task.status !== 'open')) {
       return res.redirect(`/tasks/${req.params.id}`);
     }
 
@@ -403,8 +474,8 @@ export const getEditTask = async (req, res) => {
       return res.render('error', { message: 'Нельзя редактировать закрытую задачу' });
     }
 
-    console.log('Loading categories...');
     const categories = await Category.find();
+    const cities = await City.find().sort({ name: 1 });
     console.log('Categories loaded:', categories.length);
 
     // Создаем массив типов категорий для удобства работы в шаблоне
@@ -417,6 +488,7 @@ export const getEditTask = async (req, res) => {
     res.render('tasks/edit', {
       task: task.toObject(),
       categories,
+      cities,
       categoryTypes: CATEGORY_TYPES,
       typesArray: typesArray,
       title: 'Редактирование задачи'
@@ -434,7 +506,7 @@ export const postEditTask = async (req, res) => {
       return res.redirect('/login');
     }
 
-    const { title, description, category } = req.body;
+    const { title, description, category, locationType, city } = req.body;
     const task = await Task.findById(req.params.id);
 
     if (!task) {
@@ -455,6 +527,14 @@ export const postEditTask = async (req, res) => {
     task.title = title;
     task.description = description;
     task.category = category;
+    task.locationType = locationType || 'city';
+    
+    // Если выбрана локация "город", устанавливаем город
+    if (locationType === 'city' && city) {
+      task.city = city;
+    } else if (locationType === 'remote') {
+      task.city = null;
+    }
 
     await task.save();
 
@@ -463,8 +543,9 @@ export const postEditTask = async (req, res) => {
     console.error('Ошибка редактирования задачи:', error);
 
     // Загружаем задачу и категории заново для формы с ошибкой
-    const task = await Task.findById(req.params.id).populate('category', 'name');
+    const task = await Task.findById(req.params.id).populate('category', 'name').populate('city', 'name');
     const categories = await Category.find();
+    const cities = await City.find().sort({ name: 1 });
 
     // Создаем массив типов категорий для удобства работы в шаблоне
     const typesArray = Object.entries(CATEGORY_TYPES).map(([name, icon]) => ({
@@ -475,6 +556,7 @@ export const postEditTask = async (req, res) => {
     res.render('tasks/edit', {
       task: task.toObject(),
       categories,
+      cities,
       categoryTypes: CATEGORY_TYPES,
       typesArray: typesArray,
       error: 'Ошибка сохранения задачи: ' + error.message,
@@ -503,6 +585,7 @@ export const getMyTasks = async (req, res) => {
     })
     .populate('author', 'username firstName lastName')
     .populate('category', 'name icon')
+    .populate('city', 'name region')
     .populate({
       path: 'acceptedResponse',
       populate: {

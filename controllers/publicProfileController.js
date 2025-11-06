@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import Task from '../models/Task.js';
 import Response from '../models/Response.js';
+import Rating from '../models/Rating.js';
 
 // Контроллер для публичного профиля пользователя
 export const getPublicProfile = async (req, res) => {
@@ -29,7 +30,9 @@ export const getPublicProfile = async (req, res) => {
       dateOfBirth: user.dateOfBirth,
       gender: user.gender,
       createdAt: user.createdAt,
-      createdAtFormatted: user.createdAt.toLocaleDateString('ru-RU')
+      createdAtFormatted: user.createdAt.toLocaleDateString('ru-RU'),
+      averageRating: user.averageRating || null,
+      totalRatings: user.totalRatings || 0
     };
 
     // Собираем статистику
@@ -65,6 +68,23 @@ export const getPublicProfile = async (req, res) => {
       rejected: await Response.countDocuments({ responder: user._id, status: 'rejected' })
     };
 
+    // Загружаем рейтинги (отзывы) пользователя
+    // НЕ загружаем информацию о задаче для защиты приватности (не раскрываем информацию о задачах пользователя)
+    const ratings = await Rating.find({ rated: user._id })
+      .populate('rater', 'firstName lastName username avatar')
+      .select('rater rating comment createdAt') // Загружаем только необходимые поля, исключая task
+      .sort({ createdAt: -1 })
+      .limit(20); // Ограничиваем до 20 последних отзывов
+
+    // Форматируем даты рейтингов
+    ratings.forEach(rating => {
+      rating.createdAtFormatted = rating.createdAt.toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    });
+
     const stats = {
       tasksAsAuthor,
       tasksAsExecutor,
@@ -77,6 +97,7 @@ export const getPublicProfile = async (req, res) => {
       title: `Профиль ${user.firstName || user.username}`,
       profileUser: publicUserData,
       stats: stats,
+      ratings: ratings,
       isOwner: isOwner,
       currentUserId: req.session.userId || null
     });

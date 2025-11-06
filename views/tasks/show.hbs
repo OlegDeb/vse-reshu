@@ -15,6 +15,11 @@
                                     <a href="/tasks/{{task._id}}/edit" class="btn btn-outline-warning">
                                         <i class="bi bi-pencil me-1"></i>Редактировать
                                     </a>
+                                    <form action="/tasks/{{task._id}}/close" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Вы уверены, что хотите закрыть эту задачу?')">
+                                            <i class="bi bi-x-circle me-1"></i>Закрыть задачу
+                                        </button>
+                                    </form>
                                 {{/if}}
                                 {{#if (eq task.status 'in_progress')}}
                                     <form action="/tasks/{{task._id}}/close" method="POST" class="d-inline">
@@ -262,6 +267,121 @@
                             </div>
                         {{/if}}
                     {{/if}}
+
+                    <!-- Рейтинги в отдельном белом блоке -->
+                    {{#if (eq task.status 'closed')}}
+                        <div class="mt-4">
+                            <div class="card task-card">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="mb-0">
+                                            <i class="bi bi-star me-2"></i>Оценки участников
+                                            {{#if ratings.length}}
+                                                <span class="badge bg-primary">{{ratings.length}}</span>
+                                            {{/if}}
+                                        </h5>
+                                    </div>
+
+                                    <!-- Форма для создания рейтинга -->
+                                    {{#if user}}
+                                        {{#if canRateUserId}}
+                                            {{#unless userRating}}
+                                                <div class="mb-4 p-3 border border-primary rounded">
+                                                    <h6 class="mb-3 text-primary">
+                                                        <i class="bi bi-star-fill me-2"></i>Оценить участника
+                                                    </h6>
+                                                    <form id="rating-form" onsubmit="submitRating(event)">
+                                                        <input type="hidden" name="ratedUserId" value="{{canRateUserId}}">
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Оценка</label>
+                                                            <div class="rating-input mb-2">
+                                                                <input type="radio" id="rating-5" name="rating" value="5" required>
+                                                                <label for="rating-5" class="star-label">★</label>
+                                                                <input type="radio" id="rating-4" name="rating" value="4" required>
+                                                                <label for="rating-4" class="star-label">★</label>
+                                                                <input type="radio" id="rating-3" name="rating" value="3" required>
+                                                                <label for="rating-3" class="star-label">★</label>
+                                                                <input type="radio" id="rating-2" name="rating" value="2" required>
+                                                                <label for="rating-2" class="star-label">★</label>
+                                                                <input type="radio" id="rating-1" name="rating" value="1" required>
+                                                                <label for="rating-1" class="star-label">★</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="rating-comment" class="form-label">Комментарий (необязательно)</label>
+                                                            <textarea class="form-control" id="rating-comment" name="comment" rows="3" 
+                                                                      placeholder="Оставьте комментарий о работе..." maxlength="1000"></textarea>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">
+                                                            <i class="bi bi-star me-1"></i>Отправить оценку
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            {{else}}
+                                                <div class="alert alert-success mb-4">
+                                                    <i class="bi bi-check-circle me-2"></i>
+                                                    <strong>Спасибо!</strong> Вы уже оставили оценку для этой задачи.
+                                                </div>
+                                            {{/unless}}
+                                        {{/if}}
+                                    {{/if}}
+
+                                    <!-- Список рейтингов -->
+                                    {{#if ratings.length}}
+                                        {{#each ratings}}
+                                            <div class="mb-3 p-3 rounded border">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <div class="d-flex align-items-center">
+                                                        {{#if rater.avatar}}
+                                                            <img src="{{rater.avatar}}" alt="{{rater.firstName}} {{rater.lastName}}" 
+                                                                 class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                                                        {{else}}
+                                                            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                                 style="width: 40px; height: 40px; background-color: var(--youdo-light-blue);">
+                                                                <i class="bi bi-person-fill" style="font-size: 20px; color: var(--youdo-blue);"></i>
+                                                            </div>
+                                                        {{/if}}
+                                                        <div>
+                                                            <strong class="d-block">
+                                                                {{#if rater.firstName}}
+                                                                    {{rater.firstName}} {{rater.lastName}}
+                                                                {{else}}
+                                                                    {{rater.username}}
+                                                                {{/if}}
+                                                            </strong>
+                                                            <small class="text-muted">{{createdAtFormatted}}</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="rating-display">
+                                                        {{#each (range 1 5)}}
+                                                            {{#if (gte ../rating this)}}
+                                                                <span class="text-warning" style="font-size: 1.2rem;">★</span>
+                                                            {{else}}
+                                                                <span class="text-muted" style="font-size: 1.2rem;">☆</span>
+                                                            {{/if}}
+                                                        {{/each}}
+                                                        <span class="ms-2 fw-bold">{{rating}}</span>
+                                                    </div>
+                                                </div>
+                                                {{#if comment}}
+                                                    <div class="p-2 bg-light rounded mt-2">
+                                                        <p class="mb-0" style="white-space: pre-wrap;">{{comment}}</p>
+                                                    </div>
+                                                {{/if}}
+                                            </div>
+                                        {{/each}}
+                                    {{else}}
+                                        <div class="text-center py-4">
+                                            <i class="bi bi-star" style="font-size: 3rem; color: #ddd;"></i>
+                                            <p class="text-muted mt-3 mb-0">
+                                                <i class="bi bi-info-circle me-2"></i>Пока нет оценок
+                                            </p>
+                                        </div>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </div>
+                    {{/if}}
         </div>
 
         <!-- Сайдбар в отдельном белом блоке -->
@@ -278,6 +398,23 @@
                         <span class="badge {{#if (eq task.status 'open')}}bg-success{{else if (eq task.status 'in_progress')}}bg-warning{{else}}bg-secondary{{/if}}" style="font-size: 0.9rem;">
                             {{#if (eq task.status 'open')}}Открыта{{else if (eq task.status 'in_progress')}}В работе{{else}}Закрыта{{/if}}
                         </span>
+                    </div>
+
+                    <div class="mb-3 pb-3 border-bottom">
+                        <small class="text-muted d-block mb-1">Местоположение</small>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-geo-alt me-2" style="color: var(--youdo-blue);"></i>
+                            {{#if (eq task.locationType 'remote')}}
+                                <span class="fw-bold text-success">Удаленно</span>
+                            {{else if task.city}}
+                                <span class="fw-bold">{{task.city.name}}</span>
+                                {{#if task.city.region}}
+                                    <small class="text-muted ms-2">({{task.city.region}})</small>
+                                {{/if}}
+                            {{else}}
+                                <span class="text-muted">Не указано</span>
+                            {{/if}}
+                        </div>
                     </div>
 
                     <div class="mb-3 pb-3 border-bottom">
@@ -475,5 +612,71 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+});
+
+// Функция для отправки рейтинга
+async function submitRating(event) {
+  event.preventDefault();
+  
+  const form = event.target;
+  const formData = new FormData(form);
+  const data = {
+    ratedUserId: formData.get('ratedUserId'),
+    rating: formData.get('rating'),
+    comment: formData.get('comment') || ''
+  };
+
+  try {
+    const response = await fetch(`/tasks/{{task._id}}/ratings`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert('Спасибо! Ваша оценка отправлена.');
+      location.reload();
+    } else {
+      alert('Ошибка отправки оценки: ' + (result.error || 'Неизвестная ошибка'));
+    }
+  } catch (error) {
+    console.error('Ошибка сети:', error);
+    alert('Ошибка сети при отправке оценки');
+  }
+}
+
+// Стили для звездного рейтинга
+document.addEventListener('DOMContentLoaded', function() {
+  const style = document.createElement('style');
+  style.textContent = `
+    .rating-input {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      gap: 5px;
+    }
+    .rating-input input[type="radio"] {
+      display: none;
+    }
+    .rating-input label.star-label {
+      font-size: 2rem;
+      color: #ddd;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .rating-input label.star-label:hover,
+    .rating-input label.star-label:hover ~ label.star-label {
+      color: #ffc107;
+    }
+    .rating-input input[type="radio"]:checked ~ label.star-label,
+    .rating-input input[type="radio"]:checked + label.star-label {
+      color: #ffc107;
+    }
+  `;
+  document.head.appendChild(style);
 });
 </script>

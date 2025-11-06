@@ -1,0 +1,249 @@
+<div class="mb-4">
+  <a href="/admin/tasks" class="btn btn-outline-secondary mb-3">
+    <i class="fas fa-arrow-left me-2"></i>Назад к списку задач
+  </a>
+</div>
+
+{{#if error}}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <i class="fas fa-exclamation-triangle me-2"></i>
+  <strong>Ошибка:</strong> {{error}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/if}}
+
+<!-- Информация о задаче -->
+<div class="card mb-4">
+  <div class="card-header bg-primary text-white">
+    <h3 class="mb-0">
+      <i class="bi bi-clipboard-check me-2"></i>Информация о задаче
+    </h3>
+  </div>
+  <div class="card-body">
+    <div class="row mb-3">
+      <div class="col-md-8">
+        <h4>{{task.title}}</h4>
+        <p class="text-muted">{{task.description}}</p>
+      </div>
+      <div class="col-md-4 text-end">
+        {{#if (eq task.moderationStatus "pending")}}
+        <span class="badge bg-warning fs-6">На модерации</span>
+        {{else if (eq task.moderationStatus "approved")}}
+        <span class="badge bg-success fs-6">Одобрено</span>
+        {{else}}
+        <span class="badge bg-danger fs-6">Отклонено</span>
+        {{/if}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>Автор:</strong> 
+          {{#if task.author.avatar}}
+            <img src="{{task.author.avatar}}" alt="{{task.author.username}}" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+          {{else}}
+            <i class="bi bi-person-circle me-2"></i>
+          {{/if}}
+          {{#if task.author.firstName}}{{task.author.firstName}} {{task.author.lastName}}{{else}}{{task.author.username}}{{/if}}
+        </p>
+        <p><strong>Категория:</strong> <span class="badge bg-secondary">{{task.category.name}}</span></p>
+        <p><strong>Местоположение:</strong> 
+          {{#if task.city}}
+            {{task.city.name}}{{#if task.city.region}}, {{task.city.region}}{{/if}}
+          {{else}}
+            <span class="text-muted">Удаленно</span>
+          {{/if}}
+        </p>
+        <p><strong>Статус задачи:</strong> 
+          {{#if (eq task.status "open")}}
+          <span class="badge bg-success">Открыта</span>
+          {{else if (eq task.status "in_progress")}}
+          <span class="badge bg-warning">В работе</span>
+          {{else}}
+          <span class="badge bg-secondary">Закрыта</span>
+          {{/if}}
+        </p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Дата создания:</strong> {{task.createdAtFormatted}}</p>
+        {{#if task.moderatedBy}}
+        <p><strong>Модерировал:</strong> 
+          {{#if task.moderatedBy.firstName}}{{task.moderatedBy.firstName}} {{task.moderatedBy.lastName}}{{else}}{{task.moderatedBy.username}}{{/if}}
+        </p>
+        <p><strong>Дата модерации:</strong> {{task.moderatedAtFormatted}}</p>
+        {{/if}}
+        {{#if task.moderationComment}}
+        <p><strong>Комментарий модератора:</strong> <span class="text-danger">{{task.moderationComment}}</span></p>
+        {{/if}}
+      </div>
+    </div>
+    <!-- Действия модерации -->
+    <div class="mt-4 pt-4 border-top">
+      <div class="d-flex gap-2 flex-wrap">
+        {{#if (eq task.moderationStatus "pending")}}
+        <form action="/admin/tasks/{{task._id}}/approve" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-success" onclick="return confirm('Одобрить публикацию этой задачи?')">
+            <i class="fas fa-check me-2"></i>Одобрить
+          </button>
+        </form>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">
+          <i class="fas fa-times me-2"></i>Отклонить
+        </button>
+        {{else if (eq task.moderationStatus "approved")}}
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#rejectModal">
+          <i class="fas fa-ban me-2"></i>Отклонить
+        </button>
+        <form action="/admin/tasks/{{task._id}}/pending" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-secondary" onclick="return confirm('Вернуть задачу на модерацию?')">
+            <i class="fas fa-undo me-2"></i>Вернуть на модерацию
+          </button>
+        </form>
+        {{else}}
+        <form action="/admin/tasks/{{task._id}}/approve" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-success" onclick="return confirm('Одобрить публикацию этой задачи?')">
+            <i class="fas fa-check me-2"></i>Одобрить
+          </button>
+        </form>
+        <form action="/admin/tasks/{{task._id}}/pending" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-secondary" onclick="return confirm('Вернуть задачу на модерацию?')">
+            <i class="fas fa-undo me-2"></i>Вернуть на модерацию
+          </button>
+        </form>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Отклики на задачу -->
+{{#if responses.length}}
+<div class="card mb-4">
+  <div class="card-header bg-info text-white">
+    <h4 class="mb-0">
+      <i class="bi bi-chat-dots me-2"></i>Отклики ({{responses.length}})
+    </h4>
+  </div>
+  <div class="card-body">
+    {{#each responses}}
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="d-flex align-items-center">
+            {{#if this.responder.avatar}}
+              <img src="{{this.responder.avatar}}" alt="{{this.responder.username}}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+            {{else}}
+              <i class="bi bi-person-circle me-2" style="font-size: 2rem;"></i>
+            {{/if}}
+            <div>
+              <strong>{{#if this.responder.firstName}}{{this.responder.firstName}} {{this.responder.lastName}}{{else}}{{this.responder.username}}{{/if}}</strong>
+              <br>
+              <small class="text-muted">{{this.createdAtFormatted}}</small>
+            </div>
+          </div>
+          {{#if (eq this.status "accepted")}}
+          <span class="badge bg-success">Принят</span>
+          {{else if (eq this.status "rejected")}}
+          <span class="badge bg-danger">Отклонен</span>
+          {{else}}
+          <span class="badge bg-secondary">Ожидает</span>
+          {{/if}}
+        </div>
+        <p class="mb-0">{{this.message}}</p>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+</div>
+{{/if}}
+<!-- Переписка между заказчиком и исполнителем -->
+{{#if executor}}
+<div class="card mb-4">
+  <div class="card-header bg-success text-white">
+    <h4 class="mb-0">
+      <i class="bi bi-chat-left-text me-2"></i>Переписка с исполнителем
+    </h4>
+  </div>
+  <div class="card-body">
+    <div class="mb-3 pb-3 border-bottom">
+      <p class="mb-1"><strong>Исполнитель:</strong></p>
+      <div class="d-flex align-items-center">
+        {{#if executor.avatar}}
+          <img src="{{executor.avatar}}" alt="{{executor.username}}" class="rounded-circle me-2" style="width: 48px; height: 48px; object-fit: cover;">
+        {{else}}
+          <i class="bi bi-person-circle me-2" style="font-size: 2.5rem;"></i>
+        {{/if}}
+        <div>
+          <strong>{{#if executor.firstName}}{{executor.firstName}} {{executor.lastName}}{{else}}{{executor.username}}{{/if}}</strong>
+          <br>
+          <small class="text-muted">{{executor.username}}</small>
+        </div>
+      </div>
+    </div>
+    {{#if messages.length}}
+    <div class="messages-container" style="max-height: 600px; overflow-y: auto;">
+      {{#each messages}}
+      <div class="message-item mb-3 {{#if this.isSystemMessage}}alert alert-info{{else}}card{{/if}}">
+        <div class="{{#unless this.isSystemMessage}}card-body{{/unless}}">
+          {{#if this.isSystemMessage}}
+          <div class="d-flex align-items-center">
+            <i class="bi bi-info-circle me-2"></i>
+            <span>{{this.message}}</span>
+          </div>
+          {{else}}
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div class="d-flex align-items-center">
+              {{#if this.sender.avatar}}
+                <img src="{{this.sender.avatar}}" alt="{{this.sender.username}}" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+              {{else}}
+                <i class="bi bi-person-circle me-2"></i>
+              {{/if}}
+              <strong>{{#if this.sender.firstName}}{{this.sender.firstName}} {{this.sender.lastName}}{{else}}{{this.sender.username}}{{/if}}</strong>
+              {{#if (eq this.sender._id ../task.author._id)}}
+              <span class="badge bg-primary ms-2">Заказчик</span>
+              {{else}}
+              <span class="badge bg-success ms-2">Исполнитель</span>
+              {{/if}}
+            </div>
+            <small class="text-muted">{{this.createdAtFormatted}}</small>
+          </div>
+          <p class="mb-0">{{this.message}}</p>
+          {{/if}}
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{else}}
+    <div class="alert alert-info text-center">
+      <i class="bi bi-chat-left-text me-2"></i>Переписка еще не началась
+    </div>
+    {{/if}}
+  </div>
+</div>
+{{else}}
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="alert alert-warning text-center mb-0">
+      <i class="bi bi-info-circle me-2"></i>Исполнитель еще не выбран
+    </div>
+  </div>
+</div>
+{{/if}}
+<!-- Модальное окно отклонения задачи -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+<div class="modal-header">
+  <h5 class="modal-title" id="rejectModalLabel">Отклонить задачу</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<form action="/admin/tasks/{{task._id}}/reject" method="POST">
+  <div class="modal-body">
+    <div class="mb-3">
+      <label for="rejectComment" class="form-label">Причина отклонения <span class="text-danger">*</span></label>
+      <textarea class="form-control" id="rejectComment" name="comment" rows="4" required placeholder="Укажите причину отклонения задачи..."></textarea>
+      <small class="form-text text-muted">Это сообщение будет видно автору задачи</small>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+    <button type="submit" class="btn btn-danger">Отклонить задачу</button>
+  </div>
+</form>

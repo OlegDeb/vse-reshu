@@ -34,6 +34,22 @@ import {
   postAdminEdit as postPagesEdit,
   postAdminDelete as postPagesDelete
 } from '../controllers/pagesController.js';
+import {
+  getIndex as getCitiesIndex,
+  getCreate as getCitiesCreate,
+  postCreate as postCitiesCreate,
+  getEdit as getCitiesEdit,
+  postEdit as postCitiesEdit,
+  postDelete as postCitiesDelete,
+  getCitiesByRegion
+} from '../controllers/citiesController.js';
+import {
+  getAdminIndex as getTasksAdminIndex,
+  getAdminShow as getTasksAdminShow,
+  postApproveTask,
+  postRejectTask,
+  postPendingTask
+} from '../controllers/tasksAdminController.js';
 import upload from '../config/multer.js';
 
 const router = express.Router();
@@ -74,5 +90,21 @@ router.post('/pages/create', postPagesCreate);
 router.get('/pages/:id/edit', getPagesEdit);
 router.post('/pages/:id/edit', postPagesEdit);
 router.post('/pages/:id/delete', postPagesDelete);
+
+// Города
+router.get('/cities', getCitiesIndex);
+router.get('/cities/region/:region', getCitiesByRegion);
+router.get('/cities/create', getCitiesCreate);
+router.post('/cities/create', postCitiesCreate);
+router.get('/cities/:id/edit', getCitiesEdit);
+router.post('/cities/:id/edit', postCitiesEdit);
+router.post('/cities/:id/delete', postCitiesDelete);
+
+// Модерация задач
+router.get('/tasks', getTasksAdminIndex);
+router.get('/tasks/:id', getTasksAdminShow);
+router.post('/tasks/:id/approve', postApproveTask);
+router.post('/tasks/:id/reject', postRejectTask);
+router.post('/tasks/:id/pending', postPendingTask);
 
 export default router;
